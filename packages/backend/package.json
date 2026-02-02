@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "author": "Jovanka Samudra",
+  "scripts": {
+    "dev": "bun run --hot --env-file=.env src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "bun run src/seed/main.ts"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.5",
+    "drizzle-orm": "^0.44.7",
+    "googleapis": "^171.0.0",
+    "hono": "^4.10.7",
+    "pg": "^8.17.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.15.6",
+    "drizzle-kit": "^0.31.7"
+  }
+}

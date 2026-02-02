@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1769783438550,
+      "tag": "0000_create-extention-uuid-7",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769783485222,
+      "tag": "0001_create-user-auth",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769786588926,
+      "tag": "0002_create-pocket-transaction-category-table",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769787853188,
+      "tag": "0003_change-enum-transaction-type",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769923647553,
+      "tag": "0004_index-unique-name-type-category",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1769925287466,
+      "tag": "0005_not-null-description-transcation",
+      "breakpoints": true
+    }
+  ]
+}

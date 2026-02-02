@@ -1,0 +1,7 @@
+@layer components {
+	div[data-slot="field"][data-required] > label[data-slot="field-label"]::after,
+	label[data-slot="field-label"][data-required]::after {
+		content: "*";
+		color: var(--color-destructive);
+	}
+}

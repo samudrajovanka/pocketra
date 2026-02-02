@@ -1,0 +1,100 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+	createPocket,
+	deletePocket,
+	getPocketById,
+	getPocketOptions,
+	getPockets,
+	getTotalBalance,
+	updatePocket,
+} from '@/endpoints/pocket';
+import type { UpdatePocketPayload } from '@/endpoints/pocket/types';
+import { getTransactionsQueryKey } from '../transaction';
+
+export const getPocketsQueryKey = () => ['pockets'];
+export const getPocketByIdQueryKey = (id: string) => ['pockets', id];
+
+export const useGetPocketsQuery = () => {
+	return useQuery({
+		queryKey: getPocketsQueryKey(),
+		queryFn: getPockets,
+	});
+};
+
+export const getTotalBalanceQueryKey = () => ['total-balance'];
+
+export const useGetTotalBalanceQuery = () => {
+	return useQuery({
+		queryKey: getTotalBalanceQueryKey(),
+		queryFn: getTotalBalance,
+	});
+};
+
+export const getPocketOptionsQueryKey = () => ['pocket-options'];
+
+export const useGetPocketOptionsQuery = () => {
+	return useQuery({
+		queryKey: getPocketOptionsQueryKey(),
+		queryFn: getPocketOptions,
+	});
+};
+
+export const useGetPocketByIdQuery = (id: string) => {
+	return useQuery({
+		queryKey: getPocketByIdQueryKey(id),
+		queryFn: () => getPocketById(id),
+		enabled: !!id,
+	});
+};
+
+export const useCreatePocketMutation = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: createPocket,
+		onSuccess: async () => {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: getPocketOptionsQueryKey() }),
+			]);
+		},
+	});
+};
+
+export const useUpdatePocketMutation = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: ({
+			id,
+			payload,
+		}: {
+			id: string;
+			payload: UpdatePocketPayload;
+		}) => updatePocket(id, payload),
+		onSuccess: async (_, variables) => {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
+				queryClient.invalidateQueries({
+					queryKey: getPocketByIdQueryKey(variables.id),
+				}),
+				queryClient.invalidateQueries({ queryKey: getPocketOptionsQueryKey() }),
+			]);
+		},
+	});
+};
+
+export const useDeletePocketMutation = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: deletePocket,
+		onSuccess: async () => {
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: getPocketOptionsQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: getTransactionsQueryKey() }),
+			]);
+		},
+	});
+};

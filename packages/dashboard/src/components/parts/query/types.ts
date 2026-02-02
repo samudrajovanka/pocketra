@@ -1,0 +1,12 @@
+import type { UseQueryResult } from '@tanstack/react-query';
+import type React from 'react';
+
+export type QueryHandlingProps<T> = {
+	queryResult: UseQueryResult<T>;
+	render: (data: T) => React.ReactNode;
+	renderLoading?: React.ReactNode;
+	renderError?: React.ReactNode;
+	renderEmpty?: React.ReactNode;
+	renderNotFound?: React.ReactNode;
+	checkEmpty?: (data: T) => boolean;
+};

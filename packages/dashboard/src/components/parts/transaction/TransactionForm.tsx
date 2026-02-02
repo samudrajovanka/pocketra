@@ -1,0 +1,363 @@
+import { useForm, useStore } from '@tanstack/react-form';
+import { useNavigate } from '@tanstack/react-router';
+import { format } from 'date-fns';
+import { useCallback, useEffect } from 'react';
+import type z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+	InputGroupNumberInput,
+	InputGroupText,
+} from '@/components/ui/input-group';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import type {
+	CreateTransactionPayload,
+	UpdateTransactionPayload,
+} from '@/endpoints/transaction/types';
+import {
+	createTransactionValidator,
+	updateTransactionValidator,
+} from '@/endpoints/transaction/validator';
+import { isInvalidField } from '@/lib/utils';
+import { useGetCategoriesQuery } from '@/query/category';
+import { useGetPocketOptionsQuery } from '@/query/pocket';
+import type { TransactionType } from '@/types/transaction';
+import QueryHandling from '../query/QueryHandling';
+
+type TransactionFormProps<T extends 'create' | 'update'> = {
+	initialValues?: z.infer<typeof createTransactionValidator>;
+	onSubmit: (
+		values: T extends 'create'
+			? CreateTransactionPayload
+			: UpdateTransactionPayload,
+	) => Promise<void>;
+	isSubmitting?: boolean;
+	submitText?: string;
+	submitTextLoading?: string;
+	type?: T;
+	disabled?: boolean;
+};
+
+const TransactionForm = <T extends 'create' | 'update'>({
+	initialValues,
+	onSubmit,
+	isSubmitting,
+	submitText = 'Save',
+	submitTextLoading = 'Saving...',
+	type = 'create' as T,
+	disabled,
+}: TransactionFormProps<T>) => {
+	const navigate = useNavigate();
+
+	const getCategoriesQuery = useGetCategoriesQuery();
+	const categoriesData = getCategoriesQuery.data?.data.data;
+
+	const getPocketOptionsQuery = useGetPocketOptionsQuery();
+
+	const form = useForm({
+		defaultValues: initialValues ?? {
+			amount: 0,
+			type: 'expense' as TransactionType,
+			categoryId: '',
+			pocketId: '',
+			description: '',
+			date: new Date().toISOString(),
+		},
+		validators: {
+			onChange:
+				type === 'create'
+					? // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(createTransactionValidator as any)
+					: // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(updateTransactionValidator as any),
+			onSubmit:
+				type === 'create'
+					? // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(createTransactionValidator as any)
+					: // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(updateTransactionValidator as any),
+		},
+		onSubmit: async ({ value }) => {
+			if (disabled) return;
+
+			const payload = {
+				...value,
+				date: new Date(value.date).toISOString(),
+			};
+			const { type: _type, ...finalPayload } = payload;
+
+			if (type === 'create') {
+				await onSubmit(payload as CreateTransactionPayload);
+			} else {
+				await (onSubmit as (values: UpdateTransactionPayload) => Promise<void>)(
+					finalPayload as UpdateTransactionPayload,
+				);
+			}
+		},
+	});
+
+	const transactionType = useStore(form.store, (state) => state.values.type);
+	const categoryId = useStore(form.store, (state) => state.values.categoryId);
+
+	const getOtherCategory = useCallback(
+		(type: TransactionType) => {
+			if (!categoriesData) return null;
+
+			const categories =
+				type === 'income' ? categoriesData.income : categoriesData.expense;
+
+			const category = categories.find((c) => c.name === 'Other');
+
+			if (!category) return null;
+
+			return category;
+		},
+		[categoriesData],
+	);
+
+	useEffect(() => {
+		const otherCategory = getOtherCategory(transactionType as TransactionType);
+
+		if (otherCategory && categoryId === '') {
+			form.setFieldValue('categoryId', otherCategory.id);
+		}
+	}, [transactionType, categoryId, form.setFieldValue, getOtherCategory]);
+
+	return (
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				form.handleSubmit();
+			}}
+			className="space-y-4"
+		>
+			<form.Field name="description">
+				{(field) => {
+					const isInvalid = isInvalidField(field);
+					return (
+						<Field data-invalid={isInvalid} data-required>
+							<FieldLabel>Description</FieldLabel>
+							<InputGroup>
+								<InputGroupInput
+									name={field.name}
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChange={(e) => field.handleChange(e.target.value)}
+									maxLength={255}
+									placeholder="Example: Buy a coffee"
+									disabled={disabled}
+								/>
+								<InputGroupAddon align="block-end">
+									<InputGroupText className="ml-auto">
+										{field.state.value.length}/255
+									</InputGroupText>
+								</InputGroupAddon>
+							</InputGroup>
+							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+						</Field>
+					);
+				}}
+			</form.Field>
+
+			<div className="flex md:flex-row-reverse gap-4">
+				<form.Field name="amount">
+					{(field) => {
+						const isInvalid = isInvalidField(field);
+						return (
+							<Field data-invalid={isInvalid} data-required>
+								<FieldLabel>Amount</FieldLabel>
+								<InputGroup>
+									<InputGroupNumberInput
+										name={field.name}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(val) => field.handleChange(val)}
+										placeholder="0"
+										disabled={disabled}
+									/>
+									<InputGroupAddon>
+										<InputGroupText>IDR</InputGroupText>
+									</InputGroupAddon>
+								</InputGroup>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				</form.Field>
+
+				<form.Field name="type">
+					{(field) => {
+						return (
+							<Field data-required className="md:w-2/12">
+								<FieldLabel>Type</FieldLabel>
+								<Select
+									value={field.state.value}
+									onValueChange={(val: 'income' | 'expense') => {
+										field.handleChange(val);
+										const otherCategory = getOtherCategory(val);
+										form.setFieldValue('categoryId', otherCategory?.id ?? '');
+									}}
+									disabled={type === 'update' || disabled}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="Select type" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="income">Income</SelectItem>
+										<SelectItem value="expense">Expense</SelectItem>
+									</SelectContent>
+								</Select>
+							</Field>
+						);
+					}}
+				</form.Field>
+			</div>
+
+			<form.Field name="pocketId">
+				{(field) => {
+					const isInvalid = isInvalidField(field);
+					return (
+						<Field data-invalid={isInvalid} data-required>
+							<FieldLabel>Pocket</FieldLabel>
+							<Select
+								value={field.state.value}
+								onValueChange={(val) => field.handleChange(val)}
+								disabled={getPocketOptionsQuery.isPending || disabled}
+							>
+								<SelectTrigger>
+									<SelectValue
+										placeholder={
+											getPocketOptionsQuery.isPending
+												? 'Getting pockets...'
+												: 'Select pocket'
+										}
+									/>
+								</SelectTrigger>
+								<SelectContent>
+									<QueryHandling
+										queryResult={getPocketOptionsQuery}
+										render={({ data }) =>
+											data.data.map((pocket) => (
+												<SelectItem key={pocket.id} value={pocket.id}>
+													{pocket.name}
+												</SelectItem>
+											))
+										}
+									/>
+								</SelectContent>
+							</Select>
+							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+						</Field>
+					);
+				}}
+			</form.Field>
+
+			<form.Field name="categoryId">
+				{(field) => {
+					const isInvalid = isInvalidField(field);
+					return (
+						<form.Subscribe selector={(state) => state.values.type}>
+							{(type) => {
+								return (
+									<Field data-invalid={isInvalid} data-required>
+										<FieldLabel>Category</FieldLabel>
+										<Select
+											value={field.state.value}
+											onValueChange={(val) => field.handleChange(val)}
+											disabled={getCategoriesQuery.isPending || disabled}
+										>
+											<SelectTrigger>
+												<SelectValue
+													placeholder={
+														getCategoriesQuery.isPending
+															? 'Getting categories...'
+															: 'Select category'
+													}
+												/>
+											</SelectTrigger>
+											<SelectContent>
+												<QueryHandling
+													queryResult={getCategoriesQuery}
+													render={({ data }) => {
+														const categories =
+															type === 'income'
+																? data.data.income
+																: data.data.expense;
+
+														return categories?.map((cat) => (
+															<SelectItem key={cat.id} value={cat.id}>
+																{cat.name}
+															</SelectItem>
+														));
+													}}
+												/>
+											</SelectContent>
+										</Select>
+										{isInvalid && (
+											<FieldError errors={field.state.meta.errors} />
+										)}
+									</Field>
+								);
+							}}
+						</form.Subscribe>
+					);
+				}}
+			</form.Field>
+
+			<form.Field name="date">
+				{(field) => {
+					const isInvalid = isInvalidField(field);
+					return (
+						<Field data-invalid={isInvalid} data-required>
+							<FieldLabel>Date</FieldLabel>
+							<Input
+								type="date"
+								value={format(field.state.value, 'yyyy-MM-dd')}
+								disabled={disabled}
+								onChange={(e) => {
+									const val = e.target.value;
+									if (val) {
+										field.handleChange(new Date(val).toISOString());
+									} else {
+										field.handleChange('');
+									}
+								}}
+							/>
+							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+						</Field>
+					);
+				}}
+			</form.Field>
+
+			<div className="flex justify-end gap-2">
+				<Button
+					type="button"
+					variant="outline"
+					onClick={() =>
+						navigate({
+							to: type === 'create' ? '/transactions' : '/transactions/$id',
+						})
+					}
+				>
+					Cancel
+				</Button>
+				<Button type="submit" disabled={isSubmitting || disabled}>
+					{isSubmitting ? submitTextLoading : submitText}
+				</Button>
+			</div>
+		</form>
+	);
+};
+
+export default TransactionForm;
