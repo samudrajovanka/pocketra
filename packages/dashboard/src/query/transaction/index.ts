@@ -15,10 +15,11 @@ import type { UpdateTransactionPayload } from '@/endpoints/transaction/types';
 import type { CursorPaginationParams } from '@/types/pagination';
 import { getPocketsQueryKey, getTotalBalanceQueryKey } from '../pocket';
 
-export const getTransactionsQueryKey = (params?: CursorPaginationParams) => [
-	'transactions',
-	params,
-];
+export const getTransactionsQueryKey = (params?: CursorPaginationParams) => {
+	if (params) return ['transactions', params];
+
+	return ['transactions'];
+};
 
 export const getTransactionByIdQueryKey = (id: string) => ['transactions', id];
 

@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
 import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
@@ -9,6 +9,7 @@ import { useCreateTransactionMutation } from '@/query/transaction';
 
 export default function CreateTransactionPage() {
 	const navigate = useNavigate();
+	const search = useSearch({ from: '/_authed/transactions/new' });
 	const { mutateAsync: createTransaction, isPending } =
 		useCreateTransactionMutation();
 
@@ -16,7 +17,12 @@ export default function CreateTransactionPage() {
 		try {
 			await createTransaction(values);
 			toast.success('Transaction created successfully');
-			navigate({ to: '/transactions' });
+			navigate({
+				to:
+					search.navigate_after_create === 'selected-pocket'
+						? `/pockets/${values.pocketId}`
+						: '/transactions',
+			});
 		} catch (error) {
 			if (isAxiosError(error)) {
 				toast.error(error.response?.data.message);
@@ -29,13 +35,28 @@ export default function CreateTransactionPage() {
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle title="Create Transaction" backTo="/transactions" />
+				<PageTitle
+					title="Create Transaction"
+					backTo={search.back_to ?? '/transactions'}
+				/>
 			</HeaderDashboardInset>
 
 			<TransactionForm
 				onSubmit={handleSubmit}
 				type="create"
 				isSubmitting={isPending}
+				initialValues={
+					search.pocket_id
+						? {
+								pocketId: search.pocket_id,
+								description: '',
+								amount: 0,
+								type: 'expense',
+								categoryId: '',
+								date: new Date().toISOString(),
+							}
+						: undefined
+				}
 			/>
 		</div>
 	);

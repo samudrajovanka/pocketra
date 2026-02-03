@@ -25,7 +25,15 @@ import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 import type { TransactionType } from '@/types/transaction';
 import QueryHandling from '../query/QueryHandling';
 
-const TransactionFilterModal = () => {
+export type TransactionFilterModalProps = {
+	hideFilter?: {
+		pocket?: boolean;
+	};
+};
+
+const TransactionFilterModal = ({
+	hideFilter,
+}: TransactionFilterModalProps) => {
 	const { filters, setFilters } = useTransactionFiltersStore();
 	const [open, setOpen] = useState(false);
 	const [localFilters, setLocalFilters] = useState<GetTransactionsParams>({
@@ -75,8 +83,10 @@ const TransactionFilterModal = () => {
 			cursor: undefined,
 		};
 
-		if (!localFilters.pocketId || localFilters.pocketId === 'all') delete newFilters.pocketId;
-		if (!localFilters.type || localFilters.type === 'all' as TransactionType) delete newFilters.type;
+		if (!localFilters.pocketId || localFilters.pocketId === 'all')
+			delete newFilters.pocketId;
+		if (!localFilters.type || (localFilters.type as string) === 'all')
+			delete newFilters.type;
 		if (!localFilters.minAmount) delete newFilters.minAmount;
 		if (!localFilters.maxAmount) delete newFilters.maxAmount;
 
@@ -92,7 +102,7 @@ const TransactionFilterModal = () => {
 	};
 
 	const activeFilterCount = [
-		filters.pocketId,
+		!hideFilter?.pocket && filters.pocketId,
 		filters.type,
 		filters.minAmount,
 		filters.maxAmount,
@@ -113,40 +123,42 @@ const TransactionFilterModal = () => {
 				</DialogHeader>
 
 				<div className="grid gap-4 py-4">
-					<Field>
-						<FieldLabel>Pocket</FieldLabel>
-						<Select
-							value={localFilters.pocketId}
-							onValueChange={(value) => handleFilterChange('pocketId', value)}
-							disabled={getPocketOptionsQuery.isPending}
-						>
-							<SelectTrigger>
-								<SelectValue
-									placeholder={
-										getPocketOptionsQuery.isPending
-											? 'Getting pockets...'
-											: 'Select pocket'
-									}
-								/>
-							</SelectTrigger>
-							<SelectContent>
-								<QueryHandling
-									queryResult={getPocketOptionsQuery}
-									render={({ data }) => (
-										<>
-											<SelectItem value="all">All Pockets</SelectItem>
+					{!hideFilter?.pocket && (
+						<Field>
+							<FieldLabel>Pocket</FieldLabel>
+							<Select
+								value={localFilters.pocketId}
+								onValueChange={(value) => handleFilterChange('pocketId', value)}
+								disabled={getPocketOptionsQuery.isPending}
+							>
+								<SelectTrigger>
+									<SelectValue
+										placeholder={
+											getPocketOptionsQuery.isPending
+												? 'Getting pockets...'
+												: 'Select pocket'
+										}
+									/>
+								</SelectTrigger>
+								<SelectContent>
+									<QueryHandling
+										queryResult={getPocketOptionsQuery}
+										render={({ data }) => (
+											<>
+												<SelectItem value="all">All Pockets</SelectItem>
 
-											{data.data.map((pocket) => (
-												<SelectItem key={pocket.id} value={pocket.id}>
-													{pocket.name}
-												</SelectItem>
-											))}
-										</>
-									)}
-								/>
-							</SelectContent>
-						</Select>
-					</Field>
+												{data.data.map((pocket) => (
+													<SelectItem key={pocket.id} value={pocket.id}>
+														{pocket.name}
+													</SelectItem>
+												))}
+											</>
+										)}
+									/>
+								</SelectContent>
+							</Select>
+						</Field>
+					)}
 
 					<Field>
 						<FieldLabel>Type</FieldLabel>

@@ -1,5 +1,5 @@
 import { useForm, useStore } from '@tanstack/react-form';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { useCallback, useEffect } from 'react';
 import type z from 'zod';
@@ -58,6 +58,8 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	disabled,
 }: TransactionFormProps<T>) => {
 	const navigate = useNavigate();
+	const search = useSearch({ from: '/_authed/transactions/new' });
+	console.log('search', search);
 
 	const getCategoriesQuery = useGetCategoriesQuery();
 	const categoriesData = getCategoriesQuery.data?.data.data;
@@ -65,14 +67,19 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	const getPocketOptionsQuery = useGetPocketOptionsQuery();
 
 	const form = useForm({
-		defaultValues: initialValues ?? {
-			amount: 0,
-			type: 'expense' as TransactionType,
-			categoryId: '',
-			pocketId: '',
-			description: '',
-			date: new Date().toISOString(),
-		},
+		defaultValues: initialValues
+			? {
+					...initialValues,
+					pocketId: '',
+				}
+			: {
+					amount: 0,
+					type: 'expense' as TransactionType,
+					categoryId: '',
+					pocketId: '',
+					description: '',
+					date: new Date().toISOString(),
+				},
 		validators: {
 			onChange:
 				type === 'create'
@@ -107,7 +114,34 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	});
 
 	const transactionType = useStore(form.store, (state) => state.values.type);
+	const pocketId = useStore(form.store, (state) => state.values.pocketId);
 	const categoryId = useStore(form.store, (state) => state.values.categoryId);
+
+	const setInitialPocket = useCallback(() => {
+		if (
+			!pocketId &&
+			initialValues?.pocketId &&
+			getPocketOptionsQuery.isSuccess
+		) {
+			const pocket = getPocketOptionsQuery.data?.data.data.find(
+				(pocket) => pocket.id === initialValues.pocketId,
+			);
+
+			if (pocket) {
+				form.setFieldValue('pocketId', pocket.id);
+			}
+		}
+	}, [
+		pocketId,
+		initialValues?.pocketId,
+		getPocketOptionsQuery.isSuccess,
+		form,
+		getPocketOptionsQuery.data?.data.data.find,
+	]);
+
+	useEffect(() => {
+		setInitialPocket();
+	}, [setInitialPocket]);
 
 	const getOtherCategory = useCallback(
 		(type: TransactionType) => {
@@ -346,7 +380,10 @@ const TransactionForm = <T extends 'create' | 'update'>({
 					variant="outline"
 					onClick={() =>
 						navigate({
-							to: type === 'create' ? '/transactions' : '/transactions/$id',
+							to:
+								type === 'create'
+									? (search.back_to ?? '/transactions')
+									: '/transactions/$id',
 						})
 					}
 				>

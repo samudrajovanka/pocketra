@@ -31,22 +31,19 @@ const EditPocketPage = () => {
 	};
 
 	return (
-		<QueryHandling
-			queryResult={getPocketQuery}
-			renderLoading={<Skeleton className="h-100 w-full rounded-xl" />}
-			renderNotFound={<NotFoundPocket />}
-			render={({ data }) => {
-				const pocket = data.data;
+		<div>
+			<HeaderDashboardInset>
+				<PageTitle title="Edit Pocket" backTo="/pockets/$id" />
+			</HeaderDashboardInset>
 
-				return (
-					<div>
-						<HeaderDashboardInset>
-							<PageTitle
-								title={`Edit Pocket: ${pocket.name}`}
-								backTo="/pockets"
-							/>
-						</HeaderDashboardInset>
+			<QueryHandling
+				queryResult={getPocketQuery}
+				renderLoading={<Skeleton className="h-100 w-full rounded-xl" />}
+				renderNotFound={<NotFoundPocket />}
+				render={({ data }) => {
+					const pocket = data.data;
 
+					return (
 						<PocketForm
 							initialValues={{
 								name: pocket.name,
@@ -58,10 +55,10 @@ const EditPocketPage = () => {
 							submitTextLoading="Updating..."
 							type="update"
 						/>
-					</div>
-				);
-			}}
-		/>
+					);
+				}}
+			/>
+		</div>
 	);
 };
 

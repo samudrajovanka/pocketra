@@ -5,9 +5,13 @@ import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
-import TransactionFilterModal from './TransactionFilterModal';
+import TransactionFilterModal, {
+	TransactionFilterModalProps,
+} from './TransactionFilterModal';
 
-const TransactionFilters = () => {
+type TransactionFiltersProps = Pick<TransactionFilterModalProps, 'hideFilter'>;
+
+const TransactionFilters = ({ hideFilter }: TransactionFiltersProps) => {
 	const { filters, setFilters } = useTransactionFiltersStore();
 	const [search, setSearch] = useState(filters.description || '');
 	const debouncedSearch = useDebounce(search);
@@ -31,7 +35,7 @@ const TransactionFilters = () => {
 	};
 
 	const hasAnyFilter =
-		filters.pocketId ||
+		(!hideFilter?.pocket && filters.pocketId) ||
 		filters.type ||
 		filters.description ||
 		filters.minAmount ||
@@ -48,7 +52,7 @@ const TransactionFilters = () => {
 					/>
 				</Field>
 
-				<TransactionFilterModal />
+				<TransactionFilterModal hideFilter={hideFilter} />
 
 				{hasAnyFilter && (
 					<Button

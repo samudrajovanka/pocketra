@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Edit, MoreVertical, Trash2 } from 'lucide-react';
+import { Edit, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,11 +10,11 @@ import {
 import type { Pocket } from '@/types/pocket';
 import DeletePocketDialog from './DeletePocketDialog';
 
-type PocketCardActionProps = {
+type PocketActionProps = {
 	pocket: Pocket;
 };
 
-const PocketCardAction = ({ pocket }: PocketCardActionProps) => {
+const PocketAction = ({ pocket }: PocketActionProps) => {
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -22,9 +22,9 @@ const PocketCardAction = ({ pocket }: PocketCardActionProps) => {
 		<>
 			<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
 				<PopoverTrigger asChild>
-					<Button variant="ghost" size="icon" className="h-8 w-8">
-						<MoreVertical />
-						<span className="sr-only">Open menu</span>
+					<Button variant="outline">
+						<MoreHorizontal />
+						Action
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent align="end" className="w-40 p-2">
@@ -69,4 +69,4 @@ const PocketCardAction = ({ pocket }: PocketCardActionProps) => {
 	);
 };
 
-export default PocketCardAction;
+export default PocketAction;
