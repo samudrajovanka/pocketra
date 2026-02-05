@@ -2,8 +2,8 @@ import { and, desc, eq, gte, ilike, lte } from 'drizzle-orm';
 import {
 	type CursorPagination,
 	generateCursorPaginationMetaResponse,
-} from 'src/utils/helpers/pagination';
-import { isEditableTransaction } from 'src/utils/helpers/transactions';
+} from '../../utils/helpers/pagination';
+import { isEditableTransaction } from '../../utils/helpers/transactions';
 import { db } from '../../config/db';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';

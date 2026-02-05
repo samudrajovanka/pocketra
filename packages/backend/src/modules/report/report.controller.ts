@@ -1,6 +1,6 @@
 import { endOfMonth, startOfMonth } from 'date-fns';
 import { createFactory } from 'hono/factory';
-import { authMiddleware } from 'src/middlewares/auth';
+import { authMiddleware } from '../../middlewares/auth';
 import { successResponse } from '../../utils/helpers/response';
 import ReportService from './report.service';
 import { zPayloadReportSummaryValidator } from './report.validator';

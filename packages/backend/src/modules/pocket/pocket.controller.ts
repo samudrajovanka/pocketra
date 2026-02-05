@@ -1,5 +1,5 @@
 import { createFactory } from 'hono/factory';
-import { authMiddleware } from 'src/middlewares/auth';
+import { authMiddleware } from '../../middlewares/auth';
 import { successResponse } from '../../utils/helpers/response';
 import type { LoggedUser } from '../auth/types';
 import PocketService from './pocket.service';
