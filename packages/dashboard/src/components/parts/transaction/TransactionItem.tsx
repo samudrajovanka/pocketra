@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import TextTransaction from '@/components/ui/text-transaction';
@@ -10,29 +9,25 @@ type TransactionItemProps = {
 
 const TransactionItem = ({ transaction }: TransactionItemProps) => {
 	return (
-		<Link
-			to="/transactions/$id"
-			params={{ id: transaction.id }}
-			className="block"
-		>
-			<div className="flex justify-between items-center">
-				<div>
-					<p className="text-regular font-medium">{transaction.description}</p>
+		<div className="flex justify-between items-center group-hover/transaction-item:bg-primary/5 p-2 rounded-lg">
+			<div>
+				<p className="typography-regular font-medium">
+					{transaction.description}
+				</p>
 
-					<div className="mt-1 flex gap-2 items-center">
-						<Badge variant="secondary">{transaction.pocket.name}</Badge>
-						<Badge variant="outline">{transaction.category.name}</Badge>
-						<p className="text-xsmall text-muted-foreground">
-							{format(transaction.date, 'd MMM yyyy')}
-						</p>
-					</div>
+				<div className="mt-1 flex gap-2 items-center">
+					<p className="typography-xsmall text-muted-foreground">
+						{format(transaction.date, 'dd MMM yyyy')}
+					</p>
+					<Badge variant="secondary">{transaction.pocket.name}</Badge>
+					<Badge variant="outline">{transaction.category.name}</Badge>
 				</div>
-				<TextTransaction
-					amount={Number(transaction.amount)}
-					type={transaction.type}
-				/>
 			</div>
-		</Link>
+			<TextTransaction
+				amount={Number(transaction.amount)}
+				type={transaction.type}
+			/>
+		</div>
 	);
 };
 

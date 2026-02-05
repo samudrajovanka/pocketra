@@ -35,10 +35,7 @@ export default function CreateTransactionPage() {
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle
-					title="Create Transaction"
-					backTo={search.back_to ?? '/transactions'}
-				/>
+				<PageTitle title="Create Transaction" />
 			</HeaderDashboardInset>
 
 			<TransactionForm

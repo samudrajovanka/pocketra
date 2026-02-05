@@ -1,5 +1,5 @@
 import { useForm, useStore } from '@tanstack/react-form';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { useCallback, useEffect } from 'react';
 import type z from 'zod';
@@ -57,7 +57,6 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	type = 'create' as T,
 	disabled,
 }: TransactionFormProps<T>) => {
-	const navigate = useNavigate();
 	const search = useSearch({ from: '/_authed/transactions/new' });
 	console.log('search', search);
 
@@ -378,14 +377,7 @@ const TransactionForm = <T extends 'create' | 'update'>({
 				<Button
 					type="button"
 					variant="outline"
-					onClick={() =>
-						navigate({
-							to:
-								type === 'create'
-									? (search.back_to ?? '/transactions')
-									: '/transactions/$id',
-						})
-					}
+					onClick={() => window.history.back()}
 				>
 					Cancel
 				</Button>

@@ -28,7 +28,7 @@ const CreatePocketPage = () => {
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle title="Create Pocket" backTo="/pockets" />
+				<PageTitle title="Create Pocket" />
 			</HeaderDashboardInset>
 
 			<PocketForm

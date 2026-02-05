@@ -1,17 +1,19 @@
+import { Link } from '@tanstack/react-router';
 import { format, isSameMonth } from 'date-fns';
 import { Loader2 } from 'lucide-react';
-
 import QueryHandling from '@/components/parts/query/QueryHandling';
 import EmptyTransaction from '@/components/parts/transaction/EmptyTransaction';
 import TransactionItem from '@/components/parts/transaction/TransactionItem';
-import TransactionListLoading from '@/components/parts/transaction/TransactionListLoading';
+import TransactionItemLoading from '@/components/parts/transaction/TransactionItemLoading';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useGetInfiniteTransactionsQuery } from '@/query/transaction';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 
 const TransactionList = () => {
 	const { filters } = useTransactionFiltersStore();
-	const transactionsQuery = useGetInfiniteTransactionsQuery(filters);
+	const transactionsQuery = useGetInfiniteTransactionsQuery({
+		params: filters,
+	});
 	const { fetchNextPage, hasNextPage, isFetchingNextPage } = transactionsQuery;
 
 	const observerTarget = useInfiniteScroll({
@@ -25,7 +27,14 @@ const TransactionList = () => {
 				queryResult={transactionsQuery}
 				checkEmpty={(data) => data.pages[0].data.data.length === 0}
 				renderEmpty={<EmptyTransaction />}
-				renderLoading={<TransactionListLoading />}
+				renderLoading={
+					<div className="space-y-2">
+						{[...Array(5)].map((_, index) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: use index
+							<TransactionItemLoading key={index} />
+						))}
+					</div>
+				}
 				render={(data) => {
 					const allTransactions = data.pages.flatMap((page) => page.data.data);
 
@@ -50,17 +59,21 @@ const TransactionList = () => {
 						<div className="space-y-6">
 							{sortedGroupedTransactions.map(([key, transactions]) => (
 								<div key={key} className="space-y-2">
-									<h3 className="text-small font-medium text-muted-foreground">
+									<h3 className="typography-small font-medium text-muted-foreground">
 										{isSameMonth(new Date(key), new Date())
 											? 'This Month'
 											: key}
 									</h3>
-									<div className="space-y-4 bg-muted/50 p-4 rounded-lg border">
+									<div className="space-y-1 bg-muted/50 p-2 rounded-lg border">
 										{transactions.map((transaction) => (
-											<TransactionItem
+											<Link
 												key={transaction.id}
-												transaction={transaction}
-											/>
+												to="/transactions/$id"
+												params={{ id: transaction.id }}
+												className="block group/transaction-item"
+											>
+												<TransactionItem transaction={transaction} />
+											</Link>
 										))}
 									</div>
 								</div>

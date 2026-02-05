@@ -43,7 +43,7 @@ export default function EditTransactionPage() {
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle title="Edit Transaction" backTo="/transactions/$id" />
+				<PageTitle title="Edit Transaction" />
 			</HeaderDashboardInset>
 
 			<QueryHandling

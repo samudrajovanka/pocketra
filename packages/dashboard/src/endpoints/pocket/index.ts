@@ -4,10 +4,16 @@ import type {
 	SuccessGeneralResponse,
 	SuccessResponseData,
 } from '@/types/response';
-import type { CreatePocketPayload, UpdatePocketPayload } from './types';
+import type {
+	CreatePocketPayload,
+	GetPocketsParams,
+	UpdatePocketPayload,
+} from './types';
 
-export const getPockets = async () => {
-	return await apiClient.get<SuccessResponseData<Pocket[]>>('/pockets');
+export const getPockets = async (params?: GetPocketsParams) => {
+	return await apiClient.get<SuccessResponseData<Pocket[]>>('/pockets', {
+		params,
+	});
 };
 
 export const getTotalBalance = async () => {

@@ -5,12 +5,14 @@ import type { LoggedUser } from '../auth/types';
 import PocketService from './pocket.service';
 import {
 	zPayloadGetPocketByIdValidator,
+	zPayloadGetPocketsValidator,
 	zPayloadreatePocketValidator,
 	zPayloadUpdatePocketValidator,
 } from './pocket.validator';
 import type {
 	PayloadCreatePocket,
 	PayloadGetPocketById,
+	PayloadGetPockets,
 	PayloadUpdatePocket,
 } from './types';
 
@@ -39,18 +41,24 @@ export const createPocket = createHandlers(
 	},
 );
 
-export const getPockets = createHandlers(authMiddleware, async (c) => {
-	const user = c.var.user;
-	const pocketService = new PocketService();
-	const pockets = await pocketService.getPockets(user.id);
+export const getPockets = createHandlers(
+	authMiddleware,
+	zPayloadGetPocketsValidator,
+	async (c) => {
+		const user = c.var.user;
+		const params = c.req.valid('query') as PayloadGetPockets;
 
-	return c.json(
-		successResponse({
-			message: 'Success get list pockets',
-			data: pockets,
-		}),
-	);
-});
+		const pocketService = new PocketService();
+		const pockets = await pocketService.getPockets(user.id, params);
+
+		return c.json(
+			successResponse({
+				message: 'Success get list pockets',
+				data: pockets,
+			}),
+		);
+	},
+);
 
 export const getPocketOptions = createHandlers(authMiddleware, async (c) => {
 	const user = c.var.user;

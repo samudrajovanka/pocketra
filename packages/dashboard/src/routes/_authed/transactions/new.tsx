@@ -5,7 +5,6 @@ import CreateTransactionPage from '@/components/pages/transactions/CreateTransac
 export const Route = createFileRoute('/_authed/transactions/new')({
 	validateSearch: z.object({
 		pocket_id: z.uuidv7().optional(),
-		back_to: z.string().startsWith('/').optional(),
 		navigate_after_create: z.enum(['selected-pocket']).optional(),
 	}),
 	component: CreateTransactionPage,

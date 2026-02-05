@@ -1,8 +1,13 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { db } from '../../config/db';
 import NotFoundError from '../../exceptions/NotFoundError';
+import { transactionsTable } from '../transaction/transaction.schema';
 import { pocketsTable } from './pocket.schema';
-import type { PocketWithBalance } from './types';
+import type {
+	GetPocketsWithBalanceParams,
+	PayloadGetPockets,
+	PocketWithBalance,
+} from './types';
 
 export default class PocketService {
 	async createPocket(
@@ -20,38 +25,67 @@ export default class PocketService {
 		return pocket;
 	}
 
-	async getPockets(userId: string) {
-		const pockets = await db.execute(sql`
-			SELECT
-				p.id,
-				p.name,
-				p.icon,
-				p.created_at,
-				p.updated_at,
+	private async getPocketsWithBalance(params?: GetPocketsWithBalanceParams) {
+		const pocketsQuery = db
+			.select({
+				id: pocketsTable.id,
+				name: pocketsTable.name,
+				icon: pocketsTable.icon,
+				createdAt: pocketsTable.createdAt,
+				updatedAt: pocketsTable.updatedAt,
+				currentBalance: sql<number>`
 				COALESCE(
 					SUM(
 						CASE
-							WHEN t.type = 'income' THEN t.amount
-							ELSE -t.amount
+							WHEN ${transactionsTable.type} = 'income' THEN ${transactionsTable.amount}
+							ELSE -${transactionsTable.amount}
 						END
 					), 0
-				) + p.initial_balance AS current_balance
-			FROM pockets p
-			LEFT JOIN transactions t ON p.id = t.pocket_id
-			WHERE p.user_id = ${userId}
-			GROUP BY p.id
-			ORDER BY p.created_at DESC;
-		`);
+				) + ${pocketsTable.initialBalance} AS current_balance
+			`,
+			})
+			.from(pocketsTable)
+			.leftJoin(
+				transactionsTable,
+				eq(pocketsTable.id, transactionsTable.pocketId),
+			)
+			.groupBy(pocketsTable.id)
+			.orderBy(desc(pocketsTable.createdAt));
 
-		const mappedPockets = pockets.rows.map(
+		const conditions = [];
+
+		if (params?.userId) {
+			conditions.push(eq(pocketsTable.userId, params.userId));
+		}
+
+		if (params?.pocketId) {
+			conditions.push(eq(pocketsTable.id, params.pocketId));
+		}
+
+		pocketsQuery.where(and(...conditions));
+
+		if (params?.limit !== undefined) {
+			pocketsQuery.limit(params.limit);
+		}
+
+		return await pocketsQuery;
+	}
+
+	async getPockets(userId: string, params?: PayloadGetPockets) {
+		const pockets = await this.getPocketsWithBalance({
+			userId,
+			limit: params?.limit,
+		});
+
+		const mappedPockets = pockets.map(
 			(pocket) =>
 				({
 					id: pocket.id,
 					name: pocket.name,
 					icon: pocket.icon,
-					createdAt: pocket.created_at,
-					updatedAt: pocket.updated_at,
-					currentBalance: pocket.current_balance,
+					createdAt: pocket.createdAt,
+					updatedAt: pocket.updatedAt,
+					currentBalance: pocket.currentBalance,
 				}) as PocketWithBalance,
 		);
 
@@ -69,36 +103,20 @@ export default class PocketService {
 	}
 
 	async getPocketById(userId: string, pocketId: string) {
-		const pockets = await db.execute(sql`
-			SELECT
-				p.id,
-				p.name,
-				p.icon,
-				p.created_at,
-				p.updated_at,
-				COALESCE(
-					SUM(
-						CASE
-							WHEN t.type = 'income' THEN t.amount
-							ELSE -t.amount
-						END
-					), 0
-				) + p.initial_balance AS current_balance
-			FROM pockets p
-			LEFT JOIN transactions t ON p.id = t.pocket_id
-			WHERE p.user_id = ${userId} AND p.id = ${pocketId}
-			GROUP BY p.id
-		`);
+		const pockets = await this.getPocketsWithBalance({
+			userId,
+			pocketId,
+		});
 
-		if (!pockets.rowCount) throw new NotFoundError('Pocket not found');
+		if (!pockets.length) throw new NotFoundError('Pocket not found');
 
 		const pocket = {
-			id: pockets.rows[0].id,
-			name: pockets.rows[0].name,
-			icon: pockets.rows[0].icon,
-			createdAt: pockets.rows[0].created_at,
-			updatedAt: pockets.rows[0].updated_at,
-			currentBalance: pockets.rows[0].current_balance,
+			id: pockets[0].id,
+			name: pockets[0].name,
+			icon: pockets[0].icon,
+			createdAt: pockets[0].createdAt,
+			updatedAt: pockets[0].updatedAt,
+			currentBalance: pockets[0].currentBalance,
 		} as PocketWithBalance;
 
 		return pocket;

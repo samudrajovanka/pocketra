@@ -29,7 +29,7 @@ const PageTitle = ({ title, backTo, children, noBack }: PageTitleProps) => {
 						<ArrowLeft />
 					</Button>
 				)}
-				<h1 className="text-heading">{title}</h1>
+				<h1 className="typography-heading">{title}</h1>
 			</div>
 			{children && <div>{children}</div>}
 		</div>

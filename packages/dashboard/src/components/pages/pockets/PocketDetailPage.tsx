@@ -1,17 +1,16 @@
 import { Link, useParams } from '@tanstack/react-router';
+import { Plus } from 'lucide-react';
 import { useEffect } from 'react';
 import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import NotFoundPocket from '@/components/parts/pocket/NotFoundPocket';
 import PocketAction from '@/components/parts/pocket/PocketAction';
 import QueryHandling from '@/components/parts/query/QueryHandling';
-
+import TransactionFilters from '@/components/parts/transaction/TransactionFilters';
+import TransactionList from '@/components/parts/transaction/TransactionList';
+import { Button } from '@/components/ui/button';
 import PageTitle from '@/components/ui/page-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetPocketByIdQuery } from '@/query/pocket';
-import NotFoundPocket from '@/components/parts/pocket/NotFoundPocket';
-import TransactionList from '@/components/parts/transaction/TransactionList';
-import TransactionFilters from '@/components/parts/transaction/TransactionFilters';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 
 const PocketDetailPage = () => {
@@ -30,7 +29,7 @@ const PocketDetailPage = () => {
 	return (
 		<div className="space-y-6">
 			<HeaderDashboardInset>
-				<PageTitle title="Pocket Detail" backTo="/pockets" />
+				<PageTitle title="Pocket Detail" />
 			</HeaderDashboardInset>
 
 			<QueryHandling
@@ -47,7 +46,7 @@ const PocketDetailPage = () => {
 									<span className="text-3xl">{pocket.icon}</span>
 								</div>
 
-								<h2 className="text-subheading">{pocket.name}</h2>
+								<h2 className="typography-subheading">{pocket.name}</h2>
 							</div>
 
 							<div className="flex gap-3">
@@ -56,7 +55,6 @@ const PocketDetailPage = () => {
 										to="/transactions/new"
 										search={{
 											pocket_id: pocket.id,
-											back_to: `/pockets/${pocket.id}`,
 											navigate_after_create: 'selected-pocket',
 										}}
 									>
@@ -72,7 +70,7 @@ const PocketDetailPage = () => {
 			/>
 
 			<div className="space-y-4 p-4 bg-muted/50 rounded-lg border">
-				<h2 className="text-subheading-2">Transactions</h2>
+				<h2 className="typography-subheading-2">Transactions</h2>
 
 				<TransactionFilters hideFilter={{ pocket: true }} />
 

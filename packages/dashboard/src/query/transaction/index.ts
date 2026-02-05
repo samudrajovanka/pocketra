@@ -21,25 +21,34 @@ export const getTransactionsQueryKey = (params?: CursorPaginationParams) => {
 	return ['transactions'];
 };
 
-export const getTransactionByIdQueryKey = (id: string) => ['transactions', id];
-
-export const useGetInfiniteTransactionsQuery = (
-	params?: CursorPaginationParams,
-) => {
+export const useGetInfiniteTransactionsQuery = (state?: {
+	params?: CursorPaginationParams;
+}) => {
 	return useInfiniteQuery({
-		queryKey: getTransactionsQueryKey(params),
+		queryKey: getTransactionsQueryKey(state?.params),
 		queryFn: ({ pageParam }) =>
-			getTransactions({ ...params, cursor: pageParam as string }),
+			getTransactions({ ...state?.params, cursor: pageParam as string }),
 		initialPageParam: undefined as string | undefined,
 		getNextPageParam: (lastPage) => lastPage.data.meta?.pagination?.nextCursor,
 	});
 };
+
+export const getTransactionByIdQueryKey = (id: string) => ['transactions', id];
 
 export const useGetTransactionByIdQuery = (id: string) => {
 	return useQuery({
 		queryKey: getTransactionByIdQueryKey(id),
 		queryFn: () => getTransactionById(id),
 		enabled: !!id,
+	});
+};
+
+export const useGetTransactionsQuery = (state?: {
+	params?: CursorPaginationParams;
+}) => {
+	return useQuery({
+		queryKey: getTransactionsQueryKey(state?.params),
+		queryFn: () => getTransactions(state?.params),
 	});
 };
 

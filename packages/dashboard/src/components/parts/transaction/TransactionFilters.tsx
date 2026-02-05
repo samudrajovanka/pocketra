@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 import TransactionFilterModal, {
-	TransactionFilterModalProps,
+	type TransactionFilterModalProps,
 } from './TransactionFilterModal';
 
 type TransactionFiltersProps = Pick<TransactionFilterModalProps, 'hideFilter'>;

@@ -59,8 +59,8 @@ const DashboardNavbar = () => {
 							<PopoverContent className="w-56" align="end" forceMount>
 								<div className="grid gap-4">
 									<div className="flex flex-col space-y-1">
-										<p className="text-small">{user.name}</p>
-										<p className="text-muted-foreground text-xsmall">
+										<p className="typography-small">{user.name}</p>
+										<p className="text-muted-foreground typography-xsmall">
 											{user.email}
 										</p>
 									</div>

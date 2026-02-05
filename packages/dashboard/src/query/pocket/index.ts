@@ -8,16 +8,23 @@ import {
 	getTotalBalance,
 	updatePocket,
 } from '@/endpoints/pocket';
-import type { UpdatePocketPayload } from '@/endpoints/pocket/types';
+import type {
+	GetPocketsParams,
+	UpdatePocketPayload,
+} from '@/endpoints/pocket/types';
 import { getTransactionsQueryKey } from '../transaction';
 
-export const getPocketsQueryKey = () => ['pockets'];
-export const getPocketByIdQueryKey = (id: string) => ['pockets', id];
+export const getPocketsQueryKey = (params?: GetPocketsParams) => {
+	if (params) {
+		return ['pockets', params];
+	}
+	return ['pockets'];
+};
 
-export const useGetPocketsQuery = () => {
+export const useGetPocketsQuery = (state?: { params?: GetPocketsParams }) => {
 	return useQuery({
-		queryKey: getPocketsQueryKey(),
-		queryFn: getPockets,
+		queryKey: getPocketsQueryKey(state?.params),
+		queryFn: () => getPockets(state?.params),
 	});
 };
 
@@ -38,6 +45,8 @@ export const useGetPocketOptionsQuery = () => {
 		queryFn: getPocketOptions,
 	});
 };
+
+export const getPocketByIdQueryKey = (id: string) => ['pockets', id];
 
 export const useGetPocketByIdQuery = (id: string) => {
 	return useQuery({

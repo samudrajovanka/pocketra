@@ -33,7 +33,7 @@ const EditPocketPage = () => {
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle title="Edit Pocket" backTo="/pockets/$id" />
+				<PageTitle title="Edit Pocket" />
 			</HeaderDashboardInset>
 
 			<QueryHandling

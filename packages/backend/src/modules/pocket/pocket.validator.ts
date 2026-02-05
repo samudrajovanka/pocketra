@@ -30,3 +30,12 @@ export const zPayloadUpdatePocketValidator = validationMiddleware(
 	'json',
 	payloadUpdatePocketValidator,
 );
+
+export const payloadGetPocketsValidator = z.object({
+	limit: z.string().transform(Number).optional(),
+});
+
+export const zPayloadGetPocketsValidator = validationMiddleware(
+	'query',
+	payloadGetPocketsValidator,
+);

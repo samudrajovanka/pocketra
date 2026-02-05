@@ -1,30 +1,64 @@
-import { Link } from '@tanstack/react-router';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatter/number';
+import { cn } from '@/lib/utils';
 import type { Pocket } from '@/types/pocket';
 
 type PocketCardProps = {
 	pocket: Pocket;
+	noIcon?: boolean;
+	className?: string;
+	size?: 'regular' | 'small';
 };
 
-const PocketCard = ({ pocket }: PocketCardProps) => {
+const PocketCard = ({
+	pocket,
+	noIcon,
+	className,
+	size = 'regular',
+}: PocketCardProps) => {
 	const formattedBalance = formatCurrency(Number(pocket.currentBalance));
 
 	return (
-		<Link to="/pockets/$id" params={{ id: pocket.id }} className="block h-full">
-			<Card className="flex flex-col h-full relative group hover:bg-muted/50 transition-colors">
+		<Card
+			className={cn(
+				'flex flex-col h-full relative group-hover/pocket-card:border-primary/50 group-hover/pocket-card:shadow-sm transition-all duration-300 gap-4',
+				className,
+				{
+					'p-3': size === 'small',
+				},
+			)}
+		>
+			{!noIcon && (
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="text-4xl flex items-center gap-2">
 						{pocket.icon}
 					</CardTitle>
 				</CardHeader>
+			)}
 
-				<CardContent className="flex-1">
-					<p className="text-subheading">{pocket.name}</p>
-					<div className="text-subheading font-medium">{formattedBalance}</div>
-				</CardContent>
-			</Card>
-		</Link>
+			<CardContent
+				className={cn('flex-1 space-y-0.5', {
+					'px-3': size === 'small',
+				})}
+			>
+				<p
+					className={cn('font-medium', {
+						'typography-large': size === 'regular',
+						'typography-small': size === 'small',
+					})}
+				>
+					{pocket.name}
+				</p>
+				<p
+					className={cn('font-bold', {
+						'typography-subheading': size === 'regular',
+						'typography-regular': size === 'small',
+					})}
+				>
+					{formattedBalance}
+				</p>
+			</CardContent>
+		</Card>
 	);
 };
 

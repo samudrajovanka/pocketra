@@ -21,7 +21,7 @@ export default function TransactionDetailPage() {
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle title="Transaction Detail" backTo="/transactions" />
+				<PageTitle title="Transaction Detail" />
 			</HeaderDashboardInset>
 
 			<QueryHandling
@@ -37,7 +37,7 @@ export default function TransactionDetailPage() {
 						<div className="space-y-6">
 							<Card>
 								<CardHeader className="flex justify-between">
-									<CardTitle className="text-subheading">
+									<CardTitle className="typography-subheading">
 										{transaction.description || 'No description'}
 									</CardTitle>
 
@@ -68,7 +68,7 @@ export default function TransactionDetailPage() {
 								</CardHeader>
 								<CardContent className="space-y-3">
 									<div className="flex flex-col gap-0.5 py-1">
-										<span className="text-small text-muted-foreground">
+										<span className="typography-small text-muted-foreground">
 											Amount
 										</span>
 										<TextTransaction
@@ -78,46 +78,46 @@ export default function TransactionDetailPage() {
 									</div>
 
 									<div className="flex flex-col gap-0.5 py-1">
-										<span className="text-small text-muted-foreground">
+										<span className="typography-small text-muted-foreground">
 											Type
 										</span>
-										<span className="capitalize text-regular">
+										<span className="capitalize typography-regular">
 											{transaction.type}
 										</span>
 									</div>
 
 									<div className="flex flex-col gap-0.5 py-1">
-										<span className="text-small text-muted-foreground">
+										<span className="typography-small text-muted-foreground">
 											Date
 										</span>
-										<span className="text-regular">
+										<span className="typography-regular">
 											{format(new Date(transaction.date), 'dd MMMM yyyy')}
 										</span>
 									</div>
 
 									<div className="flex flex-col gap-0.5 py-1">
-										<span className="text-small text-muted-foreground">
+										<span className="typography-small text-muted-foreground">
 											Category
 										</span>
-										<span className="text-regular">
+										<span className="typography-regular">
 											{transaction.category.name}
 										</span>
 									</div>
 
 									<div className="flex flex-col gap-0.5 py-1">
-										<span className="text-small text-muted-foreground">
+										<span className="typography-small text-muted-foreground">
 											Pocket
 										</span>
-										<span className="text-regular">
+										<span className="typography-regular">
 											{transaction.pocket.name}
 										</span>
 									</div>
 
 									<div className="flex flex-col gap-0.5 py-1">
-										<span className="text-small text-muted-foreground">
+										<span className="typography-small text-muted-foreground">
 											Created at
 										</span>
-										<span className="text-regular">
+										<span className="typography-regular">
 											{format(new Date(transaction.createdAt), 'dd MMMM yyyy')}
 										</span>
 									</div>
