@@ -22,7 +22,4 @@ app.notFound((c) => {
 });
 app.onError(errorHandler);
 
-export default {
-	port: Number(process.env.PORT) || 5000,
-	fetch: app.fetch,
-};
+export default app;

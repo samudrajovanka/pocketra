@@ -1,8 +1,8 @@
 import { DrizzleQueryError } from 'drizzle-orm';
-import ErrorConstant from '../../constants/error';
-import PgErrorConstant from '../../constants/pgError';
 import ConflictError from '../../exceptions/ConflictError';
 import type { ErrorWithCode } from '../../types/error';
+import ErrorConstant from '../constants/error';
+import PgErrorConstant from '../constants/pgError';
 
 type CatchErrorDrizzleCause = {
 	conflict?: {

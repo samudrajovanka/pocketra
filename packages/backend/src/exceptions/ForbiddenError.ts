@@ -1,4 +1,4 @@
-import ErrorConstant from '../constants/error';
+import ErrorConstant from '../utils/constants/error';
 import ClientError from './ClientError';
 
 interface ForbiddenErrorOptions {

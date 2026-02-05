@@ -1,8 +1,8 @@
 import { zValidator } from '@hono/zod-validator';
 import type { ValidationTargets } from 'hono';
 import type { z } from 'zod';
-import ErrorConstant from '../constants/error';
 import ClientError from '../exceptions/ClientError';
+import ErrorConstant from '../utils/constants/error';
 
 export const validationMiddleware = (
 	target: keyof ValidationTargets,
