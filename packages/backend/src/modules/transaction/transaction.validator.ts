@@ -1,6 +1,6 @@
-import { cursorPaginationParamsValidator } from 'src/utils/validators/paginationParams';
 import z from 'zod';
 import { validationMiddleware } from '../../middlewares/validation';
+import { cursorPaginationParamsValidator } from '../../utils/validators/paginationParams';
 import { TRANSACTION_TYPE } from './data';
 
 export const payloadCreateTransactionValidator = z.object({
