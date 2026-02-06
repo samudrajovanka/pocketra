@@ -10,6 +10,8 @@ import QueryHandling from '@/components/parts/query/QueryHandling';
 import TransactionItem from '@/components/parts/transaction/TransactionItem';
 import TransactionItemLoading from '@/components/parts/transaction/TransactionItemLoading';
 import { Button } from '@/components/ui/button';
+import { REPORT_PERIOD } from '@/lib/constants/report';
+import { getGrowthTooltipMessage } from '@/lib/helpers/report';
 import { useGetPocketsQuery, useGetTotalBalanceQuery } from '@/query/pocket';
 import { useGetReportSummaryQuery } from '@/query/report';
 import { useGetTransactionsQuery } from '@/query/transaction';
@@ -21,7 +23,11 @@ export default function DashboardPage() {
 			limit: 2,
 		},
 	});
-	const summaryQuery = useGetReportSummaryQuery();
+
+	const period = REPORT_PERIOD.month_to_date;
+	const summaryQuery = useGetReportSummaryQuery({
+		period,
+	});
 	const transactionsQuery = useGetTransactionsQuery({
 		params: {
 			limit: 5,
@@ -57,12 +63,12 @@ export default function DashboardPage() {
 								<div className="grid grid-cols-2 gap-4">
 									{[...Array(2)].map((_, index) => (
 										// biome-ignore lint/suspicious/noArrayIndexKey: use index
-										<PocketCardLoading key={index} size="small" />
+										<PocketCardLoading key={index} noIcon />
 									))}
 								</div>
 							}
 							checkEmpty={(response) => response.data.data.length === 0}
-							renderEmpty={<PocketCardAdd size="small" />}
+							renderEmpty={<PocketCardAdd />}
 							render={(response) => (
 								<div className="grid grid-cols-2 gap-4">
 									{response.data.data.map((pocket) => (
@@ -72,7 +78,7 @@ export default function DashboardPage() {
 											params={{ id: pocket.id }}
 											className="group/pocket-card"
 										>
-											<PocketCard pocket={pocket} noIcon size="small" />
+											<PocketCard pocket={pocket} noIcon />
 										</Link>
 									))}
 								</div>
@@ -88,20 +94,26 @@ export default function DashboardPage() {
 							<MetrixCard
 								variant="transaction"
 								title="Income"
-								amount={Number(data.data.income)}
+								amount={Number(data.data.income.value)}
+								growth={data.data.income.growthPercent}
+								tooltipGrowthMessage={getGrowthTooltipMessage(period)}
 								type="income"
 							/>
 							<MetrixCard
 								variant="transaction"
 								title="Expense"
-								amount={Number(data.data.expense)}
+								amount={Number(data.data.expense.value)}
+								growth={data.data.expense.growthPercent}
+								tooltipGrowthMessage={getGrowthTooltipMessage(period)}
 								type="expense"
 							/>
 							<MetrixCard
 								variant="transaction"
 								title="Net"
-								amount={Number(data.data.net)}
-								type="income"
+								amount={Number(data.data.net.value)}
+								growth={data.data.net.growthPercent}
+								tooltipGrowthMessage={getGrowthTooltipMessage(period)}
+								type={Number(data.data.net.value) > 0 ? 'income' : 'expense'}
 								className="col-span-2"
 							/>
 						</div>

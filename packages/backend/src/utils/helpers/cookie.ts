@@ -21,8 +21,6 @@ const defaultOptions: CookieOptions = {
 	path: '/',
 };
 
-console.log('defaultOptions', defaultOptions);
-
 export const setSignedCookie = async (
 	c: Context,
 	name: string,

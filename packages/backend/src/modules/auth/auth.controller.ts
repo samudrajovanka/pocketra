@@ -44,7 +44,6 @@ export const oauthCallback = createHandlers(async (c) => {
 	const query = c.req.query();
 
 	const oauthState = getCookie(c, 'oauth_state');
-	console.log('oauthstate', oauthState);
 	let oauthService: OauthService;
 
 	if (type === authProvider.Google) {

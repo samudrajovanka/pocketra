@@ -3,13 +3,18 @@ import { cn } from '@/lib/utils';
 
 export type PocketCardLoadingProps = {
 	size?: 'small' | 'regular';
+	noIcon?: boolean;
 };
 
-const PocketCardLoading = ({ size = 'regular' }: PocketCardLoadingProps) => {
+const PocketCardLoading = ({
+	size = 'regular',
+	noIcon,
+}: PocketCardLoadingProps) => {
 	return (
 		<Skeleton
 			className={cn('w-full rounded-xl', {
-				'h-40': size === 'regular',
+				'h-40': size === 'regular' && !noIcon,
+				'h-28': size === 'regular' && noIcon,
 				'h-18': size === 'small',
 			})}
 		/>
