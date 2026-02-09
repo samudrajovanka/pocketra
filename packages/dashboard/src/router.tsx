@@ -17,6 +17,7 @@ export const getRouter = () => {
 		},
 
 		defaultPreload: 'intent',
+		scrollRestoration: true,
 	});
 
 	setupRouterSsrQueryIntegration({

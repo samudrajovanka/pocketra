@@ -1,0 +1,89 @@
+import { Pie, PieChart } from 'recharts';
+import QueryHandling from '@/components/parts/query/QueryHandling';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+	type ChartConfig,
+	ChartContainer,
+	ChartLegend,
+	ChartLegendContent,
+	ChartTooltip,
+	ChartTooltipContent,
+} from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
+import { InfoTooltip } from '@/components/ui/tooltip';
+import type { ExpenseByCategoryResponse } from '@/endpoints/report/types';
+import { useGetExpenseByCategoryQuery } from '@/query/report';
+import type { ReportPeriod } from '@/types/report';
+
+type ExpenseByCategoryChartProps = {
+	period: ReportPeriod;
+};
+
+const TOP = 3;
+
+export function ExpenseByCategoryChart({
+	period,
+}: ExpenseByCategoryChartProps) {
+	const result = useGetExpenseByCategoryQuery({ period, top: TOP });
+
+	return (
+		<Card>
+			<CardHeader>
+				<div className="flex gap-2 items-center">
+					<CardTitle className="typography-subheading-2">
+						Expense by Category
+					</CardTitle>
+					<InfoTooltip content={`Top ${TOP} expense categories`} />
+				</div>
+			</CardHeader>
+			<CardContent>
+				<QueryHandling
+					queryResult={result}
+					renderLoading={<Skeleton className="h-75 w-full rounded-xl" />}
+					renderEmpty={
+						<div className="flex items-center justify-center h-62.5 text-muted-foreground">
+							No data available for this period
+						</div>
+					}
+					checkEmpty={({ data }) => !data.data.length}
+					render={({ data }) => {
+						const chartData =
+							data.data.map(
+								(item: ExpenseByCategoryResponse[number], index: number) => ({
+									...item,
+									amount: Number(item.amount),
+									fill: `var(--chart-${(index % 5) + 1})`,
+								}),
+							) || [];
+
+						const chartConfig = {
+							amount: {
+								label: 'Amount',
+							},
+							...chartData.reduce((acc: ChartConfig, item) => {
+								acc[item.name] = {
+									label: item.name,
+									color: item.fill,
+								};
+								return acc;
+							}, {} as ChartConfig),
+						} satisfies ChartConfig;
+
+						return (
+							<ChartContainer config={chartConfig}>
+								<PieChart>
+									<ChartTooltip content={<ChartTooltipContent hideLabel />} />
+									<Pie data={chartData} dataKey="amount" nameKey="name" />
+									<ChartLegend
+										content={<ChartLegendContent nameKey="name" />}
+										className="flex-wrap"
+									/>
+								</PieChart>
+							</ChartContainer>
+						);
+					}}
+				/>
+			</CardContent>
+		</Card>
+	);
+}

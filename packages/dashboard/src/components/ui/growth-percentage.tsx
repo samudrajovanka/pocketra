@@ -1,6 +1,6 @@
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { Badge } from './badge';
-import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
+import { SimpleTooltip } from './tooltip';
 
 type GrowthPercentageProps = {
 	value: number | null;
@@ -22,8 +22,8 @@ const GrowthPercentage = ({
 				messageNullValue || '-'
 			) : (
 				<>
-					{isUp ? '+' : ''}
-					{value ?? '-'}
+					{isUp ? '+' : '-'}
+					{value ? Math.abs(value).toFixed(2) : '-'}
 					{isUp || isDown ? '% ' : ''}
 					{isUp ? <TrendingUp /> : <TrendingDown />}
 				</>
@@ -36,14 +36,9 @@ const GrowthPercentage = ({
 	}
 
 	return (
-		<Tooltip>
-			<TooltipTrigger>
-				<BadgeValue />
-			</TooltipTrigger>
-			<TooltipContent>
-				<p>{tooltipMessage}</p>
-			</TooltipContent>
-		</Tooltip>
+		<SimpleTooltip content={tooltipMessage}>
+			<BadgeValue />
+		</SimpleTooltip>
 	);
 };
 

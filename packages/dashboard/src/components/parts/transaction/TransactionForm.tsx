@@ -1,5 +1,4 @@
 import { useForm, useStore } from '@tanstack/react-form';
-import { useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { useCallback, useEffect } from 'react';
 import type z from 'zod';
@@ -57,9 +56,6 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	type = 'create' as T,
 	disabled,
 }: TransactionFormProps<T>) => {
-	const search = useSearch({ from: '/_authed/transactions/new' });
-	console.log('search', search);
-
 	const getCategoriesQuery = useGetCategoriesQuery();
 	const categoriesData = getCategoriesQuery.data?.data.data;
 

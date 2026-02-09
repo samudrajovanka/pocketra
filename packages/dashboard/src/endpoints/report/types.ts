@@ -6,6 +6,10 @@ export type GetReportSummaryParams = {
 	endDate?: string;
 };
 
+export type GetExpenseReportParams = GetReportSummaryParams & {
+	top?: number;
+};
+
 export type ReportSummaryResponse = {
 	income: {
 		value: string;
@@ -20,3 +24,17 @@ export type ReportSummaryResponse = {
 		growthPercent: number | null;
 	};
 };
+
+export type ExpenseByPocketResponse = {
+	pocketId: string;
+	name: string;
+	amount: string;
+	percentage: number;
+}[];
+
+export type ExpenseByCategoryResponse = {
+	categoryId: string;
+	name: string;
+	amount: string;
+	percentage: number;
+}[];

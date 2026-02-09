@@ -1,26 +1,32 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 import MetrixCard from '@/components/parts/card/MetrixCard';
+import MetrixCardLoading from '@/components/parts/card/MetrixCardLoading';
 import PocketCard from '@/components/parts/pocket/PocketCard';
 import PocketCardAdd from '@/components/parts/pocket/PocketCardAdd';
 import PocketCardLoading from '@/components/parts/pocket/PocketCardLoading';
 import TotalBalanceCard from '@/components/parts/pocket/TotalBalanceCard';
 import TotalBalanceCardLoading from '@/components/parts/pocket/TotalBalanceCardLoading';
 import QueryHandling from '@/components/parts/query/QueryHandling';
+import EmptyTransaction from '@/components/parts/transaction/EmptyTransaction';
 import TransactionItem from '@/components/parts/transaction/TransactionItem';
 import TransactionItemLoading from '@/components/parts/transaction/TransactionItemLoading';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { REPORT_PERIOD } from '@/lib/constants/report';
 import { getGrowthTooltipMessage } from '@/lib/helpers/report';
 import { useGetPocketsQuery, useGetTotalBalanceQuery } from '@/query/pocket';
 import { useGetReportSummaryQuery } from '@/query/report';
 import { useGetTransactionsQuery } from '@/query/transaction';
+import { ExpenseByCategoryChart } from '../../parts/charts/ExpenseByCategoryChart';
+import { ExpenseByPocketChart } from '../../parts/charts/ExpenseByPocketChart';
 
 export default function DashboardPage() {
 	const getTotalBalanceQuery = useGetTotalBalanceQuery();
 	const getPocketsQuery = useGetPocketsQuery({
 		params: {
 			limit: 2,
+			sortBy: 'balance',
 		},
 	});
 
@@ -36,8 +42,8 @@ export default function DashboardPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="grid grid-cols-2 gap-6">
-				<div className="flex flex-col gap-4 p-4 bg-muted rounded-lg">
+			<div className="space-y-6">
+				<div className="grid grid-cols-2 gap-4">
 					<QueryHandling
 						queryResult={getTotalBalanceQuery}
 						renderLoading={<TotalBalanceCardLoading />}
@@ -48,7 +54,7 @@ export default function DashboardPage() {
 
 					<div className="space-y-1">
 						<div className="flex items-center justify-between">
-							<h2 className="typography-large font-medium">Pockets</h2>
+							<h2 className="typography-large font-medium">Top Pockets</h2>
 							<Button asChild size="xs" variant="ghost">
 								<Link to="/pockets">
 									See All
@@ -57,72 +63,80 @@ export default function DashboardPage() {
 							</Button>
 						</div>
 
-						<QueryHandling
-							queryResult={getPocketsQuery}
-							renderLoading={
-								<div className="grid grid-cols-2 gap-4">
-									{[...Array(2)].map((_, index) => (
-										// biome-ignore lint/suspicious/noArrayIndexKey: use index
-										<PocketCardLoading key={index} noIcon />
-									))}
-								</div>
-							}
-							checkEmpty={(response) => response.data.data.length === 0}
-							renderEmpty={<PocketCardAdd />}
-							render={(response) => (
-								<div className="grid grid-cols-2 gap-4">
-									{response.data.data.map((pocket) => (
-										<Link
-											key={pocket.id}
-											to="/pockets/$id"
-											params={{ id: pocket.id }}
-											className="group/pocket-card"
-										>
-											<PocketCard pocket={pocket} noIcon />
-										</Link>
-									))}
-								</div>
-							)}
-						/>
+						<div className="grid grid-cols-2 gap-4">
+							<QueryHandling
+								queryResult={getPocketsQuery}
+								renderLoading={[...Array(2)].map((_, index) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: use index
+									<PocketCardLoading key={index} noIcon />
+								))}
+								checkEmpty={(response) => response.data.data.length === 0}
+								renderEmpty={<PocketCardAdd />}
+								render={(response) => (
+									<>
+										{response.data.data.map((pocket) => (
+											<Link
+												key={pocket.id}
+												to="/pockets/$id"
+												params={{ id: pocket.id }}
+												className="group/pocket-card"
+											>
+												<PocketCard pocket={pocket} noIcon />
+											</Link>
+										))}
+									</>
+								)}
+							/>
+						</div>
 					</div>
 				</div>
 
-				<QueryHandling
-					queryResult={summaryQuery}
-					render={({ data }) => (
-						<div className="bg-muted rounded-lg p-4 grid grid-cols-2 gap-4">
-							<MetrixCard
-								variant="transaction"
-								title="Income"
-								amount={Number(data.data.income.value)}
-								growth={data.data.income.growthPercent}
-								tooltipGrowthMessage={getGrowthTooltipMessage(period)}
-								type="income"
-							/>
-							<MetrixCard
-								variant="transaction"
-								title="Expense"
-								amount={Number(data.data.expense.value)}
-								growth={data.data.expense.growthPercent}
-								tooltipGrowthMessage={getGrowthTooltipMessage(period)}
-								type="expense"
-							/>
-							<MetrixCard
-								variant="transaction"
-								title="Net"
-								amount={Number(data.data.net.value)}
-								growth={data.data.net.growthPercent}
-								tooltipGrowthMessage={getGrowthTooltipMessage(period)}
-								type={Number(data.data.net.value) > 0 ? 'income' : 'expense'}
-								className="col-span-2"
-							/>
-						</div>
-					)}
-				/>
+				<div className="grid grid-cols-3 gap-4">
+					<QueryHandling
+						queryResult={summaryQuery}
+						renderLoading={[...Array(3)].map((_, idx) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: use index
+							<MetrixCardLoading key={idx} />
+						))}
+						render={({ data }) => (
+							<>
+								<MetrixCard
+									variant="transaction"
+									title="Income"
+									amount={Number(data.data.income.value)}
+									growth={data.data.income.growthPercent}
+									tooltipGrowthMessage={getGrowthTooltipMessage(period)}
+									type="income"
+								/>
+								<MetrixCard
+									variant="transaction"
+									title="Expense"
+									amount={Number(data.data.expense.value)}
+									growth={data.data.expense.growthPercent}
+									tooltipGrowthMessage={getGrowthTooltipMessage(period)}
+									type="expense"
+								/>
+								<MetrixCard
+									variant="transaction"
+									title="Net"
+									amount={Number(data.data.net.value)}
+									growth={data.data.net.growthPercent}
+									tooltipGrowthMessage={getGrowthTooltipMessage(period)}
+									type={Number(data.data.net.value) > 0 ? 'income' : 'expense'}
+								/>
+							</>
+						)}
+					/>
+				</div>
 			</div>
 
-			<div className="grid grid-cols-3 gap-6">
-				<div className="space-y-4 p-4 bg-muted rounded-lg col-span-2">
+			<div className="gap-4 grid grid-cols-2">
+				<ExpenseByPocketChart period={period} />
+				<ExpenseByCategoryChart period={period} />
+			</div>
+
+			<Card>
+				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
 						<h2 className="typography-large font-medium">
 							Recent Transactions
@@ -146,6 +160,8 @@ export default function DashboardPage() {
 								))}
 							</div>
 						}
+						checkEmpty={({ data }) => data.data.length === 0}
+						renderEmpty={<EmptyTransaction />}
 						render={({ data }) => (
 							<div>
 								{data.data.map((transaction) => (
@@ -161,10 +177,8 @@ export default function DashboardPage() {
 							</div>
 						)}
 					/>
-				</div>
-
-				<div className="p-4 bg-muted rounded-lg">asdasd</div>
-			</div>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { validationMiddleware } from '../../middlewares/validation';
 import { REPORT_PERIOD } from './data';
 
-export const payloadReportSummaryValidator = z
+const reportDateRangeSchema = z
 	.object({
 		period: z
 			.enum(Object.values(REPORT_PERIOD))
@@ -40,7 +40,20 @@ export const payloadReportSummaryValidator = z
 		}
 	});
 
+export const payloadReportSummaryValidator = reportDateRangeSchema;
+
+export const payloadReportExpenseValidator = reportDateRangeSchema.and(
+	z.object({
+		top: z.coerce.number().optional(),
+	}),
+);
+
 export const zPayloadReportSummaryValidator = validationMiddleware(
 	'query',
 	payloadReportSummaryValidator,
+);
+
+export const zPayloadReportExpenseValidator = validationMiddleware(
+	'query',
+	payloadReportExpenseValidator,
 );

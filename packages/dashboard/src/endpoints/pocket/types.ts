@@ -7,4 +7,5 @@ export type UpdatePocketPayload = z.infer<typeof updatePocketValidator>;
 
 export type GetPocketsParams = {
 	limit?: number;
+	sortBy?: 'balance';
 };

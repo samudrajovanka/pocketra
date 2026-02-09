@@ -33,6 +33,7 @@ export const zPayloadUpdatePocketValidator = validationMiddleware(
 
 export const payloadGetPocketsValidator = z.object({
 	limit: z.string().transform(Number).optional(),
+	sortBy: z.enum(['balance']).optional(),
 });
 
 export const zPayloadGetPocketsValidator = validationMiddleware(
