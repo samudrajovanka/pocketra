@@ -19,6 +19,8 @@ export const getSummary = createHandlers(
 			'query',
 		) as PayloadReportSummary;
 
+		console.log('CORS', process.env.ALLOWED_CORS_ORIGINS);
+
 		const reportService = new ReportService();
 		const data = await reportService.getSummary(user.id, {
 			period,
