@@ -13,6 +13,8 @@ const allowedOrigins = (process.env.ALLOWED_CORS_ORIGINS || '')
 	.map((origin) => origin.trim())
 	.filter(Boolean);
 
+console.log('allowedOrigins', allowedOrigins);
+
 apiApp.use(
 	cors({
 		origin: allowedOrigins,
