@@ -31,7 +31,8 @@ export const oauthLogin = createHandlers(async (c) => {
 	const oauthState = randomBytes(32).toString('hex');
 
 	setCookie(c, 'oauth_state', oauthState, {
-		maxAge: 300, // 5 minutes
+		maxAge: 5 * 60, // 5 minutes
+		sameSite: 'Lax',
 	});
 
 	const autorizationUrl = await oauthService.getAuthorizationUrl(oauthState);
