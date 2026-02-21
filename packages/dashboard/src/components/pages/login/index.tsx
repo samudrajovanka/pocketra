@@ -10,7 +10,7 @@ import { Logo } from '@/components/ui/logo';
 
 export default function LoginPage() {
 	const handleGoogleLogin = () => {
-		window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/oauth/google`;
+		window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/oauth/google`;
 	};
 
 	return (
