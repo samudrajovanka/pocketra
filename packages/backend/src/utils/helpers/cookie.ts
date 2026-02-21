@@ -10,13 +10,7 @@ import appConfig from '../../config/app';
 const defaultOptions: CookieOptions = {
 	httpOnly: true,
 	secure: appConfig.isVercel,
-	sameSite: appConfig.isVercel
-		? appConfig.hasCookieDomain
-			? 'lax'
-			: 'none'
-		: appConfig.hasCookieDomain
-			? 'strict'
-			: 'lax',
+	sameSite: 'strict',
 	domain: appConfig.hasCookieDomain ? process.env.COOKIE_DOMAIN : undefined,
 	path: '/',
 };
