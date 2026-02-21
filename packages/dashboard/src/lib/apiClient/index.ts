@@ -1,8 +1,15 @@
 import axios from 'axios';
 import { deleteCookie } from '../serverFn/cookie';
 
+const getBaseUrl = () => {
+	if (import.meta.env.VITE_USE_PROXY === 'true') {
+		return `${import.meta.env.VITE_BASE_URL}/api`;
+	}
+	return `${import.meta.env.VITE_API_BASE_URL}/api`;
+};
+
 export const apiClient = axios.create({
-	baseURL: import.meta.env.VITE_API_BASE_URL,
+	baseURL: getBaseUrl(),
 	withCredentials: true,
 	headers: {
 		'Content-Type': 'application/json',
