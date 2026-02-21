@@ -63,7 +63,6 @@ export default class TransactionService {
 		}
 
 		if (params.type) {
-			console.log('params.type', params.type);
 			conditions.push(eq(transactionsTable.type, params.type));
 		}
 

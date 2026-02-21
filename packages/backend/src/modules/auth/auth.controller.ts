@@ -1,13 +1,14 @@
 import { randomBytes } from 'node:crypto';
-import { getCookie } from 'hono/cookie';
+import {
+	deleteCookie,
+	getCookie,
+	setCookie,
+	setSignedCookie,
+} from 'hono/cookie';
 import { createFactory } from 'hono/factory';
 import InvariantError from '../../exceptions/InvariantError';
 import { authMiddleware } from '../../middlewares/auth';
-import {
-	deleteCookie,
-	setCookie,
-	setSignedCookie,
-} from '../../utils/helpers/cookie';
+import { secureCookieOptions } from '../../utils/helpers/cookie';
 import { successResponse } from '../../utils/helpers/response';
 import AuthService from './auth.service';
 import { authProvider, expiresAccessTokenInSeconds } from './data';
@@ -32,7 +33,6 @@ export const oauthLogin = createHandlers(async (c) => {
 
 	setCookie(c, 'oauth_state', oauthState, {
 		maxAge: 5 * 60, // 5 minutes
-		sameSite: 'Lax',
 	});
 
 	const autorizationUrl = await oauthService.getAuthorizationUrl(oauthState);
@@ -72,6 +72,7 @@ export const oauthCallback = createHandlers(async (c) => {
 		ACCESS_TOKEN_SECRET_COOKIE,
 		{
 			maxAge: expiresAccessTokenInSeconds,
+			...secureCookieOptions,
 		},
 	);
 
@@ -93,7 +94,7 @@ export const getLoginUser = createHandlers(authMiddleware, async (c) => {
 
 export const logout = createHandlers(authMiddleware, async (c) => {
 	deleteCookie(c, 'access_token', {
-		path: '/',
+		...secureCookieOptions,
 	});
 
 	return c.json(
