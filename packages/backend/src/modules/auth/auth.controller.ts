@@ -92,8 +92,8 @@ export const getLoginUser = createHandlers(authMiddleware, async (c) => {
 	);
 });
 
-export const logout = createHandlers(authMiddleware, async (c) => {
-	deleteCookie(c, 'access_token', {
+export const logout = createHandlers(async (c) => {
+	deleteCookie(c, 'pocketra_access_token', {
 		...secureCookieOptions,
 	});
 
