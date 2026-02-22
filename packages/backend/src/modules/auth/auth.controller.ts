@@ -67,7 +67,7 @@ export const oauthCallback = createHandlers(async (c) => {
 		.ACCESS_TOKEN_SECRET_COOKIE as string;
 	await setSignedCookie(
 		c,
-		'access_token',
+		'pocketra_access_token',
 		accessToken,
 		ACCESS_TOKEN_SECRET_COOKIE,
 		{

@@ -14,7 +14,7 @@ export const authMiddleware = createMiddleware<{
 	const accessToken = await getSignedCookie(
 		c,
 		ACCESS_TOKEN_SECRET_COOKIE,
-		'access_token',
+		'pocketra_access_token',
 	);
 
 	if (!accessToken) {
