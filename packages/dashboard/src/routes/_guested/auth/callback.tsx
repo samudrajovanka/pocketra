@@ -18,7 +18,9 @@ export const Route = createFileRoute('/_guested/auth/callback')({
 
 			const {
 				data: { data: authTokens },
-			} = await exchangeCode(search.code);
+			} = await exchangeCode(search.code).catch(() => {
+				throw new Error('exchange_failed');
+			});
 
 			await setAuthCookie(authTokens);
 
