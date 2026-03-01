@@ -9,9 +9,8 @@ import {
 } from '@/components/ui/popover';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { deleteCookie } from '@/lib/serverFn/cookie';
+import { clearAuthCookie } from '@/lib/helpers/cookie';
 import { useGetMeQuery, useLogoutMutation } from '@/query/auth';
-
 import useGlobalStore from '@/store/globalStore';
 
 const DashboardNavbar = () => {
@@ -24,7 +23,7 @@ const DashboardNavbar = () => {
 		startLoadingScreen({ loadingText: 'Logging out...' });
 		try {
 			await logoutMutation.mutateAsync();
-			await deleteCookie({ data: { name: 'is_authenticated' } });
+			await clearAuthCookie();
 			navigate({ to: '/auth/login' });
 		} finally {
 			stopLoadingScreen();

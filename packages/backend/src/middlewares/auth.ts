@@ -1,4 +1,3 @@
-import { getSignedCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import AuthenticationError from '../exceptions/AuthenticationError';
 import AuthService from '../modules/auth/auth.service';
@@ -9,15 +8,15 @@ export const authMiddleware = createMiddleware<{
 		user: LoggedUser;
 	};
 }>(async (c, next) => {
-	const ACCESS_TOKEN_SECRET_COOKIE = process.env
-		.ACCESS_TOKEN_SECRET_COOKIE as string;
-	const accessToken = await getSignedCookie(
-		c,
-		ACCESS_TOKEN_SECRET_COOKIE,
-		'pocketra_access_token',
-	);
+	const authHeader = c.req.header('Authorization');
 
-	if (!accessToken) {
+	if (!authHeader) {
+		throw new AuthenticationError();
+	}
+
+	const [type, accessToken] = authHeader.split(' ');
+
+	if (type !== 'Bearer' || !accessToken) {
 		throw new AuthenticationError();
 	}
 
