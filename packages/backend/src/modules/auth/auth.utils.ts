@@ -24,6 +24,7 @@ export const createOauthCallbackRedirect = (
 
 	setCookie(c, randomString, JSON.stringify(authTokens), {
 		...secureCookieOptions,
+		sameSite: 'none',
 		maxAge: 5 * 60, // 5 minutes
 	});
 
