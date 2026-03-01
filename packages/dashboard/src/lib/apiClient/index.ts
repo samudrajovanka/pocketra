@@ -35,6 +35,7 @@ const ENDPOINT_WITHOUT_REFRESH = [
 	'/auth/refresh',
 	'/auth/login',
 	'/auth/logout',
+	'/auth/exchange',
 ];
 
 const processQueue = (error: Error | null) => {
