@@ -7,6 +7,7 @@ import { authProvider } from './data';
 import type OauthService from './oauth/oauth.abstract';
 import OauthGoogleService from './oauth/oauth.google.service';
 import type { AuthProvider } from './types';
+import { getRootDomain } from '../../utils/helpers/url';
 
 export const getOauthService = (type: AuthProvider): OauthService => {
 	if (type === authProvider.Google) {
@@ -21,11 +22,11 @@ export const createOauthCallbackRedirect = (
 	authTokens: { accessToken: string; refreshToken: string },
 ) => {
 	const randomString = createRandomString(6);
-	const host = c.req.header('host');
+	const host = c.req.header('host') ?? '';
 
 	setCookie(c, randomString, JSON.stringify(authTokens), {
 		...secureCookieOptions,
-		domain: host,
+		domain: getRootDomain(host),
 		secure: true,
 		maxAge: 1 * 60, // 1 minutes
 	});
