@@ -21,10 +21,13 @@ export const createOauthCallbackRedirect = (
 	authTokens: { accessToken: string; refreshToken: string },
 ) => {
 	const randomString = createRandomString(6);
+	const host = c.req.header('host');
 
 	setCookie(c, randomString, JSON.stringify(authTokens), {
 		...secureCookieOptions,
-		maxAge: 5 * 60, // 5 minutes
+		domain: host,
+		secure: true,
+		maxAge: 1 * 60, // 1 minutes
 	});
 
 	const redirectUrl = new URL(
