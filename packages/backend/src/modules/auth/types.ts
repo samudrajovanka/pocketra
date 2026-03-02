@@ -23,4 +23,8 @@ export type GenerateAccessTokenPayload = {
 	email: string;
 };
 
+export type GenerateRefreshTokenPayload = {
+	email: string;
+};
+
 export type LoggedUser = Pick<User, 'id' | 'email' | 'name'>;

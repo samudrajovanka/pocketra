@@ -61,6 +61,7 @@ export const useCreateTransactionMutation = () => {
 				queryClient.invalidateQueries({ queryKey: getTransactionsQueryKey() }),
 				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
 				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
+				queryClient.invalidateQueries({ queryKey: ['report'] }),
 			]);
 		},
 	});

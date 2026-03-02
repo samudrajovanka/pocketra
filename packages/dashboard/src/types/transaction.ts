@@ -1,4 +1,7 @@
-export type TransactionType = 'income' | 'expense';
+import type { TRANSACTION_TYPE } from '@/lib/constants/transactions';
+
+export type TransactionType =
+	(typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
 
 export type Transaction = {
 	id: string;

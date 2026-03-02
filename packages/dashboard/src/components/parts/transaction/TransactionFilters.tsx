@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -42,8 +43,8 @@ const TransactionFilters = ({ hideFilter }: TransactionFiltersProps) => {
 		filters.maxAmount;
 
 	return (
-		<div className="bg-card border rounded-lg p-4 space-y-4">
-			<div className="flex items-center gap-4">
+		<Card data-card-size="small">
+			<CardContent className="flex items-center gap-4">
 				<Field className="flex-1">
 					<Input
 						placeholder="Search transaction..."
@@ -64,8 +65,8 @@ const TransactionFilters = ({ hideFilter }: TransactionFiltersProps) => {
 						<X className="size-4" />
 					</Button>
 				)}
-			</div>
-		</div>
+			</CardContent>
+		</Card>
 	);
 };
 

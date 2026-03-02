@@ -1,3 +1,6 @@
+import { useSearch } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -7,10 +10,21 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Logo } from '@/components/ui/logo';
+import { AUTH_ERROR_MESSAGES } from '@/lib/constants/auth';
 
 export default function LoginPage() {
+	const { error } = useSearch({ from: '/_guested/auth/login' });
+
+	useEffect(() => {
+		if (error) {
+			toast.error(
+				AUTH_ERROR_MESSAGES[error] ?? 'Something went wrong. Please try again.',
+			);
+		}
+	}, [error]);
+
 	const handleGoogleLogin = () => {
-		window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/oauth/google`;
+		window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/oauth/google`;
 	};
 
 	return (
@@ -24,7 +38,7 @@ export default function LoginPage() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Button className="w-full" onClick={handleGoogleLogin}>
+					<Button className="w-full mt-4" onClick={handleGoogleLogin}>
 						<svg
 							className="mr-2 h-4 w-4"
 							aria-hidden="true"

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as GuestedRouteImport } from './routes/_guested'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
 import { Route as AuthedTransactionsIndexRouteImport } from './routes/_authed/transactions/index'
 import { Route as AuthedPocketsIndexRouteImport } from './routes/_authed/pockets/index'
@@ -36,6 +37,11 @@ const AuthedRoute = AuthedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
@@ -105,6 +111,7 @@ const AuthedPocketsIdEditRoute = AuthedPocketsIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/api/$': typeof ApiSplatRoute
   '/transactions/$id': typeof AuthedTransactionsIdRouteRouteWithChildren
   '/pockets/new': typeof AuthedPocketsNewRoute
   '/transactions/new': typeof AuthedTransactionsNewRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/api/$': typeof ApiSplatRoute
   '/pockets/new': typeof AuthedPocketsNewRoute
   '/transactions/new': typeof AuthedTransactionsNewRoute
   '/auth/callback': typeof GuestedAuthCallbackRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/_authed': typeof AuthedRouteWithChildren
   '/_guested': typeof GuestedRouteWithChildren
   '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/api/$': typeof ApiSplatRoute
   '/_authed/transactions/$id': typeof AuthedTransactionsIdRouteRouteWithChildren
   '/_authed/pockets/new': typeof AuthedPocketsNewRoute
   '/_authed/transactions/new': typeof AuthedTransactionsNewRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/api/$'
     | '/transactions/$id'
     | '/pockets/new'
     | '/transactions/new'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/api/$'
     | '/pockets/new'
     | '/transactions/new'
     | '/auth/callback'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authed'
     | '/_guested'
     | '/_authed/dashboard'
+    | '/api/$'
     | '/_authed/transactions/$id'
     | '/_authed/pockets/new'
     | '/_authed/transactions/new'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
   GuestedRoute: typeof GuestedRouteWithChildren
+  ApiSplatRoute: typeof ApiSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/dashboard': {
@@ -372,6 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   GuestedRoute: GuestedRouteWithChildren,
+  ApiSplatRoute: ApiSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

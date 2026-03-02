@@ -25,4 +25,5 @@ export type GetPocketsWithBalanceParams = {
 	userId: string;
 	limit?: number;
 	pocketId?: string;
+	sortBy?: 'balance';
 };

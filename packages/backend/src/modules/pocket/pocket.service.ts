@@ -50,7 +50,11 @@ export default class PocketService {
 				eq(pocketsTable.id, transactionsTable.pocketId),
 			)
 			.groupBy(pocketsTable.id)
-			.orderBy(desc(pocketsTable.createdAt));
+			.orderBy(
+				params?.sortBy === 'balance'
+					? sql`current_balance DESC`
+					: desc(pocketsTable.createdAt),
+			);
 
 		const conditions = [];
 
@@ -75,6 +79,7 @@ export default class PocketService {
 		const pockets = await this.getPocketsWithBalance({
 			userId,
 			limit: params?.limit,
+			sortBy: params?.sortBy,
 		});
 
 		const mappedPockets = pockets.map(

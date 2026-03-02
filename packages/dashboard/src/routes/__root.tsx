@@ -7,9 +7,42 @@ import { useState } from 'react';
 import appCss from '@/assets/styles/globals.css?url';
 import GlobalLoading from '@/components/parts/loading/GlobalLoading';
 import { Toaster } from '@/components/ui/sonner';
+import { refreshToken } from '@/endpoints/auth';
+import {
+	COOKIE_ACCESS_TOKEN,
+	COOKIE_REFRESH_TOKEN,
+} from '@/lib/constants/cookie';
+import { getCookie, setAuthCookie } from '@/lib/helpers/cookie';
 import { getQueryClient } from '@/lib/queryClient';
+import { getCookieServer } from '@/serverFn/cookie';
 
 export const Route = createRootRoute({
+	beforeLoad: async () => {
+		const hasAccessToken = getCookie(COOKIE_ACCESS_TOKEN);
+
+		if (hasAccessToken) {
+			return { isAuthenticated: true };
+		}
+
+		const refreshTokenValue = await getCookieServer({
+			data: { name: COOKIE_REFRESH_TOKEN },
+		});
+
+		if (refreshTokenValue) {
+			try {
+				const {
+					data: { data: authTokens },
+				} = await refreshToken(refreshTokenValue);
+
+				await setAuthCookie(authTokens);
+				return { isAuthenticated: true };
+			} catch (_) {
+				return { isAuthenticated: false };
+			}
+		}
+
+		return { isAuthenticated: false };
+	},
 	head: () => ({
 		meta: [
 			{

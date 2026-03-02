@@ -5,6 +5,7 @@ import QueryHandling from '@/components/parts/query/QueryHandling';
 import EmptyTransaction from '@/components/parts/transaction/EmptyTransaction';
 import TransactionItem from '@/components/parts/transaction/TransactionItem';
 import TransactionItemLoading from '@/components/parts/transaction/TransactionItemLoading';
+import { Card, CardContent } from '@/components/ui/card';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useGetInfiniteTransactionsQuery } from '@/query/transaction';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
@@ -56,7 +57,7 @@ const TransactionList = () => {
 					).sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime());
 
 					return (
-						<div className="space-y-6">
+						<div className="space-y-4">
 							{sortedGroupedTransactions.map(([key, transactions]) => (
 								<div key={key} className="space-y-2">
 									<h3 className="typography-small font-medium text-muted-foreground">
@@ -64,18 +65,20 @@ const TransactionList = () => {
 											? 'This Month'
 											: key}
 									</h3>
-									<div className="space-y-1 bg-muted/50 p-2 rounded-lg border">
-										{transactions.map((transaction) => (
-											<Link
-												key={transaction.id}
-												to="/transactions/$id"
-												params={{ id: transaction.id }}
-												className="block group/transaction-item"
-											>
-												<TransactionItem transaction={transaction} />
-											</Link>
-										))}
-									</div>
+									<Card data-card-size="small">
+										<CardContent>
+											{transactions.map((transaction) => (
+												<Link
+													key={transaction.id}
+													to="/transactions/$id"
+													params={{ id: transaction.id }}
+													className="block group/transaction-item"
+												>
+													<TransactionItem transaction={transaction} />
+												</Link>
+											))}
+										</CardContent>
+									</Card>
 								</div>
 							))}
 						</div>

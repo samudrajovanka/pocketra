@@ -1,4 +1,4 @@
-import ErrorConstant from '../constants/error';
+import ErrorConstant from '../utils/constants/error';
 import ClientError from './ClientError';
 
 interface AuthenticationErrorOptions {
@@ -15,7 +15,7 @@ class AuthenticationError extends ClientError {
 	) {
 		super(message, {
 			type: options?.type ?? ErrorConstant.type.AUTHENTICATION_ERR,
-			statusCode: options?.statusCode ?? 403,
+			statusCode: options?.statusCode ?? 401,
 		});
 
 		this.name = 'AuthenticationError';

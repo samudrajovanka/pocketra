@@ -1,12 +1,12 @@
 import { and, desc, eq, gte, ilike, lte } from 'drizzle-orm';
-import {
-	type CursorPagination,
-	generateCursorPaginationMetaResponse,
-} from 'src/utils/helpers/pagination';
-import { isEditableTransaction } from 'src/utils/helpers/transactions';
 import { db } from '../../config/db';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';
+import {
+	type CursorPagination,
+	generateCursorPaginationMetaResponse,
+} from '../../utils/helpers/pagination';
+import { isEditableTransaction } from '../../utils/helpers/transactions';
 import { categoriesTable } from '../category/category.schema';
 import { pocketsTable } from '../pocket/pocket.schema';
 import { transactionsTable } from './transaction.schema';
@@ -63,7 +63,6 @@ export default class TransactionService {
 		}
 
 		if (params.type) {
-			console.log('params.type', params.type);
 			conditions.push(eq(transactionsTable.type, params.type));
 		}
 

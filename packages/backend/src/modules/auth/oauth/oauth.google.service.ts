@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { type Auth, google } from 'googleapis';
 import AuthenticationError from '../../../exceptions/AuthenticationError';
 import ForbiddenError from '../../../exceptions/ForbiddenError';
 import { authProvider } from '../data';
@@ -6,7 +6,7 @@ import type { AuthProvider, GoogleOauthProfile } from '../types';
 import OauthService from './oauth.abstract';
 
 export default class OauthGoogleService extends OauthService {
-	private oauth2Client;
+	private oauth2Client: Auth.OAuth2Client;
 
 	constructor() {
 		super();

@@ -43,6 +43,13 @@
       "when": 1769925287466,
       "tag": "0005_not-null-description-transcation",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771920480189,
+      "tag": "0006_refresh-token",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
-import ErrorConstant from '../../constants/error';
 import ClientError from '../../exceptions/ClientError';
+import ErrorConstant from '../constants/error';
 import type {
 	CursorPaginationMetaResponse,
 	PaginationMetaResponse,

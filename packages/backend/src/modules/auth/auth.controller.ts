@@ -1,37 +1,33 @@
-import { randomBytes } from 'node:crypto';
-import { getCookie } from 'hono/cookie';
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { createFactory } from 'hono/factory';
-import InvariantError from '../../exceptions/InvariantError';
+import AuthenticationError from '../../exceptions/AuthenticationError';
 import { authMiddleware } from '../../middlewares/auth';
-import {
-	deleteCookie,
-	setCookie,
-	setSignedCookie,
-} from '../../utils/helpers/cookie';
+import { secureCookieOptions } from '../../utils/helpers/cookie';
+import { createRandomString } from '../../utils/helpers/encrypt';
 import { successResponse } from '../../utils/helpers/response';
 import AuthService from './auth.service';
-import { authProvider, expiresAccessTokenInSeconds } from './data';
-import type OauthService from './oauth/oauth.abstract';
-import OauthGoogleService from './oauth/oauth.google.service';
+import {
+	createOauthCallbackRedirect,
+	createOauthErrorRedirect,
+	getOauthService,
+} from './auth.utils';
+import {
+	zPayloadExchangeCodeValidator,
+	zPayloadLogoutValidator,
+	zPayloadRefreshTokenValidator,
+} from './auth.validator';
 import type { AuthProvider } from './types';
 
 const { createHandlers } = createFactory();
 
 export const oauthLogin = createHandlers(async (c) => {
 	const type = c.req.param('type') as AuthProvider;
-
-	let oauthService: OauthService;
-
-	if (type === authProvider.Google) {
-		oauthService = new OauthGoogleService();
-	} else {
-		throw new InvariantError(`Unsupported oauth provider ${type}`);
-	}
-
-	const oauthState = randomBytes(32).toString('hex');
+	const oauthService = getOauthService(type);
+	const oauthState = createRandomString(32);
 
 	setCookie(c, 'oauth_state', oauthState, {
-		maxAge: 300, // 5 minutes
+		...secureCookieOptions,
+		maxAge: 5 * 60, // 5 minutes
 	});
 
 	const autorizationUrl = await oauthService.getAuthorizationUrl(oauthState);
@@ -40,45 +36,63 @@ export const oauthLogin = createHandlers(async (c) => {
 });
 
 export const oauthCallback = createHandlers(async (c) => {
-	const type = c.req.param('type') as AuthProvider;
-	const query = c.req.query();
+	try {
+		const type = c.req.param('type') as AuthProvider;
+		const query = c.req.query();
 
-	const oauthState = getCookie(c, 'oauth_state');
-	console.log('oauthstate', oauthState);
-	let oauthService: OauthService;
+		const oauthState = getCookie(c, 'oauth_state');
+		const oauthService = getOauthService(type);
 
-	if (type === authProvider.Google) {
-		oauthService = new OauthGoogleService();
-	} else {
-		throw new InvariantError(`Unsupported oauth provider ${type}`);
+		const oauthProfile = await oauthService.handleCallback(
+			oauthState ?? '',
+			query,
+		);
+
+		deleteCookie(c, 'oauth_state');
+
+		const authService = new AuthService();
+		const authTokens = await authService.oauthLogin(oauthProfile, type);
+
+		const redirectUrl = createOauthCallbackRedirect(c, authTokens);
+		return c.redirect(redirectUrl);
+	} catch (_) {
+		deleteCookie(c, 'oauth_state');
+
+		const redirectUrl = createOauthErrorRedirect('oauth_failed');
+
+		return c.redirect(redirectUrl);
 	}
-
-	const oauthProfile = await oauthService.handleCallback(
-		oauthState ?? '',
-		query,
-	);
-
-	deleteCookie(c, 'oauth_state');
-
-	const authService = new AuthService();
-	const accessToken = await authService.oauthLogin(oauthProfile, type);
-
-	const ACCESS_TOKEN_SECRET_COOKIE = process.env
-		.ACCESS_TOKEN_SECRET_COOKIE as string;
-	await setSignedCookie(
-		c,
-		'access_token',
-		accessToken,
-		ACCESS_TOKEN_SECRET_COOKIE,
-		{
-			maxAge: expiresAccessTokenInSeconds,
-		},
-	);
-
-	return c.redirect(
-		`${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/auth/callback`,
-	);
 });
+
+export const exchangeCode = createHandlers(
+	zPayloadExchangeCodeValidator,
+	async (c) => {
+		const { code } = c.req.valid('json') as { code: string };
+
+		const rawTokens = getCookie(c, code);
+
+		if (!rawTokens) {
+			throw new AuthenticationError('Invalid or expired code');
+		}
+
+		const authTokens = JSON.parse(rawTokens) as {
+			accessToken: string;
+			refreshToken: string;
+		};
+
+		deleteCookie(c, code);
+
+		return c.json(
+			successResponse({
+				message: 'Success exchange code',
+				data: {
+					accessToken: authTokens.accessToken,
+					refreshToken: authTokens.refreshToken,
+				},
+			}),
+		);
+	},
+);
 
 export const getLoginUser = createHandlers(authMiddleware, async (c) => {
 	const user = c.get('user');
@@ -91,14 +105,43 @@ export const getLoginUser = createHandlers(authMiddleware, async (c) => {
 	);
 });
 
-export const logout = createHandlers(authMiddleware, async (c) => {
-	deleteCookie(c, 'access_token', {
-		path: '/',
-	});
+export const refreshToken = createHandlers(
+	zPayloadRefreshTokenValidator,
+	async (c) => {
+		const { refreshToken: rawRefreshToken } = c.req.valid('json') as {
+			refreshToken: string;
+		};
+
+		const authService = new AuthService();
+		const { accessToken, refreshToken: newRefreshToken } =
+			await authService.refreshAccessToken(rawRefreshToken);
+
+		return c.json(
+			successResponse({
+				message: 'Success refresh token',
+				data: {
+					accessToken,
+					refreshToken: newRefreshToken,
+				},
+			}),
+		);
+	},
+);
+
+export const logout = createHandlers(zPayloadLogoutValidator, async (c) => {
+	const { refreshToken } = c.req.valid('json') as {
+		refreshToken?: string;
+	};
+
+	const authService = new AuthService();
+
+	if (refreshToken) {
+		await authService.logout(refreshToken);
+	}
 
 	return c.json(
 		successResponse({
-			message: 'Success logout user',
+			message: 'Logout success',
 		}),
 	);
 });

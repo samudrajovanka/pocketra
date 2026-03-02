@@ -1,6 +1,6 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import { InfoIcon } from 'lucide-react';
 import type * as React from 'react';
-
 import { cn } from '@/lib/utils';
 
 function TooltipProvider({
@@ -56,4 +56,34 @@ function TooltipContent({
 	);
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+function SimpleTooltip({
+	children,
+	content,
+}: {
+	children: React.ReactNode;
+	content: string;
+}) {
+	return (
+		<Tooltip>
+			<TooltipTrigger>{children}</TooltipTrigger>
+			<TooltipContent>{content}</TooltipContent>
+		</Tooltip>
+	);
+}
+
+function InfoTooltip({ content }: { content: string }) {
+	return (
+		<SimpleTooltip content={content}>
+			<InfoIcon size={14} className="text-muted-foreground" />
+		</SimpleTooltip>
+	);
+}
+
+export {
+	Tooltip,
+	TooltipTrigger,
+	TooltipContent,
+	TooltipProvider,
+	SimpleTooltip,
+	InfoTooltip,
+};
