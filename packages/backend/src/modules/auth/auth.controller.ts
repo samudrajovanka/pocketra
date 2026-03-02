@@ -55,7 +55,8 @@ export const oauthCallback = createHandlers(async (c) => {
 
 		const redirectUrl = createOauthCallbackRedirect(c, authTokens);
 		return c.redirect(redirectUrl);
-	} catch (_) {
+	} catch (error) {
+		console.log(error);
 		deleteCookie(c, 'oauth_state');
 
 		const redirectUrl = createOauthErrorRedirect('oauth_failed');
