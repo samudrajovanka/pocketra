@@ -109,7 +109,7 @@ export default class AuthService {
 		});
 
 		if (!userWithProviders) {
-			return await db.transaction(async (tx) => {
+			const newUser = await db.transaction(async (tx) => {
 				const [newUser] = await tx
 					.insert(usersTable)
 					.values({
@@ -123,14 +123,16 @@ export default class AuthService {
 					userId: newUser.id,
 				});
 
-				return this.generateAuthToken(
-					{ email: oauthProfile.email },
-					{ email: oauthProfile.email },
-					{
-						id: newUser.id,
-					},
-				);
+				return newUser;
 			});
+
+			return this.generateAuthToken(
+				{ email: oauthProfile.email },
+				{ email: oauthProfile.email },
+				{
+					id: newUser.id,
+				},
+			);
 		}
 
 		const isProviderMatch = userWithProviders.userProviders.some(
