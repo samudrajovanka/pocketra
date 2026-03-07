@@ -1,4 +1,10 @@
+import type z from 'zod';
 import type { userProvidersTable, usersTable } from './auth.schema';
+import type {
+	payloadExchangeCodeValidator,
+	payloadLogoutValidator,
+	payloadRefreshTokenValidator,
+} from './auth.validator';
 import type { authProvider } from './data';
 
 export type User = typeof usersTable.$inferSelect;
@@ -28,3 +34,9 @@ export type GenerateRefreshTokenPayload = {
 };
 
 export type LoggedUser = Pick<User, 'id' | 'email' | 'name'>;
+
+export type ExchangeCodeParam = z.infer<typeof payloadExchangeCodeValidator>;
+
+export type PayloadRefreshToken = z.infer<typeof payloadRefreshTokenValidator>;
+
+export type PayloadLogout = z.infer<typeof payloadLogoutValidator>;

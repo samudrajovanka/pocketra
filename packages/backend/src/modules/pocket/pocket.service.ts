@@ -20,7 +20,9 @@ export default class PocketService {
 				...data,
 				userId,
 			})
-			.returning();
+			.returning({
+				id: pocketsTable.id,
+			});
 
 		return pocket;
 	}
@@ -37,7 +39,7 @@ export default class PocketService {
 				COALESCE(
 					SUM(
 						CASE
-							WHEN ${transactionsTable.type} = 'income' THEN ${transactionsTable.amount}
+							WHEN ${transactionsTable.type} IN ('income', 'transfer_in') THEN ${transactionsTable.amount}
 							ELSE -${transactionsTable.amount}
 						END
 					), 0
@@ -137,7 +139,9 @@ export default class PocketService {
 			.where(
 				and(eq(pocketsTable.id, pocketId), eq(pocketsTable.userId, userId)),
 			)
-			.returning();
+			.returning({
+				id: pocketsTable.id,
+			});
 
 		if (!pocket) throw new NotFoundError('Pocket not found');
 
@@ -150,12 +154,15 @@ export default class PocketService {
 			.where(
 				and(eq(pocketsTable.id, pocketId), eq(pocketsTable.userId, userId)),
 			)
-			.returning();
+			.returning({
+				id: pocketsTable.id,
+			});
 
 		if (!pocket) throw new NotFoundError('Pocket not found');
 
 		return pocket;
 	}
+
 	async getTotalBalance(userId: string) {
 		const result = await db.execute(sql`
 			SELECT
@@ -165,7 +172,7 @@ export default class PocketService {
 					COALESCE(
 						SUM(
 							CASE
-								WHEN t.type = 'income' THEN t.amount
+								WHEN t.type IN ('income', 'transfer_in') THEN t.amount
 								ELSE -t.amount
 							END
 						), 0

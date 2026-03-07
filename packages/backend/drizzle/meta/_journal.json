@@ -50,6 +50,20 @@
       "when": 1771920480189,
       "tag": "0006_refresh-token",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1772639349481,
+      "tag": "0007_create-transfer-id-and-type",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1772853761630,
+      "tag": "0008_add-related-pocket-id",
+      "breakpoints": true
     }
   ]
 }

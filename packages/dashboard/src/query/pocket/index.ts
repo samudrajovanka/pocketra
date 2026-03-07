@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
 	createPocket,
 	deletePocket,
@@ -12,13 +12,13 @@ import type {
 	GetPocketsParams,
 	UpdatePocketPayload,
 } from '@/endpoints/pocket/types';
-import { getTransactionsQueryKey } from '../transaction';
+import { useInvalidatePocketQueries } from './invalidate';
 
 export const getPocketsQueryKey = (params?: GetPocketsParams) => {
 	if (params) {
-		return ['pockets', params];
+		return ['pockets', 'list', params];
 	}
-	return ['pockets'];
+	return ['pockets', 'list'];
 };
 
 export const useGetPocketsQuery = (state?: { params?: GetPocketsParams }) => {
@@ -46,7 +46,7 @@ export const useGetPocketOptionsQuery = () => {
 	});
 };
 
-export const getPocketByIdQueryKey = (id: string) => ['pockets', id];
+export const getPocketByIdQueryKey = (id: string) => ['pockets', 'detail', id];
 
 export const useGetPocketByIdQuery = (id: string) => {
 	return useQuery({
@@ -57,21 +57,17 @@ export const useGetPocketByIdQuery = (id: string) => {
 };
 
 export const useCreatePocketMutation = () => {
-	const queryClient = useQueryClient();
+	const invalidatePocketQueries = useInvalidatePocketQueries();
 	return useMutation({
 		mutationFn: createPocket,
 		onSuccess: async () => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getPocketOptionsQueryKey() }),
-			]);
+			await invalidatePocketQueries();
 		},
 	});
 };
 
 export const useUpdatePocketMutation = () => {
-	const queryClient = useQueryClient();
+	const invalidatePocketQueries = useInvalidatePocketQueries();
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -81,29 +77,17 @@ export const useUpdatePocketMutation = () => {
 			payload: UpdatePocketPayload;
 		}) => updatePocket(id, payload),
 		onSuccess: async (_, variables) => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
-				queryClient.invalidateQueries({
-					queryKey: getPocketByIdQueryKey(variables.id),
-				}),
-				queryClient.invalidateQueries({ queryKey: getPocketOptionsQueryKey() }),
-			]);
+			await invalidatePocketQueries({ pocketId: variables.id });
 		},
 	});
 };
 
 export const useDeletePocketMutation = () => {
-	const queryClient = useQueryClient();
+	const invalidatePocketQueries = useInvalidatePocketQueries();
 	return useMutation({
 		mutationFn: deletePocket,
 		onSuccess: async () => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getPocketOptionsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTransactionsQueryKey() }),
-			]);
+			await invalidatePocketQueries({ invalidateTransactions: true });
 		},
 	});
 };

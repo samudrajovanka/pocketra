@@ -3,7 +3,9 @@ import type { CursorPaginationParams } from '@/types/pagination';
 import type { TransactionType } from '@/types/transaction';
 import type {
 	createTransactionValidator,
+	transferTransactionValidator,
 	updateTransactionValidator,
+	updateTransferTransactionValidator,
 } from './validator';
 
 export type GetTransactionsParams = CursorPaginationParams & {
@@ -20,4 +22,12 @@ export type CreateTransactionPayload = z.infer<
 
 export type UpdateTransactionPayload = z.infer<
 	typeof updateTransactionValidator
+>;
+
+export type TransferTransactionPayload = z.infer<
+	typeof transferTransactionValidator
+>;
+
+export type UpdateTransferTransactionPayload = z.infer<
+	typeof updateTransferTransactionValidator
 >;

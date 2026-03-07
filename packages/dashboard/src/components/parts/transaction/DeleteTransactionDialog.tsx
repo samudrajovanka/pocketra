@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
 
@@ -17,21 +17,31 @@ import { useDeleteTransactionMutation } from '@/query/transaction';
 
 type DeleteTransactionDialogProps = {
 	transactionId: string;
+	pocketId?: string;
 	children: React.ReactNode;
 };
 
 const DeleteTransactionDialog = ({
 	transactionId,
+	pocketId,
 	children,
 }: DeleteTransactionDialogProps) => {
 	const navigate = useNavigate();
+	const search = useSearch({ strict: false }) as {
+		from?: 'detail_pocket';
+	};
 	const deleteTransactionMutation = useDeleteTransactionMutation();
 
 	const handleDelete = async () => {
 		try {
 			await deleteTransactionMutation.mutateAsync(transactionId);
 			toast.success('Transaction deleted successfully');
-			navigate({ to: '/transactions' });
+			navigate({
+				to:
+					search.from === 'detail_pocket' && pocketId
+						? `/pockets/${pocketId}`
+						: '/transactions',
+			});
 		} catch (error) {
 			if (isAxiosError(error)) {
 				toast.error(error.response?.data.message);

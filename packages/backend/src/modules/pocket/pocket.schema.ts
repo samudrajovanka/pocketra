@@ -21,5 +21,8 @@ export const pocketsRelations = relations(pocketsTable, ({ one, many }) => ({
 		fields: [pocketsTable.userId],
 		references: [usersTable.id],
 	}),
-	transactions: many(transactionsTable),
+	transactions: many(transactionsTable, { relationName: 'transactions' }),
+	relatedTransactions: many(transactionsTable, {
+		relationName: 'relatedTransactions',
+	}),
 }));

@@ -4,14 +4,14 @@ import { successResponse } from '../../utils/helpers/response';
 import type { LoggedUser } from '../auth/types';
 import PocketService from './pocket.service';
 import {
-	zPayloadGetPocketByIdValidator,
+	zGetPocketByIdParamValidator,
 	zPayloadGetPocketsValidator,
 	zPayloadreatePocketValidator,
 	zPayloadUpdatePocketValidator,
 } from './pocket.validator';
 import type {
+	GetPocketByIdParam,
 	PayloadCreatePocket,
-	PayloadGetPocketById,
 	PayloadGetPockets,
 	PayloadUpdatePocket,
 } from './types';
@@ -75,10 +75,10 @@ export const getPocketOptions = createHandlers(authMiddleware, async (c) => {
 
 export const getPocketById = createHandlers(
 	authMiddleware,
-	zPayloadGetPocketByIdValidator,
+	zGetPocketByIdParamValidator,
 	async (c) => {
 		const user = c.var.user;
-		const { id: pocketId } = c.req.valid('param') as PayloadGetPocketById;
+		const { id: pocketId } = c.req.valid('param') as GetPocketByIdParam;
 		const pocketService = new PocketService();
 		const pocket = await pocketService.getPocketById(user.id, pocketId);
 
@@ -93,11 +93,11 @@ export const getPocketById = createHandlers(
 
 export const updatePocket = createHandlers(
 	authMiddleware,
-	zPayloadGetPocketByIdValidator,
+	zGetPocketByIdParamValidator,
 	zPayloadUpdatePocketValidator,
 	async (c) => {
 		const user = c.var.user;
-		const { id: pocketId } = c.req.valid('param') as PayloadGetPocketById;
+		const { id: pocketId } = c.req.valid('param') as GetPocketByIdParam;
 		const body = c.req.valid('json') as PayloadUpdatePocket;
 		const pocketService = new PocketService();
 
@@ -114,10 +114,10 @@ export const updatePocket = createHandlers(
 
 export const deletePocket = createHandlers(
 	authMiddleware,
-	zPayloadGetPocketByIdValidator,
+	zGetPocketByIdParamValidator,
 	async (c) => {
 		const user = c.var.user;
-		const { id: pocketId } = c.req.valid('param') as PayloadGetPocketById;
+		const { id: pocketId } = c.req.valid('param') as GetPocketByIdParam;
 		const pocketService = new PocketService();
 
 		const pocket = await pocketService.deletePocket(user.id, pocketId);

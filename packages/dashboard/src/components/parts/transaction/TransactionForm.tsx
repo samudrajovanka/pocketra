@@ -1,6 +1,6 @@
 import { useForm, useStore } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -45,6 +45,7 @@ type TransactionFormProps<T extends 'create' | 'update'> = {
 	submitTextLoading?: string;
 	type?: T;
 	disabled?: boolean;
+	fromPocketId?: string;
 };
 
 const TransactionForm = <T extends 'create' | 'update'>({
@@ -55,18 +56,17 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	submitTextLoading = 'Saving...',
 	type = 'create' as T,
 	disabled,
+	fromPocketId,
 }: TransactionFormProps<T>) => {
 	const getCategoriesQuery = useGetCategoriesQuery();
+	const [isFromPocketValid, setIsFromPocketValid] = useState(false);
 	const categoriesData = getCategoriesQuery.data?.data.data;
 
 	const getPocketOptionsQuery = useGetPocketOptionsQuery();
 
 	const form = useForm({
 		defaultValues: initialValues
-			? {
-					...initialValues,
-					pocketId: '',
-				}
+			? initialValues
 			: {
 					amount: 0,
 					type: 'expense' as TransactionType,
@@ -113,22 +113,19 @@ const TransactionForm = <T extends 'create' | 'update'>({
 	const categoryId = useStore(form.store, (state) => state.values.categoryId);
 
 	const setInitialPocket = useCallback(() => {
-		if (
-			!pocketId &&
-			initialValues?.pocketId &&
-			getPocketOptionsQuery.isSuccess
-		) {
+		if (!pocketId && fromPocketId && getPocketOptionsQuery.isSuccess) {
 			const pocket = getPocketOptionsQuery.data?.data.data.find(
-				(pocket) => pocket.id === initialValues.pocketId,
+				(pocket) => pocket.id === fromPocketId,
 			);
 
 			if (pocket) {
+				setIsFromPocketValid(true);
 				form.setFieldValue('pocketId', pocket.id);
 			}
 		}
 	}, [
 		pocketId,
-		initialValues?.pocketId,
+		fromPocketId,
 		getPocketOptionsQuery.isSuccess,
 		form,
 		getPocketOptionsQuery.data?.data.data.find,
@@ -262,7 +259,11 @@ const TransactionForm = <T extends 'create' | 'update'>({
 							<Select
 								value={field.state.value}
 								onValueChange={(val) => field.handleChange(val)}
-								disabled={getPocketOptionsQuery.isPending || disabled}
+								disabled={
+									getPocketOptionsQuery.isPending ||
+									isFromPocketValid ||
+									disabled
+								}
 							>
 								<SelectTrigger>
 									<SelectValue

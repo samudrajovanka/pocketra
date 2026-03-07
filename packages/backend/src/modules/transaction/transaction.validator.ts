@@ -51,3 +51,38 @@ export const zPayloadUpdateTransactionValidator = validationMiddleware(
 	'json',
 	payloadUpdateTransactionValidator,
 );
+
+export const payloadTransferTransactionValidator = z.object({
+	fromPocketId: z.uuidv7(),
+	toPocketId: z.uuidv7(),
+	amount: z.number().positive(),
+	description: z.string().max(255),
+	date: z.iso.datetime(),
+});
+
+export const zPayloadTransferTransactionValidator = validationMiddleware(
+	'json',
+	payloadTransferTransactionValidator,
+);
+
+export const payloadTransferIdValidator = z.object({
+	id: z.string().min(1),
+});
+
+export const zPayloadTransferIdValidator = validationMiddleware(
+	'param',
+	payloadTransferIdValidator,
+);
+
+export const payloadUpdateTransferTransactionValidator = z.object({
+	fromPocketId: z.uuidv7().optional(),
+	toPocketId: z.uuidv7().optional(),
+	amount: z.number().positive().optional(),
+	description: z.string().max(255).optional(),
+	date: z.iso.datetime().optional(),
+});
+
+export const zPayloadUpdateTransferTransactionValidator = validationMiddleware(
+	'json',
+	payloadUpdateTransferTransactionValidator,
+);

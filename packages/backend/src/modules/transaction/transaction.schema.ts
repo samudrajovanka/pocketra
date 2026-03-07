@@ -29,6 +29,10 @@ export const transactionsTable = pgTable('transactions', {
 	amount: decimal('amount', { precision: 19, scale: 4 }).notNull(),
 	description: text('description').notNull(),
 	date: timestamp('date', { withTimezone: true }).notNull(),
+	transferId: text('transfer_id'),
+	relatedPocketId: uuid('related_pocket_id').references(() => pocketsTable.id, {
+		onDelete: 'cascade',
+	}),
 });
 
 export const transactionsRelations = relations(
@@ -37,6 +41,12 @@ export const transactionsRelations = relations(
 		pocket: one(pocketsTable, {
 			fields: [transactionsTable.pocketId],
 			references: [pocketsTable.id],
+			relationName: 'transactions',
+		}),
+		relatedPocket: one(pocketsTable, {
+			fields: [transactionsTable.relatedPocketId],
+			references: [pocketsTable.id],
+			relationName: 'relatedTransactions',
 		}),
 		category: one(categoriesTable, {
 			fields: [transactionsTable.categoryId],
