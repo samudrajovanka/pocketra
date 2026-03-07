@@ -5,7 +5,9 @@ import type { Transaction } from '@/types/transaction';
 import type {
 	CreateTransactionPayload,
 	GetTransactionsParams,
+	TransferTransactionPayload,
 	UpdateTransactionPayload,
+	UpdateTransferTransactionPayload,
 } from './types';
 
 export const getTransactions = async (params?: GetTransactionsParams) => {
@@ -42,5 +44,24 @@ export const updateTransaction = async (
 export const deleteTransaction = async (id: string) => {
 	return await apiClient.delete<SuccessResponseData<Transaction>>(
 		`/transactions/${id}`,
+	);
+};
+
+export const transferTransaction = async (
+	payload: TransferTransactionPayload,
+) => {
+	return await apiClient.post<SuccessResponseData<{ transferId: string }>>(
+		'/transactions/transfer',
+		payload,
+	);
+};
+
+export const updateTransferTransaction = async (
+	id: string,
+	payload: UpdateTransferTransactionPayload,
+) => {
+	return await apiClient.patch<SuccessResponseData<{ transferId: string }>>(
+		`/transactions/transfer/${id}`,
+		payload,
 	);
 };

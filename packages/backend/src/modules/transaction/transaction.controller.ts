@@ -8,13 +8,19 @@ import {
 	zPayloadCreateTransactionValidator,
 	zPayloadGetTransactionByIdValidator,
 	zPayloadGetTransactionsValidator,
+	zPayloadTransferIdValidator,
+	zPayloadTransferTransactionValidator,
 	zPayloadUpdateTransactionValidator,
+	zPayloadUpdateTransferTransactionValidator,
 } from './transaction.validator';
 import type {
 	PayloadCreateTransaction,
 	PayloadGetTransactionById,
 	PayloadGetTransactions,
+	PayloadTransferId,
+	PayloadTransferTransaction,
 	PayloadUpdateTransaction,
+	PayloadUpdateTransferTransaction,
 } from './types';
 
 const { createHandlers } = createFactory<{ Variables: { user: LoggedUser } }>();
@@ -139,6 +145,53 @@ export const deleteTransaction = createHandlers(
 			successResponse({
 				message: 'Success delete transaction',
 				data: transaction,
+			}),
+		);
+	},
+);
+
+export const transferTransaction = createHandlers(
+	authMiddleware,
+	zPayloadTransferTransactionValidator,
+	async (c) => {
+		const user = c.var.user;
+		const payload = c.req.valid('json') as PayloadTransferTransaction;
+		const transactionService = new TransactionService();
+
+		const result = await transactionService.createTransferTransaction(
+			user.id,
+			payload,
+		);
+
+		return c.json(
+			successResponse({
+				message: 'Success transfer amount between pockets',
+				data: { transferId: result },
+			}),
+		);
+	},
+);
+
+export const updateTransferTransaction = createHandlers(
+	authMiddleware,
+	zPayloadTransferIdValidator,
+	zPayloadUpdateTransferTransactionValidator,
+	async (c) => {
+		const user = c.var.user;
+		const { id: transferId } = c.req.valid('param') as PayloadTransferId;
+		const payload = c.req.valid('json') as PayloadUpdateTransferTransaction;
+		const transactionService = new TransactionService();
+
+		const result = await transactionService.updateTransferTransaction(
+			user.id,
+			transferId,
+			payload,
+		);
+
+		return c.json(
+			successResponse({
+				message: 'Success update transfer transaction',
+				data: { transferId: result },
 			}),
 		);
 	},

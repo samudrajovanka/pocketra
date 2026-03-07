@@ -1,5 +1,5 @@
 import { Link, useParams } from '@tanstack/react-router';
-import { Plus } from 'lucide-react';
+import { ArrowUp, Plus } from 'lucide-react';
 import { useEffect } from 'react';
 import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
 import NotFoundPocket from '@/components/parts/pocket/NotFoundPocket';
@@ -50,19 +50,32 @@ const PocketDetailPage = () => {
 							</div>
 
 							<div className="flex gap-3">
+								<PocketAction pocket={pocket} />
+								<Button variant="outline" asChild>
+									<Link
+										to="/transactions/new"
+										search={{
+											method: 'transfer',
+											from_pocket_id: pocket.id,
+											from: 'detail_pocket',
+										}}
+									>
+										<ArrowUp />
+										Transfer
+									</Link>
+								</Button>
 								<Button asChild>
 									<Link
 										to="/transactions/new"
 										search={{
 											pocket_id: pocket.id,
-											navigate_after_create: 'selected-pocket',
+											from: 'detail_pocket',
 										}}
 									>
 										<Plus />
-										Add Transaction
+										Transaction
 									</Link>
 								</Button>
-								<PocketAction pocket={pocket} />
 							</div>
 						</div>
 					);
@@ -74,7 +87,7 @@ const PocketDetailPage = () => {
 
 				<TransactionFilters hideFilter={{ pocket: true }} />
 
-				<TransactionList />
+				<TransactionList hidePocketName />
 			</div>
 		</div>
 	);

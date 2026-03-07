@@ -3,7 +3,10 @@ import type {
 	payloadCreateTransactionValidator,
 	payloadGetTransactionByIdValidator,
 	payloadGetTransactionsValidator,
+	payloadTransferIdValidator,
+	payloadTransferTransactionValidator,
 	payloadUpdateTransactionValidator,
+	payloadUpdateTransferTransactionValidator,
 } from './transaction.validator';
 
 export type PayloadCreateTransaction = z.infer<
@@ -20,4 +23,14 @@ export type PayloadGetTransactionById = z.infer<
 
 export type PayloadUpdateTransaction = z.infer<
 	typeof payloadUpdateTransactionValidator
+>;
+
+export type PayloadTransferTransaction = z.infer<
+	typeof payloadTransferTransactionValidator
+>;
+
+export type PayloadTransferId = z.infer<typeof payloadTransferIdValidator>;
+
+export type PayloadUpdateTransferTransaction = z.infer<
+	typeof payloadUpdateTransferTransactionValidator
 >;

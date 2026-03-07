@@ -12,13 +12,13 @@ export const zPayloadreatePocketValidator = validationMiddleware(
 	payloadCreatePocketValidator,
 );
 
-export const payloadGetPocketByIdValidator = z.object({
+export const GetPocketByIdParamValidator = z.object({
 	id: z.uuidv7(),
 });
 
-export const zPayloadGetPocketByIdValidator = validationMiddleware(
+export const zGetPocketByIdParamValidator = validationMiddleware(
 	'param',
-	payloadGetPocketByIdValidator,
+	GetPocketByIdParamValidator,
 );
 
 export const payloadUpdatePocketValidator = z.object({

@@ -1,16 +1,20 @@
 import { Link } from '@tanstack/react-router';
 import { format, isSameMonth } from 'date-fns';
-import { Loader2 } from 'lucide-react';
 import QueryHandling from '@/components/parts/query/QueryHandling';
 import EmptyTransaction from '@/components/parts/transaction/EmptyTransaction';
 import TransactionItem from '@/components/parts/transaction/TransactionItem';
 import TransactionItemLoading from '@/components/parts/transaction/TransactionItemLoading';
 import { Card, CardContent } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
 import { useGetInfiniteTransactionsQuery } from '@/query/transaction';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 
-const TransactionList = () => {
+type TransactionListProps = {
+	hidePocketName?: boolean;
+};
+
+const TransactionList = ({ hidePocketName }: TransactionListProps) => {
 	const { filters } = useTransactionFiltersStore();
 	const transactionsQuery = useGetInfiniteTransactionsQuery({
 		params: filters,
@@ -74,7 +78,10 @@ const TransactionList = () => {
 													params={{ id: transaction.id }}
 													className="block group/transaction-item"
 												>
-													<TransactionItem transaction={transaction} />
+													<TransactionItem
+														transaction={transaction}
+														hidePocketName={hidePocketName}
+													/>
 												</Link>
 											))}
 										</CardContent>
@@ -88,7 +95,7 @@ const TransactionList = () => {
 
 			{(hasNextPage || isFetchingNextPage) && (
 				<div ref={observerTarget} className="flex justify-center p-4">
-					{isFetchingNextPage && <Loader2 className="animate-spin" />}
+					{isFetchingNextPage && <Spinner />}
 				</div>
 			)}
 		</div>

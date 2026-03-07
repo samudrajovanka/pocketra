@@ -1,4 +1,4 @@
-import { Link, useParams } from '@tanstack/react-router';
+import { Link, useParams, useSearch } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
 import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
@@ -10,11 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PageTitle from '@/components/ui/page-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import TextTransaction from '@/components/ui/text-transaction';
+import TransferBadge from '@/components/ui/transfer-badge';
+import { TRANSACTION_TYPE_LABELS } from '@/lib/constants/transactions';
 import { isEditableTransaction } from '@/lib/helpers/transactions';
 import { useGetTransactionByIdQuery } from '@/query/transaction';
 
 export default function TransactionDetailPage() {
 	const { id } = useParams({ from: '/_authed/transactions/$id' });
+	const search = useSearch({ from: '/_authed/transactions/$id/' });
 
 	const getTransactionByIdQuery = useGetTransactionByIdQuery(id);
 
@@ -49,13 +52,22 @@ export default function TransactionDetailPage() {
 												title="Edit"
 												variant="outlineWarning"
 											>
-												<Link to="/transactions/$id/edit" params={{ id }}>
+												<Link
+													to="/transactions/$id/edit"
+													params={{ id }}
+													search={{
+														from: search.from || undefined,
+													}}
+												>
 													<Pencil />
 												</Link>
 											</Button>
 										)}
 
-										<DeleteTransactionDialog transactionId={transaction.id}>
+										<DeleteTransactionDialog
+											transactionId={transaction.id}
+											pocketId={transaction.pocketId}
+										>
 											<Button
 												variant="outlineDestructive"
 												size="icon-sm"
@@ -82,7 +94,7 @@ export default function TransactionDetailPage() {
 											Type
 										</span>
 										<span className="capitalize typography-regular">
-											{transaction.type}
+											{TRANSACTION_TYPE_LABELS[transaction.type]}
 										</span>
 									</div>
 
@@ -99,9 +111,18 @@ export default function TransactionDetailPage() {
 										<span className="typography-small text-muted-foreground">
 											Category
 										</span>
-										<span className="typography-regular">
-											{transaction.category.name}
-										</span>
+										<div className="flex items-center gap-2">
+											<span className="typography-regular">
+												{transaction.category.name}
+											</span>
+
+											{transaction.relatedPocket && (
+												<TransferBadge
+													type={transaction.type}
+													relatedPocketName={transaction.relatedPocket.name}
+												/>
+											)}
+										</div>
 									</div>
 
 									<div className="flex flex-col gap-0.5 py-1">

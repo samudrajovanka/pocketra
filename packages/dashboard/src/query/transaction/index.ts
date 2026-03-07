@@ -1,24 +1,27 @@
-import {
-	useInfiniteQuery,
-	useMutation,
-	useQuery,
-	useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import {
 	createTransaction,
 	deleteTransaction,
 	getTransactionById,
 	getTransactions,
+	transferTransaction,
 	updateTransaction,
+	updateTransferTransaction,
 } from '@/endpoints/transaction';
-import type { UpdateTransactionPayload } from '@/endpoints/transaction/types';
+import type {
+	UpdateTransactionPayload,
+	UpdateTransferTransactionPayload,
+} from '@/endpoints/transaction/types';
 import type { CursorPaginationParams } from '@/types/pagination';
-import { getPocketsQueryKey, getTotalBalanceQueryKey } from '../pocket';
+import {
+	useInvalidateTransactionQueries,
+	useInvalidateTransferTransactionQueries,
+} from './invalidate';
 
 export const getTransactionsQueryKey = (params?: CursorPaginationParams) => {
-	if (params) return ['transactions', params];
+	if (params) return ['transactions', 'list', params];
 
-	return ['transactions'];
+	return ['transactions', 'list'];
 };
 
 export const useGetInfiniteTransactionsQuery = (state?: {
@@ -33,7 +36,11 @@ export const useGetInfiniteTransactionsQuery = (state?: {
 	});
 };
 
-export const getTransactionByIdQueryKey = (id: string) => ['transactions', id];
+export const getTransactionByIdQueryKey = (id: string) => [
+	'transactions',
+	'detail',
+	id,
+];
 
 export const useGetTransactionByIdQuery = (id: string) => {
 	return useQuery({
@@ -53,22 +60,17 @@ export const useGetTransactionsQuery = (state?: {
 };
 
 export const useCreateTransactionMutation = () => {
-	const queryClient = useQueryClient();
+	const invalidateTransactionQueries = useInvalidateTransactionQueries();
 	return useMutation({
 		mutationFn: createTransaction,
 		onSuccess: async () => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getTransactionsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: ['report'] }),
-			]);
+			await invalidateTransactionQueries();
 		},
 	});
 };
 
 export const useUpdateTransactionMutation = () => {
-	const queryClient = useQueryClient();
+	const invalidateTransactionQueries = useInvalidateTransactionQueries();
 	return useMutation({
 		mutationFn: ({
 			id,
@@ -78,28 +80,47 @@ export const useUpdateTransactionMutation = () => {
 			payload: UpdateTransactionPayload;
 		}) => updateTransaction(id, payload),
 		onSuccess: async (_, variables) => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getTransactionsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
-				queryClient.invalidateQueries({
-					queryKey: getTransactionByIdQueryKey(variables.id),
-				}),
-			]);
+			await invalidateTransactionQueries({ transactionId: variables.id });
 		},
 	});
 };
 
 export const useDeleteTransactionMutation = () => {
-	const queryClient = useQueryClient();
+	const invalidateTransactionQueries = useInvalidateTransactionQueries();
 	return useMutation({
 		mutationFn: deleteTransaction,
-		onSuccess: async () => {
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getTransactionsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getPocketsQueryKey() }),
-				queryClient.invalidateQueries({ queryKey: getTotalBalanceQueryKey() }),
-			]);
+		onSuccess: async (_, variables) => {
+			await invalidateTransactionQueries({ transactionId: variables });
+		},
+	});
+};
+
+export const useTransferTransactionMutation = () => {
+	const invalidateTransferTransactionQueries =
+		useInvalidateTransferTransactionQueries();
+	return useMutation({
+		mutationFn: transferTransaction,
+		onSuccess: async (_, payload) => {
+			await invalidateTransferTransactionQueries({
+				fromPocketId: payload.fromPocketId,
+				toPocketId: payload.toPocketId,
+			});
+		},
+	});
+};
+
+export const useUpdateTransferTransactionMutation = () => {
+	const invalidateTransactionQueries = useInvalidateTransactionQueries();
+	return useMutation({
+		mutationFn: ({
+			id,
+			payload,
+		}: {
+			id: string;
+			payload: UpdateTransferTransactionPayload;
+		}) => updateTransferTransaction(id, payload),
+		onSuccess: async (_, variables) => {
+			await invalidateTransactionQueries({ transactionId: variables.id });
 		},
 	});
 };

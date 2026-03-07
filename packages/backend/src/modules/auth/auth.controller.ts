@@ -16,7 +16,12 @@ import {
 	zPayloadLogoutValidator,
 	zPayloadRefreshTokenValidator,
 } from './auth.validator';
-import type { AuthProvider } from './types';
+import type {
+	AuthProvider,
+	ExchangeCodeParam,
+	PayloadLogout,
+	PayloadRefreshToken,
+} from './types';
 
 const { createHandlers } = createFactory();
 
@@ -68,7 +73,7 @@ export const oauthCallback = createHandlers(async (c) => {
 export const exchangeCode = createHandlers(
 	zPayloadExchangeCodeValidator,
 	async (c) => {
-		const { code } = c.req.valid('json') as { code: string };
+		const { code } = c.req.valid('json') as ExchangeCodeParam;
 
 		const rawTokens = getCookie(c, code);
 
@@ -109,9 +114,9 @@ export const getLoginUser = createHandlers(authMiddleware, async (c) => {
 export const refreshToken = createHandlers(
 	zPayloadRefreshTokenValidator,
 	async (c) => {
-		const { refreshToken: rawRefreshToken } = c.req.valid('json') as {
-			refreshToken: string;
-		};
+		const { refreshToken: rawRefreshToken } = c.req.valid(
+			'json',
+		) as PayloadRefreshToken;
 
 		const authService = new AuthService();
 		const { accessToken, refreshToken: newRefreshToken } =
@@ -130,9 +135,7 @@ export const refreshToken = createHandlers(
 );
 
 export const logout = createHandlers(zPayloadLogoutValidator, async (c) => {
-	const { refreshToken } = c.req.valid('json') as {
-		refreshToken?: string;
-	};
+	const { refreshToken } = c.req.valid('json') as PayloadLogout;
 
 	const authService = new AuthService();
 

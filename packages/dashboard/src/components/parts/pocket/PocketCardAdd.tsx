@@ -13,7 +13,7 @@ const PocketCardAdd = ({ size = 'regular' }: PocketCardAddProps) => {
 				className={cn(
 					'w-full border border-dashed border-primary hover:bg-primary/10 rounded-xl flex items-center justify-center gap-1 text-primary',
 					{
-						'h-40': size === 'regular',
+						'h-28': size === 'regular',
 						'h-18': size === 'small',
 					},
 				)}

@@ -1,8 +1,8 @@
 import type z from 'zod';
 import type { pocketsTable } from './pocket.schema';
 import type {
+	GetPocketByIdParamValidator,
 	payloadCreatePocketValidator,
-	payloadGetPocketByIdValidator,
 	payloadGetPocketsValidator,
 	payloadUpdatePocketValidator,
 } from './pocket.validator';
@@ -13,9 +13,7 @@ export type PocketWithBalance = typeof pocketsTable.$inferSelect & {
 
 export type PayloadCreatePocket = z.infer<typeof payloadCreatePocketValidator>;
 
-export type PayloadGetPocketById = z.infer<
-	typeof payloadGetPocketByIdValidator
->;
+export type GetPocketByIdParam = z.infer<typeof GetPocketByIdParamValidator>;
 
 export type PayloadUpdatePocket = z.infer<typeof payloadUpdatePocketValidator>;
 

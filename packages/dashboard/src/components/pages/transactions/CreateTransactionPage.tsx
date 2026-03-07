@@ -3,23 +3,32 @@ import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
 import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
 import TransactionForm from '@/components/parts/transaction/TransactionForm';
+import TransferPocketForm from '@/components/parts/transaction/TransferPocketForm';
 import PageTitle from '@/components/ui/page-title';
-import type { CreateTransactionPayload } from '@/endpoints/transaction/types';
-import { useCreateTransactionMutation } from '@/query/transaction';
+import type {
+	CreateTransactionPayload,
+	TransferTransactionPayload,
+} from '@/endpoints/transaction/types';
+import {
+	useCreateTransactionMutation,
+	useTransferTransactionMutation,
+} from '@/query/transaction';
 
 export default function CreateTransactionPage() {
 	const navigate = useNavigate();
 	const search = useSearch({ from: '/_authed/transactions/new' });
-	const { mutateAsync: createTransaction, isPending } =
+	const { mutateAsync: createTransaction, isPending: isCreating } =
 		useCreateTransactionMutation();
+	const { mutateAsync: transferTransaction, isPending: isTransferring } =
+		useTransferTransactionMutation();
 
-	const handleSubmit = async (values: CreateTransactionPayload) => {
+	const handleCreateSubmit = async (values: CreateTransactionPayload) => {
 		try {
 			await createTransaction(values);
 			toast.success('Transaction created successfully');
 			navigate({
 				to:
-					search.navigate_after_create === 'selected-pocket'
+					search.from === 'detail_pocket'
 						? `/pockets/${values.pocketId}`
 						: '/transactions',
 			});
@@ -32,29 +41,50 @@ export default function CreateTransactionPage() {
 		}
 	};
 
+	const handleTransferSubmit = async (values: TransferTransactionPayload) => {
+		try {
+			await transferTransaction(values);
+			toast.success('Transfer successful');
+			navigate({
+				to:
+					search.from === 'detail_pocket'
+						? `/pockets/${values.fromPocketId}`
+						: '/transactions',
+			});
+		} catch (error) {
+			if (isAxiosError(error)) {
+				toast.error(error.response?.data.message);
+			} else {
+				toast.error('Failed to transfer pocket');
+			}
+		}
+	};
+
+	const isTransfer = search.method === 'transfer';
+
 	return (
 		<div>
 			<HeaderDashboardInset>
-				<PageTitle title="Create Transaction" />
+				<PageTitle
+					title={isTransfer ? 'Transfer Balance' : 'Create Transaction'}
+				/>
 			</HeaderDashboardInset>
 
-			<TransactionForm
-				onSubmit={handleSubmit}
-				type="create"
-				isSubmitting={isPending}
-				initialValues={
-					search.pocket_id
-						? {
-								pocketId: search.pocket_id,
-								description: '',
-								amount: 0,
-								type: 'expense',
-								categoryId: '',
-								date: new Date().toISOString(),
-							}
-						: undefined
-				}
-			/>
+			{isTransfer ? (
+				<TransferPocketForm
+					type="create"
+					onSubmit={handleTransferSubmit}
+					isSubmitting={isTransferring}
+					fromPocketId={search.from_pocket_id}
+				/>
+			) : (
+				<TransactionForm
+					onSubmit={handleCreateSubmit}
+					type="create"
+					isSubmitting={isCreating}
+					fromPocketId={search.pocket_id}
+				/>
+			)}
 		</div>
 	);
 }

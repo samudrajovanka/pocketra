@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Plus } from 'lucide-react';
+import { ArrowUp, Plus } from 'lucide-react';
 import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
 import TransactionFilters from '@/components/parts/transaction/TransactionFilters';
 import TransactionList from '@/components/parts/transaction/TransactionList';
@@ -11,11 +11,18 @@ const TransactionListPage = () => {
 		<div className="space-y-6">
 			<HeaderDashboardInset>
 				<PageTitle title="Transactions" noBack>
-					<Button asChild>
-						<Link to="/transactions/new">
-							<Plus /> Add Transaction
-						</Link>
-					</Button>
+					<div className="flex gap-2">
+						<Button variant="outline" asChild>
+							<Link to="/transactions/new" search={{ method: 'transfer' }}>
+								<ArrowUp /> Transfer
+							</Link>
+						</Button>
+						<Button asChild>
+							<Link to="/transactions/new">
+								<Plus /> Transaction
+							</Link>
+						</Button>
+					</div>
 				</PageTitle>
 
 				<TransactionFilters />

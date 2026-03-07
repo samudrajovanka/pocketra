@@ -11,6 +11,8 @@ export type Transaction = {
 	amount: string;
 	description: string | null;
 	date: string;
+	transferId: string | null;
+	relatedPocketId: string | null;
 	createdAt: string;
 	updatedAt: string;
 	pocket: {
@@ -21,4 +23,8 @@ export type Transaction = {
 		id: string;
 		name: string;
 	};
+	relatedPocket: {
+		id: string;
+		name: string;
+	} | null;
 };

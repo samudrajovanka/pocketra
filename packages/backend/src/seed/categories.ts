@@ -52,6 +52,8 @@ export const seedCategories = async () => {
 		.values([
 			...INCOME_CATEGORIES.map((name) => ({ name, type: 'income' })),
 			...EXPENSE_CATEGORIES.map((name) => ({ name, type: 'expense' })),
+			{ name: 'Transfer In', type: 'transfer_in' },
+			{ name: 'Transfer Out', type: 'transfer_out' },
 		])
 		.onConflictDoNothing();
 };

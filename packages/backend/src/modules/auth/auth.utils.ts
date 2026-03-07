@@ -3,11 +3,11 @@ import { setCookie } from 'hono/cookie';
 import InvariantError from '../../exceptions/InvariantError';
 import { secureCookieOptions } from '../../utils/helpers/cookie';
 import { createRandomString } from '../../utils/helpers/encrypt';
+import { getRootDomain } from '../../utils/helpers/url';
 import { authProvider } from './data';
 import type OauthService from './oauth/oauth.abstract';
 import OauthGoogleService from './oauth/oauth.google.service';
 import type { AuthProvider } from './types';
-import { getRootDomain } from '../../utils/helpers/url';
 
 export const getOauthService = (type: AuthProvider): OauthService => {
 	if (type === authProvider.Google) {

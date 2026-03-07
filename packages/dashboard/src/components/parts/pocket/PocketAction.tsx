@@ -22,9 +22,8 @@ const PocketAction = ({ pocket }: PocketActionProps) => {
 		<>
 			<Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
 				<PopoverTrigger asChild>
-					<Button variant="outline">
+					<Button variant="outline" size="icon">
 						<MoreHorizontal />
-						Action
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent align="end" className="w-40 p-2">

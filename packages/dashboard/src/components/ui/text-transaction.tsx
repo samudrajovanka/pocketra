@@ -4,10 +4,13 @@ import type { TransactionType } from '@/types/transaction';
 
 type TextTransactionProps = {
 	amount: number;
-	type?: TransactionType;
+	type: TransactionType;
 	className?: string;
 	noSign?: boolean;
 };
+
+const INCOME_TYPES: TransactionType[] = ['income', 'transfer_in'];
+const EXPENSE_TYPES: TransactionType[] = ['expense', 'transfer_out'];
 
 const TextTransaction = ({
 	amount,
@@ -15,18 +18,21 @@ const TextTransaction = ({
 	className,
 	noSign,
 }: TextTransactionProps) => {
+	const isIncome = INCOME_TYPES.includes(type);
+	const isExpense = EXPENSE_TYPES.includes(type);
+
 	return (
 		<p
 			className={cn(
 				'typography-regular font-semibold',
 				{
-					'text-green-500': type === 'income',
-					'text-red-500': type === 'expense',
+					'text-green-500': isIncome,
+					'text-red-500': isExpense,
 				},
 				className,
 			)}
 		>
-			{!noSign && (type === 'income' ? '+' : '-')} {formatCurrency(amount)}
+			{!noSign && (isIncome ? '+' : '-')} {formatCurrency(amount)}
 		</p>
 	);
 };
