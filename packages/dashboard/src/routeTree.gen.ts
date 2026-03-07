@@ -24,7 +24,6 @@ import { Route as AuthedTransactionsIdRouteRouteImport } from './routes/_authed/
 import { Route as AuthedTransactionsIdIndexRouteImport } from './routes/_authed/transactions/$id/index'
 import { Route as AuthedPocketsIdIndexRouteImport } from './routes/_authed/pockets/$id/index'
 import { Route as AuthedTransactionsIdEditRouteImport } from './routes/_authed/transactions/$id/edit'
-import { Route as AuthedPocketsIdTransferRouteImport } from './routes/_authed/pockets/$id.transfer'
 import { Route as AuthedPocketsIdEditRouteImport } from './routes/_authed/pockets/$id/edit'
 
 const GuestedRoute = GuestedRouteImport.update({
@@ -103,11 +102,6 @@ const AuthedTransactionsIdEditRoute =
     path: '/edit',
     getParentRoute: () => AuthedTransactionsIdRouteRoute,
   } as any)
-const AuthedPocketsIdTransferRoute = AuthedPocketsIdTransferRouteImport.update({
-  id: '/pockets/$id/transfer',
-  path: '/pockets/$id/transfer',
-  getParentRoute: () => AuthedRoute,
-} as any)
 const AuthedPocketsIdEditRoute = AuthedPocketsIdEditRouteImport.update({
   id: '/pockets/$id/edit',
   path: '/pockets/$id/edit',
@@ -126,7 +120,6 @@ export interface FileRoutesByFullPath {
   '/pockets/': typeof AuthedPocketsIndexRoute
   '/transactions/': typeof AuthedTransactionsIndexRoute
   '/pockets/$id/edit': typeof AuthedPocketsIdEditRoute
-  '/pockets/$id/transfer': typeof AuthedPocketsIdTransferRoute
   '/transactions/$id/edit': typeof AuthedTransactionsIdEditRoute
   '/pockets/$id/': typeof AuthedPocketsIdIndexRoute
   '/transactions/$id/': typeof AuthedTransactionsIdIndexRoute
@@ -142,7 +135,6 @@ export interface FileRoutesByTo {
   '/pockets': typeof AuthedPocketsIndexRoute
   '/transactions': typeof AuthedTransactionsIndexRoute
   '/pockets/$id/edit': typeof AuthedPocketsIdEditRoute
-  '/pockets/$id/transfer': typeof AuthedPocketsIdTransferRoute
   '/transactions/$id/edit': typeof AuthedTransactionsIdEditRoute
   '/pockets/$id': typeof AuthedPocketsIdIndexRoute
   '/transactions/$id': typeof AuthedTransactionsIdIndexRoute
@@ -162,7 +154,6 @@ export interface FileRoutesById {
   '/_authed/pockets/': typeof AuthedPocketsIndexRoute
   '/_authed/transactions/': typeof AuthedTransactionsIndexRoute
   '/_authed/pockets/$id/edit': typeof AuthedPocketsIdEditRoute
-  '/_authed/pockets/$id/transfer': typeof AuthedPocketsIdTransferRoute
   '/_authed/transactions/$id/edit': typeof AuthedTransactionsIdEditRoute
   '/_authed/pockets/$id/': typeof AuthedPocketsIdIndexRoute
   '/_authed/transactions/$id/': typeof AuthedTransactionsIdIndexRoute
@@ -181,7 +172,6 @@ export interface FileRouteTypes {
     | '/pockets/'
     | '/transactions/'
     | '/pockets/$id/edit'
-    | '/pockets/$id/transfer'
     | '/transactions/$id/edit'
     | '/pockets/$id/'
     | '/transactions/$id/'
@@ -197,7 +187,6 @@ export interface FileRouteTypes {
     | '/pockets'
     | '/transactions'
     | '/pockets/$id/edit'
-    | '/pockets/$id/transfer'
     | '/transactions/$id/edit'
     | '/pockets/$id'
     | '/transactions/$id'
@@ -216,7 +205,6 @@ export interface FileRouteTypes {
     | '/_authed/pockets/'
     | '/_authed/transactions/'
     | '/_authed/pockets/$id/edit'
-    | '/_authed/pockets/$id/transfer'
     | '/_authed/transactions/$id/edit'
     | '/_authed/pockets/$id/'
     | '/_authed/transactions/$id/'
@@ -336,13 +324,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedTransactionsIdEditRouteImport
       parentRoute: typeof AuthedTransactionsIdRouteRoute
     }
-    '/_authed/pockets/$id/transfer': {
-      id: '/_authed/pockets/$id/transfer'
-      path: '/pockets/$id/transfer'
-      fullPath: '/pockets/$id/transfer'
-      preLoaderRoute: typeof AuthedPocketsIdTransferRouteImport
-      parentRoute: typeof AuthedRoute
-    }
     '/_authed/pockets/$id/edit': {
       id: '/_authed/pockets/$id/edit'
       path: '/pockets/$id/edit'
@@ -377,7 +358,6 @@ interface AuthedRouteChildren {
   AuthedPocketsIndexRoute: typeof AuthedPocketsIndexRoute
   AuthedTransactionsIndexRoute: typeof AuthedTransactionsIndexRoute
   AuthedPocketsIdEditRoute: typeof AuthedPocketsIdEditRoute
-  AuthedPocketsIdTransferRoute: typeof AuthedPocketsIdTransferRoute
   AuthedPocketsIdIndexRoute: typeof AuthedPocketsIdIndexRoute
 }
 
@@ -389,7 +369,6 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedPocketsIndexRoute: AuthedPocketsIndexRoute,
   AuthedTransactionsIndexRoute: AuthedTransactionsIndexRoute,
   AuthedPocketsIdEditRoute: AuthedPocketsIdEditRoute,
-  AuthedPocketsIdTransferRoute: AuthedPocketsIdTransferRoute,
   AuthedPocketsIdIndexRoute: AuthedPocketsIdIndexRoute,
 }
 
