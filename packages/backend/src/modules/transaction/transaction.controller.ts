@@ -158,7 +158,7 @@ export const transferTransaction = createHandlers(
 		const payload = c.req.valid('json') as PayloadTransferTransaction;
 		const transactionService = new TransactionService();
 
-		const result = await transactionService.createTransferTransaction(
+		const transferId = await transactionService.createTransferTransaction(
 			user.id,
 			payload,
 		);
@@ -166,7 +166,7 @@ export const transferTransaction = createHandlers(
 		return c.json(
 			successResponse({
 				message: 'Success transfer amount between pockets',
-				data: { transferId: result },
+				data: { transferId },
 			}),
 		);
 	},
@@ -182,16 +182,17 @@ export const updateTransferTransaction = createHandlers(
 		const payload = c.req.valid('json') as PayloadUpdateTransferTransaction;
 		const transactionService = new TransactionService();
 
-		const result = await transactionService.updateTransferTransaction(
-			user.id,
-			transferId,
-			payload,
-		);
+		const updatedTransferId =
+			await transactionService.updateTransferTransaction(
+				user.id,
+				transferId,
+				payload,
+			);
 
 		return c.json(
 			successResponse({
 				message: 'Success update transfer transaction',
-				data: { transferId: result },
+				data: { transferId: updatedTransferId },
 			}),
 		);
 	},
