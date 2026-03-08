@@ -1,7 +1,7 @@
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { TRANSACTION_TYPE } from '@/lib/constants/transactions';
 import type { TransactionType } from '@/types/transaction';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 type TransferBadgeProps = {
 	type: TransactionType;

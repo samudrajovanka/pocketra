@@ -3,16 +3,15 @@ import { useEffect } from 'react';
 import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
 import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import NotFoundPocket from '@/components/parts/pocket/NotFoundPocket';
+import PocketCard from '@/components/parts/pocket/PocketCard';
+import PocketCardLoading from '@/components/parts/pocket/PocketCardLoading';
 import PocketDetailActions from '@/components/parts/pocket/PocketDetailActions';
 import QueryHandling from '@/components/parts/query/QueryHandling';
 import TransactionFilters from '@/components/parts/transaction/TransactionFilters';
 import TransactionList from '@/components/parts/transaction/TransactionList';
 import PageTitle from '@/components/ui/page-title';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useGetPocketByIdQuery } from '@/query/pocket';
 import useTransactionFiltersStore from '@/store/transactionFiltersStore';
-import PocketCard from '@/components/parts/pocket/PocketCard';
-import PocketCardLoading from '@/components/parts/pocket/PocketCardLoading';
 
 const PocketDetailPage = () => {
 	const { id } = useParams({ from: '/_authed/pockets/$id/' });

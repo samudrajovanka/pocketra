@@ -2,8 +2,8 @@ import { Link } from '@tanstack/react-router';
 import { ArrowUp, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { Pocket } from '@/types/pocket';
 import PocketAction from './PocketAction';
-import { Pocket } from '@/types/pocket';
 
 type PocketDetailActionsProps = {
 	pocket: Pocket;
