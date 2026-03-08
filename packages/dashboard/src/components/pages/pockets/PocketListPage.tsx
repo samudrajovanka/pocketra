@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
+import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import EmptyPocket from '@/components/parts/pocket/EmptyPocket';
 import PocketCard from '@/components/parts/pocket/PocketCard';
 import PocketCardLoading from '@/components/parts/pocket/PocketCardLoading';
@@ -16,8 +17,8 @@ const PocketListPage = () => {
 	const totalBalanceQuery = useGetTotalBalanceQuery();
 
 	return (
-		<div className="space-y-4">
-			<HeaderDashboardInset>
+		<div>
+			<DashboardStickyHeader>
 				<PageTitle title="Pockets" noBack>
 					<Button asChild>
 						<Link to="/pockets/new">
@@ -25,43 +26,45 @@ const PocketListPage = () => {
 						</Link>
 					</Button>
 				</PageTitle>
-			</HeaderDashboardInset>
+			</DashboardStickyHeader>
 
-			<QueryHandling
-				queryResult={totalBalanceQuery}
-				renderLoading={<TotalBalanceCardLoading />}
-				render={({ data }) => (
-					<TotalBalanceCard balance={data.data.totalBalance} />
-				)}
-			/>
+			<DashboardBody containerClassName="space-y-6">
+				<QueryHandling
+					queryResult={totalBalanceQuery}
+					renderLoading={<TotalBalanceCardLoading />}
+					render={({ data }) => (
+						<TotalBalanceCard balance={data.data.totalBalance} />
+					)}
+				/>
 
-			<QueryHandling
-				queryResult={pocketsQuery}
-				renderLoading={
-					<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-						{[...Array(3)].map((_, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: use index key
-							<PocketCardLoading key={i} />
-						))}
-					</div>
-				}
-				checkEmpty={(response) => response.data.data.length === 0}
-				renderEmpty={<EmptyPocket />}
-				render={(response) => (
-					<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-						{response.data.data.map((pocket) => (
-							<Link
-								key={pocket.id}
-								to="/pockets/$id"
-								params={{ id: pocket.id }}
-								className="block h-full group/pocket-card"
-							>
-								<PocketCard pocket={pocket} />
-							</Link>
-						))}
-					</div>
-				)}
-			/>
+				<QueryHandling
+					queryResult={pocketsQuery}
+					renderLoading={
+						<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+							{[...Array(3)].map((_, i) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: use index key
+								<PocketCardLoading key={i} />
+							))}
+						</div>
+					}
+					checkEmpty={(response) => response.data.data.length === 0}
+					renderEmpty={<EmptyPocket />}
+					render={(response) => (
+						<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+							{response.data.data.map((pocket) => (
+								<Link
+									key={pocket.id}
+									to="/pockets/$id"
+									params={{ id: pocket.id }}
+									className="block h-full group/pocket-card"
+								>
+									<PocketCard pocket={pocket} />
+								</Link>
+							))}
+						</div>
+					)}
+				/>
+			</DashboardBody>
 		</div>
 	);
 };

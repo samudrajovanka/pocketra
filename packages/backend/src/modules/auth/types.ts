@@ -33,7 +33,7 @@ export type GenerateRefreshTokenPayload = {
 	email: string;
 };
 
-export type LoggedUser = Pick<User, 'id' | 'email' | 'name'>;
+export type LoggedUser = Pick<User, 'id' | 'email' | 'name' | 'avatarUrl'>;
 
 export type ExchangeCodeParam = z.infer<typeof payloadExchangeCodeValidator>;
 

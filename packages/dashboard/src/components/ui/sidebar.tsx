@@ -698,6 +698,13 @@ function SidebarMenuSubButton({
 	);
 }
 
+function SidebarContentInset({
+	children,
+	className,
+}: React.PropsWithChildren<{ className?: string }>) {
+	return <div className={cn('md:pl-2 md:pr-4', className)}>{children}</div>;
+}
+
 export {
 	Sidebar,
 	SidebarContent,
@@ -723,4 +730,5 @@ export {
 	SidebarSeparator,
 	SidebarTrigger,
 	useSidebar,
+	SidebarContentInset,
 };

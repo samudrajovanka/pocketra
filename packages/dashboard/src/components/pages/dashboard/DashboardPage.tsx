@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
 import MetrixCard from '@/components/parts/card/MetrixCard';
 import MetrixCardLoading from '@/components/parts/card/MetrixCardLoading';
 import PocketCard from '@/components/parts/pocket/PocketCard';
@@ -41,57 +42,57 @@ export default function DashboardPage() {
 	});
 
 	return (
-		<div className="space-y-6">
-			<div className="space-y-6">
-				<div className="grid grid-cols-2 gap-4">
-					<QueryHandling
-						queryResult={getTotalBalanceQuery}
-						renderLoading={<TotalBalanceCardLoading />}
-						render={({ data }) => (
-							<TotalBalanceCard balance={data.data.totalBalance} />
-						)}
-					/>
+		<DashboardBody containerClassName="space-y-8 @container/dashboard">
+			<div className="grid grid-cols-1 @xl/dashboard:grid-cols-2 gap-4">
+				<QueryHandling
+					queryResult={getTotalBalanceQuery}
+					renderLoading={<TotalBalanceCardLoading />}
+					render={({ data }) => (
+						<TotalBalanceCard balance={data.data.totalBalance} />
+					)}
+				/>
 
-					<div className="space-y-1">
-						<div className="flex items-center justify-between">
-							<h2 className="typography-large font-medium">Top Pockets</h2>
-							<Button asChild size="xs" variant="ghost">
-								<Link to="/pockets">
-									See All
-									<ArrowRight />
-								</Link>
-							</Button>
-						</div>
+				<div className="space-y-1">
+					<div className="flex items-center justify-between">
+						<h2 className="typography-large font-medium">Top Pockets</h2>
+						<Button asChild size="xs" variant="ghost">
+							<Link to="/pockets">
+								See All
+								<ArrowRight />
+							</Link>
+						</Button>
+					</div>
 
-						<div className="grid grid-cols-2 gap-4">
-							<QueryHandling
-								queryResult={getPocketsQuery}
-								renderLoading={[...Array(2)].map((_, index) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: use index
-									<PocketCardLoading key={index} noIcon />
-								))}
-								checkEmpty={(response) => response.data.data.length === 0}
-								renderEmpty={<PocketCardAdd />}
-								render={(response) => (
-									<>
-										{response.data.data.map((pocket) => (
-											<Link
-												key={pocket.id}
-												to="/pockets/$id"
-												params={{ id: pocket.id }}
-												className="group/pocket-card"
-											>
-												<PocketCard pocket={pocket} noIcon />
-											</Link>
-										))}
-									</>
-								)}
-							/>
-						</div>
+					<div className="grid grid-cols-2 gap-3 md:gap-4">
+						<QueryHandling
+							queryResult={getPocketsQuery}
+							renderLoading={[...Array(2)].map((_, index) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: use index
+								<PocketCardLoading key={index} noIcon />
+							))}
+							checkEmpty={(response) => response.data.data.length === 0}
+							renderEmpty={<PocketCardAdd />}
+							render={(response) => (
+								<>
+									{response.data.data.map((pocket) => (
+										<Link
+											key={pocket.id}
+											to="/pockets/$id"
+											params={{ id: pocket.id }}
+											className="group/pocket-card"
+										>
+											<PocketCard pocket={pocket} noIcon />
+										</Link>
+									))}
+								</>
+							)}
+						/>
 					</div>
 				</div>
+			</div>
 
-				<div className="grid grid-cols-3 gap-4">
+			<div className="space-y-4 bg-slate-100 p-4 rounded-xl">
+				<div className="grid grid-cols-1 @xl/dashboard:grid-cols-2 @3xl/dashboard:grid-cols-3 gap-4">
 					<QueryHandling
 						queryResult={summaryQuery}
 						renderLoading={[...Array(3)].map((_, idx) => (
@@ -123,16 +124,17 @@ export default function DashboardPage() {
 									growth={data.data.net.growthPercent}
 									tooltipGrowthMessage={getGrowthTooltipMessage(period)}
 									type={Number(data.data.net.value) > 0 ? 'income' : 'expense'}
+									className="@xl/dashboard:col-span-2 @3xl/dashboard:col-span-1"
 								/>
 							</>
 						)}
 					/>
 				</div>
-			</div>
 
-			<div className="gap-4 grid grid-cols-2">
-				<ExpenseByPocketChart period={period} />
-				<ExpenseByCategoryChart period={period} />
+				<div className="gap-4 grid grid-cols-1 @xl/dashboard:grid-cols-2">
+					<ExpenseByPocketChart period={period} />
+					<ExpenseByCategoryChart period={period} />
+				</div>
 			</div>
 
 			<Card>
@@ -179,6 +181,6 @@ export default function DashboardPage() {
 					/>
 				</CardContent>
 			</Card>
-		</div>
+		</DashboardBody>
 	);
 }

@@ -43,7 +43,7 @@ const MetrixCard = ({
 								messageNullValue={
 									growth === null
 										? amount === 0
-											? 'Start adding transactions to see growth'
+											? 'Start transactions to see growth'
 											: 'No data for comparison growth'
 										: 'No data for comparison growth'
 								}

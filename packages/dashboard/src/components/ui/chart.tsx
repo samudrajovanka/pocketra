@@ -346,6 +346,17 @@ function getPayloadConfigFromPayload(
 		: config[key as keyof typeof config];
 }
 
+export const halfPieProps = {
+	innerRadius: 60,
+	outerRadius: 100,
+	startAngle: 180,
+	endAngle: 0,
+	cornerRadius: 10,
+	paddingAngle: 5,
+	cx: '50%',
+	cy: '100%',
+} as const;
+
 export {
 	ChartContainer,
 	ChartTooltip,

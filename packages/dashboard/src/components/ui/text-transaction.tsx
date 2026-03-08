@@ -4,7 +4,7 @@ import type { TransactionType } from '@/types/transaction';
 
 type TextTransactionProps = {
 	amount: number;
-	type: TransactionType;
+	type: TransactionType | 'netral';
 	className?: string;
 	noSign?: boolean;
 };
@@ -18,8 +18,8 @@ const TextTransaction = ({
 	className,
 	noSign,
 }: TextTransactionProps) => {
-	const isIncome = INCOME_TYPES.includes(type);
-	const isExpense = EXPENSE_TYPES.includes(type);
+	const isIncome = INCOME_TYPES.includes(type as TransactionType);
+	const isExpense = EXPENSE_TYPES.includes(type as TransactionType);
 
 	return (
 		<p

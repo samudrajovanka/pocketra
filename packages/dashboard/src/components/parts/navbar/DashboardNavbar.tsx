@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import QueryHandling from '@/components/parts/query/QueryHandling';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
 	Popover,
@@ -31,12 +31,12 @@ const DashboardNavbar = () => {
 	};
 
 	return (
-		<div className="bg-sidebar border border-sidebar-border rounded-lg flex items-center justify-between p-2 sticky top-2 z-50">
-			<SidebarTrigger />
+		<div className="bg-primary border border-sidebar-border rounded-lg flex items-center justify-between p-2">
+			<SidebarTrigger className="text-primary-foreground hover:text-primary" />
 
 			<QueryHandling
 				queryResult={getMeQuery}
-				renderLoading={<Skeleton className="h-9 w-9 rounded-full" />}
+				renderLoading={<Skeleton className="h-8 w-8 rounded-full" />}
 				render={(response) => {
 					const user = response.data.data;
 
@@ -45,10 +45,13 @@ const DashboardNavbar = () => {
 							<PopoverTrigger asChild>
 								<Button
 									variant="ghost"
-									className="relative h-9 w-9 rounded-full"
+									className="relative h-8 w-8 rounded-full"
 								>
-									<Avatar className="h-9 w-9">
-										<AvatarFallback className="bg-primary/20">
+									<Avatar>
+										{user.avatarUrl && (
+											<AvatarImage src={user.avatarUrl} alt={user.name} />
+										)}
+										<AvatarFallback>
 											{user.name?.charAt(0).toUpperCase()}
 										</AvatarFallback>
 									</Avatar>

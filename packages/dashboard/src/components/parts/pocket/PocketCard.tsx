@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatter/number';
 import { cn } from '@/lib/utils';
 import type { Pocket } from '@/types/pocket';
@@ -8,6 +14,7 @@ type PocketCardProps = {
 	noIcon?: boolean;
 	className?: string;
 	size?: 'regular' | 'small';
+	actionComponent?: React.ReactNode;
 };
 
 const PocketCard = ({
@@ -15,13 +22,14 @@ const PocketCard = ({
 	noIcon,
 	className,
 	size = 'regular',
+	actionComponent,
 }: PocketCardProps) => {
 	const formattedBalance = formatCurrency(Number(pocket.currentBalance));
 
 	return (
 		<Card
 			className={cn(
-				'flex flex-col h-full relative group-hover/pocket-card:border-primary/50 group-hover/pocket-card:shadow-sm transition-all duration-300 gap-4',
+				'flex flex-col h-full relative group-hover/pocket-card:border-primary/50 group-hover/pocket-card:shadow-sm transition-all duration-300 gap-4 @container/pocket',
 				className,
 				{
 					'p-3': size === 'small',
@@ -30,8 +38,12 @@ const PocketCard = ({
 		>
 			{!noIcon && (
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-4xl flex items-center gap-2">
+					<CardTitle className="w-full text-4xl flex items-center justify-between gap-2">
 						{pocket.icon}
+
+						{actionComponent && (
+							<div className="@max-lg/pocket:hidden">{actionComponent}</div>
+						)}
 					</CardTitle>
 				</CardHeader>
 			)}
@@ -42,7 +54,7 @@ const PocketCard = ({
 				})}
 			>
 				<p
-					className={cn('font-medium', {
+					className={cn('font-medium text-muted-foreground', {
 						'typography-large': size === 'regular',
 						'typography-small': size === 'small',
 					})}
@@ -51,13 +63,17 @@ const PocketCard = ({
 				</p>
 				<p
 					className={cn('font-bold', {
-						'typography-subheading': size === 'regular',
-						'typography-regular': size === 'small',
+						'typography-regular': size === 'regular',
+						'typography-small': size === 'small',
 					})}
 				>
 					{formattedBalance}
 				</p>
 			</CardContent>
+
+			{actionComponent && (
+				<CardFooter className="@lg/pocket:hidden">{actionComponent}</CardFooter>
+			)}
 		</Card>
 	);
 };

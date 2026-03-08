@@ -1,7 +1,8 @@
 import { useNavigate } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
-import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
+import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import PocketForm from '@/components/parts/pocket/PocketForm';
 import PageTitle from '@/components/ui/page-title';
 import type { CreatePocketPayload } from '@/endpoints/pocket/types';
@@ -27,16 +28,18 @@ const CreatePocketPage = () => {
 
 	return (
 		<div>
-			<HeaderDashboardInset>
+			<DashboardStickyHeader>
 				<PageTitle title="Create Pocket" />
-			</HeaderDashboardInset>
+			</DashboardStickyHeader>
 
-			<PocketForm
-				onSubmit={handleSubmit}
-				isSubmitting={createMutation.isPending}
-				submitText="Create Pocket"
-				type="create"
-			/>
+			<DashboardBody>
+				<PocketForm
+					onSubmit={handleSubmit}
+					isSubmitting={createMutation.isPending}
+					submitText="Create Pocket"
+					type="create"
+				/>
+			</DashboardBody>
 		</div>
 	);
 };
