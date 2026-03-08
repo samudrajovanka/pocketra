@@ -1,7 +1,8 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
-import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
+import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import TransactionForm from '@/components/parts/transaction/TransactionForm';
 import TransferPocketForm from '@/components/parts/transaction/TransferPocketForm';
 import PageTitle from '@/components/ui/page-title';
@@ -64,27 +65,29 @@ export default function CreateTransactionPage() {
 
 	return (
 		<div>
-			<HeaderDashboardInset>
+			<DashboardStickyHeader>
 				<PageTitle
 					title={isTransfer ? 'Transfer Balance' : 'Create Transaction'}
 				/>
-			</HeaderDashboardInset>
+			</DashboardStickyHeader>
 
-			{isTransfer ? (
-				<TransferPocketForm
-					type="create"
-					onSubmit={handleTransferSubmit}
-					isSubmitting={isTransferring}
-					fromPocketId={search.from_pocket_id}
-				/>
-			) : (
-				<TransactionForm
-					onSubmit={handleCreateSubmit}
-					type="create"
-					isSubmitting={isCreating}
-					fromPocketId={search.pocket_id}
-				/>
-			)}
+			<DashboardBody>
+				{isTransfer ? (
+					<TransferPocketForm
+						type="create"
+						onSubmit={handleTransferSubmit}
+						isSubmitting={isTransferring}
+						fromPocketId={search.from_pocket_id}
+					/>
+				) : (
+					<TransactionForm
+						onSubmit={handleCreateSubmit}
+						type="create"
+						isSubmitting={isCreating}
+						fromPocketId={search.pocket_id}
+					/>
+				)}
+			</DashboardBody>
 		</div>
 	);
 }

@@ -22,7 +22,7 @@ const PageTitle = ({ title, backTo, children, noBack }: PageTitleProps) => {
 	};
 
 	return (
-		<div className="flex items-center justify-between mb-6">
+		<div className="flex flex-col md:flex-row md:items-center md:justify-between not-last:mb-6 gap-4">
 			<div className="flex items-center gap-4">
 				{!noBack && (
 					<Button variant="ghost" size="icon-sm" onClick={handleBack}>
@@ -31,6 +31,7 @@ const PageTitle = ({ title, backTo, children, noBack }: PageTitleProps) => {
 				)}
 				<h1 className="typography-heading">{title}</h1>
 			</div>
+
 			{children && <div>{children}</div>}
 		</div>
 	);

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { TRANSACTION_TYPE } from '@/lib/constants/transactions';
 import type { TransactionType } from '@/types/transaction';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 type TransferBadgeProps = {
 	type: TransactionType;
@@ -14,7 +15,7 @@ const TransferBadge = ({ type, relatedPocketName }: TransferBadgeProps) => {
 		<Badge
 			variant={isTransferOut ? 'destructive-secondary' : 'success-secondary'}
 		>
-			{isTransferOut ? 'To ' : 'From '}
+			{isTransferOut ? <ArrowRight /> : <ArrowLeft />}
 			{relatedPocketName}
 		</Badge>
 	);

@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
-import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
+import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import NotFoundPocket from '@/components/parts/pocket/NotFoundPocket';
 import PocketForm from '@/components/parts/pocket/PocketForm';
 import QueryHandling from '@/components/parts/query/QueryHandling';
@@ -32,32 +33,34 @@ const EditPocketPage = () => {
 
 	return (
 		<div>
-			<HeaderDashboardInset>
+			<DashboardStickyHeader>
 				<PageTitle title="Edit Pocket" />
-			</HeaderDashboardInset>
+			</DashboardStickyHeader>
 
-			<QueryHandling
-				queryResult={getPocketQuery}
-				renderLoading={<Skeleton className="h-100 w-full rounded-xl" />}
-				renderNotFound={<NotFoundPocket />}
-				render={({ data }) => {
-					const pocket = data.data;
+			<DashboardBody>
+				<QueryHandling
+					queryResult={getPocketQuery}
+					renderLoading={<Skeleton className="h-100 w-full rounded-xl" />}
+					renderNotFound={<NotFoundPocket />}
+					render={({ data }) => {
+						const pocket = data.data;
 
-					return (
-						<PocketForm
-							initialValues={{
-								name: pocket.name,
-								icon: pocket.icon,
-							}}
-							onSubmit={handleSubmit}
-							isSubmitting={updateMutation.isPending}
-							submitText="Update Pocket"
-							submitTextLoading="Updating..."
-							type="update"
-						/>
-					);
-				}}
-			/>
+						return (
+							<PocketForm
+								initialValues={{
+									name: pocket.name,
+									icon: pocket.icon,
+								}}
+								onSubmit={handleSubmit}
+								isSubmitting={updateMutation.isPending}
+								submitText="Update Pocket"
+								submitTextLoading="Updating..."
+								type="update"
+							/>
+						);
+					}}
+				/>
+			</DashboardBody>
 		</div>
 	);
 };

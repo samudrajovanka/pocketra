@@ -47,7 +47,7 @@ const TransactionFilters = ({ hideFilter }: TransactionFiltersProps) => {
 			<CardContent className="flex items-center gap-4">
 				<Field className="flex-1">
 					<Input
-						placeholder="Search transaction..."
+						placeholder="Search..."
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
 					/>

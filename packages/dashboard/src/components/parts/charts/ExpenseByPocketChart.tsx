@@ -8,6 +8,7 @@ import {
 	ChartLegendContent,
 	ChartTooltip,
 	ChartTooltipContent,
+	halfPieProps,
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfoTooltip } from '@/components/ui/tooltip';
@@ -37,7 +38,7 @@ export function ExpenseByPocketChart({ period }: ExpenseByPocketChartProps) {
 			<CardContent>
 				<QueryHandling
 					queryResult={result}
-					renderLoading={<Skeleton className="h-75 w-full rounded-xl" />}
+					renderLoading={<Skeleton className="h-40 w-full rounded-xl" />}
 					renderEmpty={
 						<div className="flex items-center justify-center h-62.5 text-muted-foreground">
 							No data available for this period
@@ -68,13 +69,15 @@ export function ExpenseByPocketChart({ period }: ExpenseByPocketChartProps) {
 						} satisfies ChartConfig;
 
 						return (
-							<ChartContainer
-								config={chartConfig}
-								className="mx-auto max-h-62.5"
-							>
+							<ChartContainer config={chartConfig} className="mx-auto max-h-40">
 								<PieChart>
 									<ChartTooltip content={<ChartTooltipContent hideLabel />} />
-									<Pie data={chartData} dataKey="amount" nameKey="name" />
+									<Pie
+										data={chartData}
+										dataKey="amount"
+										nameKey="name"
+										{...halfPieProps}
+									/>
 									<ChartLegend
 										content={<ChartLegendContent nameKey="name" />}
 									/>

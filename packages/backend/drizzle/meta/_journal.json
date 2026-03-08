@@ -64,6 +64,13 @@
       "when": 1772853761630,
       "tag": "0008_add-related-pocket-id",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772944378982,
+      "tag": "0009_add-avatar-url-user",
+      "breakpoints": true
     }
   ]
 }

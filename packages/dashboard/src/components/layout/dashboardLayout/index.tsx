@@ -1,20 +1,23 @@
 import type React from 'react';
 import DashboardNavbar from '@/components/parts/navbar/DashboardNavbar';
 import DashboardSidebar from '@/components/parts/sidebar/DashboardSidebar';
-import Container from '@/components/ui/container';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import {
+	SidebarContentInset,
+	SidebarInset,
+	SidebarProvider,
+} from '@/components/ui/sidebar';
 
 const DashboardLayout = ({ children }: React.PropsWithChildren) => {
 	return (
 		<SidebarProvider>
 			<DashboardSidebar />
 
-			<SidebarInset className="pt-2 px-4 pb-4">
-				<DashboardNavbar />
+			<SidebarInset className="pb-4">
+				<SidebarContentInset className="px-2 sticky top-0 pt-2 z-50 bg-background">
+					<DashboardNavbar />
+				</SidebarContentInset>
 
-				<Container className="flex flex-1 flex-col gap-4 py-4">
-					{children}
-				</Container>
+				{children}
 			</SidebarInset>
 		</SidebarProvider>
 	);

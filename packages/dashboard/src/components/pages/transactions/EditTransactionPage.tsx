@@ -2,7 +2,8 @@ import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
+import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import QueryHandling from '@/components/parts/query/QueryHandling';
 import NotFoundTransaction from '@/components/parts/transaction/NotFoundTransaction';
 import TransactionForm from '@/components/parts/transaction/TransactionForm';
@@ -84,74 +85,76 @@ export default function EditTransactionPage() {
 
 	return (
 		<div>
-			<HeaderDashboardInset>
+			<DashboardStickyHeader>
 				<PageTitle title="Edit Transaction" />
-			</HeaderDashboardInset>
+			</DashboardStickyHeader>
 
-			<QueryHandling
-				queryResult={getTransactionByIdQuery}
-				renderLoading={<Skeleton className="h-100 w-full rounded-xl" />}
-				renderNotFound={<NotFoundTransaction />}
-				render={({ data }) => {
-					const transaction = data.data;
-					const isEditable = isEditableTransaction(transaction.createdAt);
-					const isTransfer = !!transaction.transferId;
+			<DashboardBody>
+				<QueryHandling
+					queryResult={getTransactionByIdQuery}
+					renderLoading={<Skeleton className="h-100 w-full rounded-xl" />}
+					renderNotFound={<NotFoundTransaction />}
+					render={({ data }) => {
+						const transaction = data.data;
+						const isEditable = isEditableTransaction(transaction.createdAt);
+						const isTransfer = !!transaction.transferId;
 
-					return (
-						<div className="space-y-6">
-							{!isEditable && (
-								<Alert variant="destructive">
-									<AlertCircle className="h-4 w-4" />
-									<AlertTitle>Cannot Edit</AlertTitle>
-									<AlertDescription>
-										This transaction is older than 1 week after created and
-										cannot be edited.
-									</AlertDescription>
-								</Alert>
-							)}
+						return (
+							<div className="space-y-6">
+								{!isEditable && (
+									<Alert variant="destructive">
+										<AlertCircle className="h-4 w-4" />
+										<AlertTitle>Cannot Edit</AlertTitle>
+										<AlertDescription>
+											This transaction is older than 1 week after created and
+											cannot be edited.
+										</AlertDescription>
+									</Alert>
+								)}
 
-							{isTransfer ? (
-								<TransferPocketForm
-									type="update"
-									initialValues={{
-										fromPocketId:
-											transaction.type === 'transfer_out'
-												? transaction.pocketId
-												: (transaction.relatedPocketId ?? undefined),
-										toPocketId:
-											transaction.type === 'transfer_out'
-												? (transaction.relatedPocketId ?? undefined)
-												: transaction.pocketId,
-										amount: Number(transaction.amount),
-										description: transaction.description || '',
-										date: transaction.date,
-									}}
-									onSubmit={handleTransferSubmit}
-									disabled={!isEditable}
-									isSubmitting={isUpdatingTransfer}
-									submitText="Save"
-									submitTextLoading="Saving..."
-								/>
-							) : (
-								<TransactionForm
-									type="update"
-									initialValues={{
-										pocketId: transaction.pocketId,
-										categoryId: transaction.categoryId,
-										amount: Number(transaction.amount),
-										description: transaction.description || '',
-										date: transaction.date,
-										type: transaction.type,
-									}}
-									onSubmit={handleTransactionSubmit}
-									disabled={!isEditable}
-									isSubmitting={isUpdatingTransaction}
-								/>
-							)}
-						</div>
-					);
-				}}
-			/>
+								{isTransfer ? (
+									<TransferPocketForm
+										type="update"
+										initialValues={{
+											fromPocketId:
+												transaction.type === 'transfer_out'
+													? transaction.pocketId
+													: (transaction.relatedPocketId ?? undefined),
+											toPocketId:
+												transaction.type === 'transfer_out'
+													? (transaction.relatedPocketId ?? undefined)
+													: transaction.pocketId,
+											amount: Number(transaction.amount),
+											description: transaction.description || '',
+											date: transaction.date,
+										}}
+										onSubmit={handleTransferSubmit}
+										disabled={!isEditable}
+										isSubmitting={isUpdatingTransfer}
+										submitText="Save"
+										submitTextLoading="Saving..."
+									/>
+								) : (
+									<TransactionForm
+										type="update"
+										initialValues={{
+											pocketId: transaction.pocketId,
+											categoryId: transaction.categoryId,
+											amount: Number(transaction.amount),
+											description: transaction.description || '',
+											date: transaction.date,
+											type: transaction.type,
+										}}
+										onSubmit={handleTransactionSubmit}
+										disabled={!isEditable}
+										isSubmitting={isUpdatingTransaction}
+									/>
+								)}
+							</div>
+						);
+					}}
+				/>
+			</DashboardBody>
 		</div>
 	);
 }

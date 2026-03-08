@@ -115,6 +115,7 @@ export default class AuthService {
 					.values({
 						email: oauthProfile.email,
 						name: oauthProfile.name,
+						avatarUrl: oauthProfile.picture,
 					})
 					.returning();
 				await tx.insert(userProvidersTable).values({
@@ -147,6 +148,13 @@ export default class AuthService {
 				providerUserId: oauthProfile.providerUserId,
 				userId: userWithProviders.id,
 			});
+		}
+
+		if (!userWithProviders.avatarUrl && oauthProfile.picture) {
+			await db
+				.update(usersTable)
+				.set({ avatarUrl: oauthProfile.picture })
+				.where(eq(usersTable.id, userWithProviders.id));
 		}
 
 		return this.generateAuthToken(
@@ -182,7 +190,8 @@ export default class AuthService {
 			id: user.id,
 			email: user.email,
 			name: user.name,
-		} as LoggedUser;
+			avatarUrl: user.avatarUrl,
+		} satisfies LoggedUser;
 	}
 
 	async logout(refreshToken: string) {

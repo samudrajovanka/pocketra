@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowUp, Plus } from 'lucide-react';
-import HeaderDashboardInset from '@/components/layout/dashboardLayout/HeaderDashboardInset';
+import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
+import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import TransactionFilters from '@/components/parts/transaction/TransactionFilters';
 import TransactionList from '@/components/parts/transaction/TransactionList';
 import { Button } from '@/components/ui/button';
@@ -8,16 +9,16 @@ import PageTitle from '@/components/ui/page-title';
 
 const TransactionListPage = () => {
 	return (
-		<div className="space-y-6">
-			<HeaderDashboardInset>
+		<div>
+			<DashboardStickyHeader>
 				<PageTitle title="Transactions" noBack>
 					<div className="flex gap-2">
-						<Button variant="outline" asChild>
+						<Button variant="outline" asChild className="flex-1">
 							<Link to="/transactions/new" search={{ method: 'transfer' }}>
 								<ArrowUp /> Transfer
 							</Link>
 						</Button>
-						<Button asChild>
+						<Button asChild className="flex-1">
 							<Link to="/transactions/new">
 								<Plus /> Transaction
 							</Link>
@@ -26,9 +27,11 @@ const TransactionListPage = () => {
 				</PageTitle>
 
 				<TransactionFilters />
-			</HeaderDashboardInset>
+			</DashboardStickyHeader>
 
-			<TransactionList />
+			<DashboardBody>
+				<TransactionList />
+			</DashboardBody>
 		</div>
 	);
 };
