@@ -16,6 +16,8 @@ import {
 import { getCookie, setAuthCookie } from '@/lib/helpers/cookie';
 import { getQueryClient } from '@/lib/queryClient';
 import { getCookieServer } from '@/serverFn/cookie';
+import app from '@/config/app';
+import { generateMetadata } from '@/lib/helpers/meta';
 
 export const Route = createRootRoute({
 	beforeLoad: async () => {
@@ -53,9 +55,14 @@ export const Route = createRootRoute({
 				name: 'viewport',
 				content: 'width=device-width, initial-scale=1',
 			},
-			{
-				title: 'Pocketra',
-			},
+			...generateMetadata(
+				{
+					title: app.name,
+					description: app.description,
+					keywords: app.keywords,
+				},
+				{ withSuffix: false },
+			),
 		],
 		links: [
 			{
