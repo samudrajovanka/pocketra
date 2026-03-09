@@ -6,6 +6,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { useState } from 'react';
 import appCss from '@/assets/styles/globals.css?url';
 import GlobalLoading from '@/components/parts/loading/GlobalLoading';
+import { RouteProgressBar } from '@/components/parts/loading/RouteProgressBar';
 import { Toaster } from '@/components/ui/sonner';
 import { refreshToken } from '@/endpoints/auth';
 import {
@@ -92,6 +93,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<QueryClientProvider client={queryClient}>
 					{children}
 
+					<RouteProgressBar />
 					<GlobalLoading />
 					<Toaster richColors position="top-right" />
 
