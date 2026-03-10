@@ -5,8 +5,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { formatCurrency } from '@/lib/formatter/number';
+import TextCurrency from '@/components/ui/text-currency';
 import { cn } from '@/lib/utils';
+import { useSettingsStore } from '@/store/settingsStore';
 import type { Pocket } from '@/types/pocket';
 
 type PocketCardProps = {
@@ -24,7 +25,7 @@ const PocketCard = ({
 	size = 'regular',
 	actionComponent,
 }: PocketCardProps) => {
-	const formattedBalance = formatCurrency(Number(pocket.currentBalance));
+	const isNominalHidden = useSettingsStore((state) => state.isNominalHidden);
 
 	return (
 		<Card
@@ -61,14 +62,14 @@ const PocketCard = ({
 				>
 					{pocket.name}
 				</p>
-				<p
+				<TextCurrency
+					amount={Number(pocket.currentBalance)}
+					isNominalHidden={isNominalHidden}
 					className={cn('font-bold', {
 						'typography-regular': size === 'regular',
 						'typography-small': size === 'small',
 					})}
-				>
-					{formattedBalance}
-				</p>
+				/>
 			</CardContent>
 
 			{actionComponent && (

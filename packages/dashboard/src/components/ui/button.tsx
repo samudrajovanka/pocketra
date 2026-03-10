@@ -23,6 +23,8 @@ const buttonVariants = cva(
 				secondary:
 					'bg-secondary text-secondary-foreground hover:bg-secondary/80',
 				ghost: 'hover:bg-accent text-accent-foreground dark:hover:bg-accent/50',
+				ghostWhite:
+					'hover:bg-white/20 text-primary-foreground dark:hover:bg-white/20',
 				ghostDestructive:
 					'text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/50',
 				ghostWarning:

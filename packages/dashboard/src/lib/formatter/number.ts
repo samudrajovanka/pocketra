@@ -3,7 +3,11 @@ export const formatNumber = (value: number | undefined | null) => {
 	return new Intl.NumberFormat('en-US').format(value);
 };
 
-export const formatCurrency = (value: number | undefined | null) => {
+export const formatCurrency = (
+	value: number | undefined | null,
+	isHidden: boolean = false,
+) => {
+	if (isHidden) return 'IDR •••••';
 	if (value === undefined || value === null || Number.isNaN(value)) return '';
 
 	const isUpperBillion = value >= 1_000_000_000;

@@ -1,7 +1,9 @@
 import { Wallet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatCurrency } from '@/lib/formatter/number';
+import TextCurrency from '@/components/ui/text-currency';
 import { cn } from '@/lib/utils';
+import { useSettingsStore } from '@/store/settingsStore';
+import ToggleNominalButton from '../button/ToggleNominalButton';
 
 type TotalBalanceCardProps = {
 	balance: string;
@@ -9,6 +11,8 @@ type TotalBalanceCardProps = {
 };
 
 const TotalBalanceCard = ({ balance, className }: TotalBalanceCardProps) => {
+	const { isNominalHidden } = useSettingsStore();
+
 	return (
 		<Card
 			className={cn(
@@ -16,14 +20,21 @@ const TotalBalanceCard = ({ balance, className }: TotalBalanceCardProps) => {
 				className,
 			)}
 		>
-			<CardHeader className="flex flex-row items-center">
-				<Wallet className="size-4" />
-				<CardTitle className="typography-regular font-medium">
-					Total Balance
-				</CardTitle>
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+				<div className="flex flex-row items-center space-x-2">
+					<Wallet className="size-4" />
+					<CardTitle className="typography-regular font-medium">
+						Total Balance
+					</CardTitle>
+				</div>
+				<ToggleNominalButton variant="ghostWhite" />
 			</CardHeader>
 			<CardContent>
-				<p className="typography-heading">{formatCurrency(Number(balance))}</p>
+				<TextCurrency
+					amount={Number(balance)}
+					isNominalHidden={isNominalHidden}
+					className="typography-heading"
+				/>
 			</CardContent>
 		</Card>
 	);
