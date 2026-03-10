@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, MetaHTMLAttributes } from 'react';
+import type { DetailedHTMLProps, MetaHTMLAttributes } from 'react';
 import app from '@/config/app';
 
 type Metadata = DetailedHTMLProps<

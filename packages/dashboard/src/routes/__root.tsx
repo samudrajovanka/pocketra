@@ -5,21 +5,23 @@ import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { useState } from 'react';
 import appCss from '@/assets/styles/globals.css?url';
+import { NotFound } from '@/components/parts/error/NotFound';
 import GlobalLoading from '@/components/parts/loading/GlobalLoading';
 import { RouteProgressBar } from '@/components/parts/loading/RouteProgressBar';
 import { Toaster } from '@/components/ui/sonner';
+import app from '@/config/app';
 import { refreshToken } from '@/endpoints/auth';
 import {
 	COOKIE_ACCESS_TOKEN,
 	COOKIE_REFRESH_TOKEN,
 } from '@/lib/constants/cookie';
 import { getCookie, setAuthCookie } from '@/lib/helpers/cookie';
+import { generateMetadata } from '@/lib/helpers/meta';
 import { getQueryClient } from '@/lib/queryClient';
 import { getCookieServer } from '@/serverFn/cookie';
-import app from '@/config/app';
-import { generateMetadata } from '@/lib/helpers/meta';
 
 export const Route = createRootRoute({
+	notFoundComponent: NotFound,
 	beforeLoad: async () => {
 		const hasAccessToken = getCookie(COOKIE_ACCESS_TOKEN);
 
