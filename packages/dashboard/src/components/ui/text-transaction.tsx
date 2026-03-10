@@ -7,6 +7,7 @@ type TextTransactionProps = {
 	type: TransactionType | 'netral';
 	className?: string;
 	noSign?: boolean;
+	isNominalHidden?: boolean;
 };
 
 const INCOME_TYPES: TransactionType[] = ['income', 'transfer_in'];
@@ -17,6 +18,7 @@ const TextTransaction = ({
 	type,
 	className,
 	noSign,
+	isNominalHidden,
 }: TextTransactionProps) => {
 	const isIncome = INCOME_TYPES.includes(type as TransactionType);
 	const isExpense = EXPENSE_TYPES.includes(type as TransactionType);
@@ -32,7 +34,8 @@ const TextTransaction = ({
 				className,
 			)}
 		>
-			{!noSign && (isIncome ? '+' : '-')} {formatCurrency(amount)}
+			{!noSign && (isIncome ? '+' : '-')}{' '}
+			{formatCurrency(amount, isNominalHidden)}
 		</p>
 	);
 };
