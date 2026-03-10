@@ -55,6 +55,10 @@ export const Route = createRootRoute({
 				name: 'viewport',
 				content: 'width=device-width, initial-scale=1',
 			},
+			{
+				name: 'theme-color',
+				content: '#2563eb',
+			},
 			...generateMetadata(
 				{
 					title: app.name,
@@ -65,6 +69,23 @@ export const Route = createRootRoute({
 			),
 		],
 		links: [
+			{
+				rel: 'manifest',
+				href: '/manifest.webmanifest',
+			},
+			{
+				rel: 'icon',
+				href: '/icons/favicon.ico',
+			},
+			{
+				rel: 'icon',
+				href: '/icons/pwa-64x64.png',
+				type: 'image/png',
+			},
+			{
+				rel: 'apple-touch-icon',
+				href: '/icons/apple-touch-icon-180x180.png',
+			},
 			{
 				rel: 'preconnect',
 				href: 'https://fonts.googleapis.com',

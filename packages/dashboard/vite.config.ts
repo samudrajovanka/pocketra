@@ -2,11 +2,13 @@ import { defineConfig } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { fileURLToPath, URL } from 'url'
 
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
+import app from "./src/config/app"
 
 const config = defineConfig({
   resolve: {
@@ -24,6 +26,21 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      pwaAssets: {
+        disabled: false,
+        config: true,
+      },
+      manifest: {
+        name: app.name,
+        short_name: app.name,
+        description: app.description,
+        theme_color: '#2563eb',
+        background_color: '#ffffff',
+        display: 'standalone',
+      }
+    }),
   ],
 })
 

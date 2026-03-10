@@ -26,7 +26,7 @@ const Logo = ({
 	return (
 		<div className={cn('flex', className)}>
 			<img
-				src="/images/logo.webp"
+				src="/icons/logo.webp"
 				alt="logo"
 				height={logoSizeValue}
 				width={logoSizeValue}
