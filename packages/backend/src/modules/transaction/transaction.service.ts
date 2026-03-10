@@ -190,7 +190,7 @@ export default class TransactionService {
 				eq(transactionsTable.categoryId, categoriesTable.id),
 			)
 			.where(and(...conditions))
-			.orderBy(desc(transactionsTable.id))
+			.orderBy(desc(transactionsTable.date))
 			.limit(limit + 1);
 
 		let nextCursor: string | null = null;
