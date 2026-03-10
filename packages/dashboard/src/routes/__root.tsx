@@ -5,18 +5,23 @@ import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { useState } from 'react';
 import appCss from '@/assets/styles/globals.css?url';
+import { NotFound } from '@/components/parts/error/NotFound';
 import GlobalLoading from '@/components/parts/loading/GlobalLoading';
+import { RouteProgressBar } from '@/components/parts/loading/RouteProgressBar';
 import { Toaster } from '@/components/ui/sonner';
+import app from '@/config/app';
 import { refreshToken } from '@/endpoints/auth';
 import {
 	COOKIE_ACCESS_TOKEN,
 	COOKIE_REFRESH_TOKEN,
 } from '@/lib/constants/cookie';
 import { getCookie, setAuthCookie } from '@/lib/helpers/cookie';
+import { generateMetadata } from '@/lib/helpers/meta';
 import { getQueryClient } from '@/lib/queryClient';
 import { getCookieServer } from '@/serverFn/cookie';
 
 export const Route = createRootRoute({
+	notFoundComponent: NotFound,
 	beforeLoad: async () => {
 		const hasAccessToken = getCookie(COOKIE_ACCESS_TOKEN);
 
@@ -53,10 +58,36 @@ export const Route = createRootRoute({
 				content: 'width=device-width, initial-scale=1',
 			},
 			{
-				title: 'Pocketra',
+				name: 'theme-color',
+				content: '#2563eb',
 			},
+			...generateMetadata(
+				{
+					title: app.name,
+					description: app.description,
+					keywords: app.keywords,
+				},
+				{ withSuffix: false },
+			),
 		],
 		links: [
+			{
+				rel: 'manifest',
+				href: '/manifest.webmanifest',
+			},
+			{
+				rel: 'icon',
+				href: '/icons/favicon.ico',
+			},
+			{
+				rel: 'icon',
+				href: '/icons/pwa-64x64.png',
+				type: 'image/png',
+			},
+			{
+				rel: 'apple-touch-icon',
+				href: '/icons/apple-touch-icon-180x180.png',
+			},
 			{
 				rel: 'preconnect',
 				href: 'https://fonts.googleapis.com',
@@ -92,6 +123,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<QueryClientProvider client={queryClient}>
 					{children}
 
+					<RouteProgressBar />
 					<GlobalLoading />
 					<Toaster richColors position="top-right" />
 
