@@ -10,12 +10,14 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from '@/components/ui/sidebar';
 import { menuItems } from './data/menu';
 
 const DashboardSidebar = () => {
 	const routerState = useRouterState();
 	const currentPath = routerState.location.pathname;
+	const { setOpenMobile } = useSidebar();
 
 	return (
 		<Sidebar variant="floating">
@@ -36,6 +38,7 @@ const DashboardSidebar = () => {
 										asChild
 										tooltip={item.title}
 										isActive={currentPath === item.url}
+										onClick={() => setOpenMobile(false)}
 									>
 										<Link to={item.url}>
 											<item.icon />

@@ -26,11 +26,7 @@ export const createPocket = createHandlers(
 		const payload = c.req.valid('json') as PayloadCreatePocket;
 		const pocketService = new PocketService();
 
-		const pocket = await pocketService.createPocket(user.id, {
-			name: payload.name,
-			icon: payload.icon,
-			initialBalance: payload.initialBalance.toString(),
-		});
+		const pocket = await pocketService.createPocket(user.id, payload);
 
 		return c.json(
 			successResponse({

@@ -71,6 +71,13 @@
       "when": 1772944378982,
       "tag": "0009_add-avatar-url-user",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1773195122413,
+      "tag": "0010_add-pocket-type-and-color",
+      "breakpoints": true
     }
   ]
 }

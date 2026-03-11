@@ -10,6 +10,8 @@ import TotalBalanceCardLoading from '@/components/parts/pocket/TotalBalanceCardL
 import QueryHandling from '@/components/parts/query/QueryHandling';
 import { Button } from '@/components/ui/button';
 import PageTitle from '@/components/ui/page-title';
+import { POCKET_TYPE_LABELS } from '@/lib/constants/pockets';
+import { groupPocketsByType } from '@/lib/helpers/pocket';
 import { useGetPocketsQuery, useGetTotalBalanceQuery } from '@/query/pocket';
 
 const PocketListPage = () => {
@@ -49,20 +51,36 @@ const PocketListPage = () => {
 					}
 					checkEmpty={(response) => response.data.data.length === 0}
 					renderEmpty={<EmptyPocket />}
-					render={(response) => (
-						<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-							{response.data.data.map((pocket) => (
-								<Link
-									key={pocket.id}
-									to="/pockets/$id"
-									params={{ id: pocket.id }}
-									className="block h-full group/pocket-card"
-								>
-									<PocketCard pocket={pocket} />
-								</Link>
-							))}
-						</div>
-					)}
+					render={(response) => {
+						const pockets = response.data.data;
+						const groupedPockets = groupPocketsByType(pockets);
+
+						return (
+							<div className="space-y-6">
+								{Object.entries(groupedPockets).map(([type, typePockets]) => (
+									<div key={type} className="space-y-2">
+										<h3 className="typography-regular font-medium">
+											{POCKET_TYPE_LABELS[
+												type as keyof typeof POCKET_TYPE_LABELS
+											] || 'Other'}
+										</h3>
+										<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+											{typePockets.map((pocket) => (
+												<Link
+													key={pocket.id}
+													to="/pockets/$id"
+													params={{ id: pocket.id }}
+													className="block h-full group/pocket-card"
+												>
+													<PocketCard pocket={pocket} />
+												</Link>
+											))}
+										</div>
+									</div>
+								))}
+							</div>
+						);
+					}}
 				/>
 			</DashboardBody>
 		</div>
