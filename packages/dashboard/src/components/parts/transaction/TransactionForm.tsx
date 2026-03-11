@@ -196,32 +196,7 @@ const TransactionForm = <T extends 'create' | 'update'>({
 				}}
 			</form.Field>
 
-			<div className="flex md:flex-row-reverse gap-4">
-				<form.Field name="amount">
-					{(field) => {
-						const isInvalid = isInvalidField(field);
-						return (
-							<Field data-invalid={isInvalid} data-required>
-								<FieldLabel>Amount</FieldLabel>
-								<InputGroup>
-									<InputGroupNumberInput
-										name={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(val) => field.handleChange(val)}
-										placeholder="0"
-										disabled={disabled}
-									/>
-									<InputGroupAddon>
-										<InputGroupText>IDR</InputGroupText>
-									</InputGroupAddon>
-								</InputGroup>
-								{isInvalid && <FieldError errors={field.state.meta.errors} />}
-							</Field>
-						);
-					}}
-				</form.Field>
-
+			<div className="flex gap-4">
 				<form.Field name="type">
 					{(field) => {
 						return (
@@ -244,6 +219,31 @@ const TransactionForm = <T extends 'create' | 'update'>({
 										<SelectItem value="expense">Expense</SelectItem>
 									</SelectContent>
 								</Select>
+							</Field>
+						);
+					}}
+				</form.Field>
+
+				<form.Field name="amount">
+					{(field) => {
+						const isInvalid = isInvalidField(field);
+						return (
+							<Field data-invalid={isInvalid} data-required>
+								<FieldLabel>Amount</FieldLabel>
+								<InputGroup>
+									<InputGroupNumberInput
+										name={field.name}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(val) => field.handleChange(val)}
+										placeholder="0"
+										disabled={disabled}
+									/>
+									<InputGroupAddon>
+										<InputGroupText>IDR</InputGroupText>
+									</InputGroupAddon>
+								</InputGroup>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
 							</Field>
 						);
 					}}

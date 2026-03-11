@@ -8,7 +8,7 @@ export const payloadCreatePocketValidator = z.object({
 	type: z
 		.enum(Object.values(pocketType) as [string, ...string[]])
 		.default(pocketType.Cash),
-	color: z.string().optional(),
+	color: z.string().nullable().optional(),
 	initialBalance: z.number().min(0),
 });
 
@@ -30,7 +30,7 @@ export const payloadUpdatePocketValidator = z.object({
 	name: z.string().optional(),
 	icon: z.string().optional(),
 	type: z.enum(Object.values(pocketType) as [string, ...string[]]).optional(),
-	color: z.string().optional(),
+	color: z.string().nullable().optional(),
 });
 
 export const zPayloadUpdatePocketValidator = validationMiddleware(

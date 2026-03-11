@@ -111,7 +111,7 @@ const PocketForm = <T extends 'create' | 'update'>({
 								<FieldLabel>Color</FieldLabel>
 								<div>
 									<ColorPicker
-										value={field.state.value}
+										value={field.state.value as string | null | undefined}
 										onChange={(val) => field.handleChange(val)}
 									/>
 								</div>
