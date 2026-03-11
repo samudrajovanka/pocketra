@@ -135,7 +135,6 @@ const PocketForm = <T extends 'create' | 'update'>({
 								placeholder="Enter pocket name"
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								inputMode="numeric"
 							/>
 							{isInvalid && <FieldError errors={field.state.meta.errors} />}
 						</Field>
