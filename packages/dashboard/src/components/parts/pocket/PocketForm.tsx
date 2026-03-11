@@ -10,6 +10,13 @@ import {
 	InputGroupNumberInput,
 	InputGroupText,
 } from '@/components/ui/input-group';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 import type {
 	CreatePocketPayload,
 	UpdatePocketPayload,
@@ -18,7 +25,13 @@ import {
 	createPocketValidator,
 	updatePocketValidator,
 } from '@/endpoints/pocket/validator';
+import {
+	POCKET_EMOJIS,
+	POCKET_TYPE,
+	POCKET_TYPE_OPTIONS,
+} from '@/lib/constants/pockets';
 import { isInvalidField } from '@/lib/utils';
+import ColorPicker from './ColorPicker';
 import IconPicker from './IconPicker';
 
 type PocketFormProps<T extends 'create' | 'update'> = {
@@ -45,7 +58,8 @@ const PocketForm = <T extends 'create' | 'update'>({
 	const form = useForm({
 		defaultValues: initialValues ?? {
 			name: '',
-			icon: '💰',
+			icon: POCKET_EMOJIS[0],
+			type: POCKET_TYPE.cash,
 			initialBalance: 0,
 		},
 		validators: {
@@ -70,23 +84,43 @@ const PocketForm = <T extends 'create' | 'update'>({
 			}}
 			className="space-y-4"
 		>
-			<form.Field name="icon">
-				{(field) => {
-					const isInvalid = isInvalidField(field);
-					return (
-						<Field data-invalid={isInvalid} data-required>
-							<FieldLabel>Icon</FieldLabel>
-							<div>
-								<IconPicker
-									value={field.state.value as string}
-									onChange={(val) => field.handleChange(val)}
-								/>
-							</div>
-							{isInvalid && <FieldError errors={field.state.meta.errors} />}
-						</Field>
-					);
-				}}
-			</form.Field>
+			<div className="flex gap-6">
+				<form.Field name="icon">
+					{(field) => {
+						const isInvalid = isInvalidField(field);
+						return (
+							<Field data-invalid={isInvalid} data-required className="w-fit">
+								<FieldLabel>Icon</FieldLabel>
+								<div>
+									<IconPicker
+										value={field.state.value as string}
+										onChange={(val) => field.handleChange(val)}
+									/>
+								</div>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				</form.Field>
+
+				<form.Field name="color">
+					{(field) => {
+						const isInvalid = isInvalidField(field);
+						return (
+							<Field data-invalid={isInvalid} data-required className="w-fit">
+								<FieldLabel>Color</FieldLabel>
+								<div>
+									<ColorPicker
+										value={field.state.value}
+										onChange={(val) => field.handleChange(val)}
+									/>
+								</div>
+								{isInvalid && <FieldError errors={field.state.meta.errors} />}
+							</Field>
+						);
+					}}
+				</form.Field>
+			</div>
 
 			<form.Field name="name">
 				{(field) => {
@@ -103,6 +137,38 @@ const PocketForm = <T extends 'create' | 'update'>({
 								onChange={(e) => field.handleChange(e.target.value)}
 								inputMode="numeric"
 							/>
+							{isInvalid && <FieldError errors={field.state.meta.errors} />}
+						</Field>
+					);
+				}}
+			</form.Field>
+
+			<form.Field name="type">
+				{(field) => {
+					const isInvalid = isInvalidField(field);
+
+					return (
+						<Field data-invalid={isInvalid} data-required>
+							<FieldLabel>Type</FieldLabel>
+							<Select
+								value={field.state.value}
+								onValueChange={(val) =>
+									field.handleChange(
+										val as (typeof POCKET_TYPE)[keyof typeof POCKET_TYPE],
+									)
+								}
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Select pocket type" />
+								</SelectTrigger>
+								<SelectContent>
+									{POCKET_TYPE_OPTIONS.map((type) => (
+										<SelectItem key={type.value} value={type.value}>
+											{type.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 							{isInvalid && <FieldError errors={field.state.meta.errors} />}
 						</Field>
 					);

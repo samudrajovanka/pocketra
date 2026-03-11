@@ -7,7 +7,10 @@ import type {
 	payloadUpdatePocketValidator,
 } from './pocket.validator';
 
-export type PocketWithBalance = typeof pocketsTable.$inferSelect & {
+export type PocketWithBalance = Omit<
+	typeof pocketsTable.$inferSelect,
+	'initialBalance'
+> & {
 	currentBalance: number;
 };
 

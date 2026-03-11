@@ -1,8 +1,14 @@
 import { relations } from 'drizzle-orm';
-import { decimal, pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
+import { decimal, pgEnum, pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
 import { baseColumns } from '../../utils/helpers/schema';
 import { usersTable } from '../auth/auth.schema';
 import { transactionsTable } from '../transaction/transaction.schema';
+import { pocketType } from './data';
+
+export const pocketTypeEnum = pgEnum(
+	'pocket_type',
+	Object.values(pocketType) as [string, ...string[]],
+);
 
 export const pocketsTable = pgTable('pockets', {
 	...baseColumns,
@@ -11,6 +17,8 @@ export const pocketsTable = pgTable('pockets', {
 		.references(() => usersTable.id, { onDelete: 'cascade' }),
 	name: varchar('name').notNull(),
 	icon: varchar('icon').notNull(),
+	type: pocketTypeEnum().default('cash').notNull(),
+	color: varchar('color'),
 	initialBalance: decimal('initial_balance', { precision: 19, scale: 4 })
 		.notNull()
 		.default('0'),

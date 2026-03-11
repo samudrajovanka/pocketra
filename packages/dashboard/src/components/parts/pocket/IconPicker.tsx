@@ -5,8 +5,8 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
+import { POCKET_EMOJIS } from '@/lib/constants/pockets';
 import { cn } from '@/lib/utils';
-import { EMOJI_LIST } from './data/emoji';
 
 type IconPickerProps = {
 	value: string;
@@ -22,18 +22,20 @@ const IconPicker = ({ value, onChange, className }: IconPickerProps) => {
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"
-					className={cn('h-10 w-10 text-2xl p-0', className)}
+					size="icon"
+					className={cn('typography-large', className)}
 				>
 					{value || '❓'}
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-2" align="start">
 				<div className="grid grid-cols-8 gap-1">
-					{EMOJI_LIST.map((emoji) => (
+					{POCKET_EMOJIS.map((emoji) => (
 						<Button
 							key={emoji}
 							variant="ghost"
-							className="h-8 w-8 text-lg p-0"
+							className="typography-large"
+							size="icon"
 							onClick={() => {
 								onChange(emoji);
 								setOpen(false);

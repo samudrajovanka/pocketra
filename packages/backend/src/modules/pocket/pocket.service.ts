@@ -5,19 +5,19 @@ import { transactionsTable } from '../transaction/transaction.schema';
 import { pocketsTable } from './pocket.schema';
 import type {
 	GetPocketsWithBalanceParams,
+	PayloadCreatePocket,
 	PayloadGetPockets,
+	PayloadUpdatePocket,
 	PocketWithBalance,
 } from './types';
 
 export default class PocketService {
-	async createPocket(
-		userId: string,
-		data: { name: string; icon: string; initialBalance: string },
-	) {
+	async createPocket(userId: string, data: PayloadCreatePocket) {
 		const [pocket] = await db
 			.insert(pocketsTable)
 			.values({
 				...data,
+				initialBalance: data.initialBalance.toString(),
 				userId,
 			})
 			.returning({
@@ -33,6 +33,8 @@ export default class PocketService {
 				id: pocketsTable.id,
 				name: pocketsTable.name,
 				icon: pocketsTable.icon,
+				type: pocketsTable.type,
+				color: pocketsTable.color,
 				createdAt: pocketsTable.createdAt,
 				updatedAt: pocketsTable.updatedAt,
 				currentBalance: sql<number>`
@@ -74,7 +76,7 @@ export default class PocketService {
 			pocketsQuery.limit(params.limit);
 		}
 
-		return await pocketsQuery;
+		return (await pocketsQuery) as PocketWithBalance[];
 	}
 
 	async getPockets(userId: string, params?: PayloadGetPockets) {
@@ -84,19 +86,7 @@ export default class PocketService {
 			sortBy: params?.sortBy,
 		});
 
-		const mappedPockets = pockets.map(
-			(pocket) =>
-				({
-					id: pocket.id,
-					name: pocket.name,
-					icon: pocket.icon,
-					createdAt: pocket.createdAt,
-					updatedAt: pocket.updatedAt,
-					currentBalance: pocket.currentBalance,
-				}) as PocketWithBalance,
-		);
-
-		return mappedPockets;
+		return pockets;
 	}
 
 	async getPocketOptions(userId: string) {
@@ -117,21 +107,14 @@ export default class PocketService {
 
 		if (!pockets.length) throw new NotFoundError('Pocket not found');
 
-		const pocket = {
-			id: pockets[0].id,
-			name: pockets[0].name,
-			icon: pockets[0].icon,
-			createdAt: pockets[0].createdAt,
-			updatedAt: pockets[0].updatedAt,
-			currentBalance: pockets[0].currentBalance,
-		} as PocketWithBalance;
+		const pocket = pockets[0];
 
 		return pocket;
 	}
 	async updatePocket(
 		userId: string,
 		pocketId: string,
-		data: { name?: string; icon?: string },
+		data: PayloadUpdatePocket,
 	) {
 		const [pocket] = await db
 			.update(pocketsTable)

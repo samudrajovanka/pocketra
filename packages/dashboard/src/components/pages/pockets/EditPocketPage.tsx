@@ -50,6 +50,8 @@ const EditPocketPage = () => {
 								initialValues={{
 									name: pocket.name,
 									icon: pocket.icon,
+									color: pocket.color,
+									type: pocket.type,
 								}}
 								onSubmit={handleSubmit}
 								isSubmitting={updateMutation.isPending}
