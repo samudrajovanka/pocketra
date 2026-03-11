@@ -13,6 +13,7 @@ import PageTitle from '@/components/ui/page-title';
 import { POCKET_TYPE_LABELS } from '@/lib/constants/pockets';
 import { groupPocketsByType } from '@/lib/helpers/pocket';
 import { useGetPocketsQuery, useGetTotalBalanceQuery } from '@/query/pocket';
+import { Badge } from '@/components/ui/badge';
 
 const PocketListPage = () => {
 	const pocketsQuery = useGetPocketsQuery();
@@ -59,11 +60,11 @@ const PocketListPage = () => {
 							<div className="space-y-6">
 								{Object.entries(groupedPockets).map(([type, typePockets]) => (
 									<div key={type} className="space-y-2">
-										<h3 className="typography-regular font-medium">
+										<Badge variant="secondary" className="typography-small">
 											{POCKET_TYPE_LABELS[
 												type as keyof typeof POCKET_TYPE_LABELS
 											] || 'Other'}
-										</h3>
+										</Badge>
 										<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
 											{typePockets.map((pocket) => (
 												<Link

@@ -10,8 +10,8 @@ import { POKCET_COLORS } from '@/lib/constants/pockets';
 import { cn } from '@/lib/utils';
 
 type ColorPickerProps = {
-	value?: string;
-	onChange: (value?: string) => void;
+	value?: string | null;
+	onChange: (value?: string | null) => void;
 	className?: string;
 };
 
@@ -46,7 +46,7 @@ const ColorPicker = ({ value, onChange, className }: ColorPickerProps) => {
 							!value && 'ring-2 ring-primary ring-offset-2',
 						)}
 						onClick={() => {
-							onChange(undefined);
+							onChange(null);
 							setOpen(false);
 						}}
 						title="No Color"
