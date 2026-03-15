@@ -21,7 +21,7 @@ const EditPocketPage = () => {
 		try {
 			await updateMutation.mutateAsync({ id, payload: values });
 			toast.success('Pocket updated successfully');
-			navigate({ to: '/pockets' });
+			navigate({ to: '/pockets', replace: true });
 		} catch (error) {
 			if (isAxiosError(error)) {
 				toast.error(error.response?.data.message);
@@ -34,7 +34,7 @@ const EditPocketPage = () => {
 	return (
 		<div>
 			<DashboardStickyHeader>
-				<PageTitle title="Edit Pocket" />
+				<PageTitle title="Edit Pocket" backTo="/pockets" />
 			</DashboardStickyHeader>
 
 			<DashboardBody>

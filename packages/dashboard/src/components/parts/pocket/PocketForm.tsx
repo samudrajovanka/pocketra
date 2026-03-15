@@ -205,7 +205,7 @@ const PocketForm = <T extends 'create' | 'update'>({
 				<Button
 					type="button"
 					variant="outline"
-					onClick={() => navigate({ to: '/pockets' })}
+					onClick={() => navigate({ to: '/pockets', replace: true })}
 				>
 					Cancel
 				</Button>

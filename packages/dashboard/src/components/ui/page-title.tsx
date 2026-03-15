@@ -6,16 +6,25 @@ import { Button } from '@/components/ui/button';
 type PageTitleProps = {
 	title: string;
 	backTo?: string;
+	onBack?: () => void;
 	children?: React.ReactNode;
 	noBack?: boolean;
 };
 
-const PageTitle = ({ title, backTo, children, noBack }: PageTitleProps) => {
+const PageTitle = ({
+	title,
+	backTo,
+	onBack,
+	children,
+	noBack,
+}: PageTitleProps) => {
 	const navigate = useNavigate();
 
 	const handleBack = () => {
-		if (backTo) {
-			navigate({ to: backTo });
+		if (onBack) {
+			onBack();
+		} else if (backTo) {
+			navigate({ to: backTo, replace: true });
 		} else {
 			window.history.back();
 		}

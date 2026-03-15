@@ -32,6 +32,7 @@ export default function CreateTransactionPage() {
 					search.from === 'detail_pocket'
 						? `/pockets/${values.pocketId}`
 						: '/transactions',
+				replace: true,
 			});
 		} catch (error) {
 			if (isAxiosError(error)) {
@@ -51,6 +52,7 @@ export default function CreateTransactionPage() {
 					search.from === 'detail_pocket'
 						? `/pockets/${values.fromPocketId}`
 						: '/transactions',
+				replace: true,
 			});
 		} catch (error) {
 			if (isAxiosError(error)) {
@@ -63,11 +65,17 @@ export default function CreateTransactionPage() {
 
 	const isTransfer = search.method === 'transfer';
 
+	const backTo =
+		search.from === 'detail_pocket'
+			? `/pockets/${isTransfer ? search.from_pocket_id : search.pocket_id}`
+			: '/transactions';
+
 	return (
 		<div>
 			<DashboardStickyHeader>
 				<PageTitle
 					title={isTransfer ? 'Transfer Balance' : 'Create Transaction'}
+					backTo={backTo}
 				/>
 			</DashboardStickyHeader>
 

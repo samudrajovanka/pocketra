@@ -8,12 +8,12 @@ import PocketCardLoading from '@/components/parts/pocket/PocketCardLoading';
 import TotalBalanceCard from '@/components/parts/pocket/TotalBalanceCard';
 import TotalBalanceCardLoading from '@/components/parts/pocket/TotalBalanceCardLoading';
 import QueryHandling from '@/components/parts/query/QueryHandling';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PageTitle from '@/components/ui/page-title';
 import { POCKET_TYPE_LABELS } from '@/lib/constants/pockets';
 import { groupPocketsByType } from '@/lib/helpers/pocket';
 import { useGetPocketsQuery, useGetTotalBalanceQuery } from '@/query/pocket';
-import { Badge } from '@/components/ui/badge';
 
 const PocketListPage = () => {
 	const pocketsQuery = useGetPocketsQuery();

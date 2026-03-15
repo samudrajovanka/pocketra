@@ -41,6 +41,7 @@ const DeleteTransactionDialog = ({
 					search.from === 'detail_pocket' && pocketId
 						? `/pockets/${pocketId}`
 						: '/transactions',
+				replace: true,
 			});
 		} catch (error) {
 			if (isAxiosError(error)) {

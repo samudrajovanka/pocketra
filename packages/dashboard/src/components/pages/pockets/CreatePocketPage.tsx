@@ -16,7 +16,7 @@ const CreatePocketPage = () => {
 		try {
 			await createMutation.mutateAsync(values);
 			toast.success('Pocket created successfully');
-			navigate({ to: '/pockets' });
+			navigate({ to: '/pockets', replace: true });
 		} catch (error) {
 			if (isAxiosError(error)) {
 				toast.error(error.response?.data.message);
@@ -29,7 +29,7 @@ const CreatePocketPage = () => {
 	return (
 		<div>
 			<DashboardStickyHeader>
-				<PageTitle title="Create Pocket" />
+				<PageTitle title="Create Pocket" backTo="/pockets" />
 			</DashboardStickyHeader>
 
 			<DashboardBody>
