@@ -5,6 +5,7 @@ import AuthenticationError from '../../exceptions/AuthenticationError';
 import AuthorizationError from '../../exceptions/AuthorizationError';
 import { hash } from '../../utils/helpers/encrypt';
 import { decodeJwt } from '../../utils/helpers/token';
+import AuthRepository from './auth.repository';
 import {
 	refreshTokensTable,
 	userProvidersTable,
@@ -24,6 +25,8 @@ import type {
 } from './types';
 
 export default class AuthService {
+	private repository = new AuthRepository();
+
 	private generateAccessToken(payload: GenerateAccessTokenPayload) {
 		const secretKey = process.env.ACCESS_TOKEN_SECRET ?? '';
 		return jwt.sign(payload, secretKey, {
@@ -56,10 +59,10 @@ export default class AuthService {
 	}
 
 	async refreshAccessToken(refreshToken: string) {
-		let decodedToken: GenerateAccessTokenPayload;
+		let decodedToken: GenerateRefreshTokenPayload;
 
 		try {
-			decodedToken = decodeJwt<GenerateAccessTokenPayload>(
+			decodedToken = decodeJwt<GenerateRefreshTokenPayload>(
 				refreshToken,
 				process.env.REFRESH_TOKEN_SECRET ?? '',
 			);
@@ -109,23 +112,17 @@ export default class AuthService {
 		});
 
 		if (!userWithProviders) {
-			const newUser = await db.transaction(async (tx) => {
-				const [newUser] = await tx
-					.insert(usersTable)
-					.values({
-						email: oauthProfile.email,
-						name: oauthProfile.name,
-						avatarUrl: oauthProfile.picture,
-					})
-					.returning();
-				await tx.insert(userProvidersTable).values({
+			const newUser = await this.repository.createUserWithProvider(
+				{
+					email: oauthProfile.email,
+					name: oauthProfile.name,
+					avatarUrl: oauthProfile.picture,
+				},
+				{
 					provider,
 					providerUserId: oauthProfile.providerUserId,
-					userId: newUser.id,
-				});
-
-				return newUser;
-			});
+				},
+			);
 
 			return this.generateAuthToken(
 				{ email: oauthProfile.email },

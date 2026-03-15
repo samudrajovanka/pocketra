@@ -1,6 +1,4 @@
-import { endOfDay, startOfDay } from 'date-fns';
-import { and, desc, eq, gte, ilike, inArray, lte } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { and, eq, inArray } from 'drizzle-orm';
 import { db } from '../../config/db';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';
@@ -8,11 +6,12 @@ import {
 	type CursorPagination,
 	generateCursorPaginationMetaResponse,
 } from '../../utils/helpers/pagination';
-import { isEditableTransaction } from '../../utils/helpers/transactions';
 import { categoriesTable } from '../category/category.schema';
 import { pocketsTable } from '../pocket/pocket.schema';
+import TransactionRepository from './transaction.repository';
 import { transactionsTable } from './transaction.schema';
 import { generateTransferId } from './transaction.utils';
+import { isEditableTransaction } from './transactions.utils';
 import type {
 	PayloadCreateTransaction,
 	PayloadGetTransactions,
@@ -22,6 +21,8 @@ import type {
 } from './types';
 
 export default class TransactionService {
+	private repository = new TransactionRepository();
+
 	async createTransferTransaction(
 		userId: string,
 		data: PayloadTransferTransaction,
@@ -37,6 +38,9 @@ export default class TransactionService {
 				inArray(pocketsTable.id, [fromPocketId, toPocketId]),
 				eq(pocketsTable.userId, userId),
 			),
+			columns: {
+				id: true,
+			},
 		});
 
 		if (pockets.length !== 2) {
@@ -47,6 +51,10 @@ export default class TransactionService {
 
 		const categories = await db.query.categoriesTable.findMany({
 			where: inArray(categoriesTable.type, ['transfer_in', 'transfer_out']),
+			columns: {
+				id: true,
+				type: true,
+			},
 		});
 
 		const transferInCategory = categories.find((c) => c.type === 'transfer_in');
@@ -94,6 +102,9 @@ export default class TransactionService {
 				eq(pocketsTable.id, data.pocketId),
 				eq(pocketsTable.userId, userId),
 			),
+			columns: {
+				id: true,
+			},
 		});
 
 		if (!pocket) {
@@ -129,90 +140,21 @@ export default class TransactionService {
 		userId: string,
 		params: PayloadGetTransactions & { pagination: CursorPagination },
 	) {
-		const conditions = [eq(pocketsTable.userId, userId)];
-
-		if (params.pocketId) {
-			conditions.push(eq(transactionsTable.pocketId, params.pocketId));
-		}
-
-		if (params.type) {
-			conditions.push(eq(transactionsTable.type, params.type));
-		}
-
-		if (params.description) {
-			conditions.push(
-				ilike(transactionsTable.description, `%${params.description}%`),
-			);
-		}
-
-		if (params.minAmount) {
-			conditions.push(
-				gte(transactionsTable.amount, params.minAmount.toString()),
-			);
-		}
-
-		if (params.maxAmount) {
-			conditions.push(
-				lte(transactionsTable.amount, params.maxAmount.toString()),
-			);
-		}
-
-		if (params.startDate) {
-			conditions.push(
-				gte(transactionsTable.date, startOfDay(new Date(params.startDate))),
-			);
-		}
-
-		if (params.endDate) {
-			conditions.push(
-				lte(transactionsTable.date, endOfDay(new Date(params.endDate))),
-			);
-		}
-
-		if (params.pagination?.cursor) {
-			conditions.push(lte(transactionsTable.id, params.pagination.cursor));
-		}
-
+		const conditions = this.repository.buildListConditions(userId, params);
 		const limit = params.pagination?.limit || 10;
-		const relatedPocketsTable = alias(pocketsTable, 'relatedPocket');
 
-		const rows = await db
-			.select({
-				transaction: transactionsTable,
-				pocket: {
-					id: pocketsTable.id,
-					name: pocketsTable.name,
-				},
-				relatedPocket: {
-					id: relatedPocketsTable.id,
-					name: relatedPocketsTable.name,
-				},
-				category: {
-					id: categoriesTable.id,
-					name: categoriesTable.name,
-				},
-			})
-			.from(transactionsTable)
-			.innerJoin(pocketsTable, eq(transactionsTable.pocketId, pocketsTable.id))
-			.leftJoin(
-				relatedPocketsTable,
-				eq(transactionsTable.relatedPocketId, relatedPocketsTable.id),
-			)
-			.innerJoin(
-				categoriesTable,
-				eq(transactionsTable.categoryId, categoriesTable.id),
-			)
-			.where(and(...conditions))
-			.orderBy(desc(transactionsTable.date))
-			.limit(limit + 1);
+		const rawTransactions = await this.repository.findTransactionsWithRelations(
+			conditions,
+			limit,
+		);
 
 		let nextCursor: string | null = null;
-		if (rows.length > limit) {
-			const nextItem = rows.pop();
+		if (rawTransactions.length > limit) {
+			const nextItem = rawTransactions.pop();
 			nextCursor = nextItem?.transaction.id || null;
 		}
 
-		const data = rows.map((row) => ({
+		const transactions = rawTransactions.map((row) => ({
 			...row.transaction,
 			pocket: row.pocket,
 			relatedPocket: row.relatedPocket,
@@ -220,7 +162,7 @@ export default class TransactionService {
 		}));
 
 		return {
-			data,
+			data: transactions,
 			meta: {
 				pagination: generateCursorPaginationMetaResponse(
 					params.pagination,
@@ -231,30 +173,8 @@ export default class TransactionService {
 	}
 
 	async getTransactionById(userId: string, transactionId: string) {
-		const transaction = await db.query.transactionsTable.findFirst({
-			where: eq(transactionsTable.id, transactionId),
-			with: {
-				pocket: {
-					columns: {
-						id: true,
-						name: true,
-						userId: true,
-					},
-				},
-				relatedPocket: {
-					columns: {
-						id: true,
-						name: true,
-					},
-				},
-				category: {
-					columns: {
-						id: true,
-						name: true,
-					},
-				},
-			},
-		});
+		const transaction =
+			await this.repository.findTransactionWithRelationsById(transactionId);
 
 		if (!transaction || transaction.pocket.userId !== userId) {
 			throw new NotFoundError('Transaction not found');
@@ -271,7 +191,11 @@ export default class TransactionService {
 		const transaction = await db.query.transactionsTable.findFirst({
 			where: eq(transactionsTable.id, transactionId),
 			with: {
-				pocket: true,
+				pocket: {
+					columns: {
+						userId: true,
+					},
+				},
 			},
 		});
 
@@ -288,6 +212,9 @@ export default class TransactionService {
 		if (data.categoryId) {
 			const category = await db.query.categoriesTable.findFirst({
 				where: eq(categoriesTable.id, data.categoryId),
+				columns: {
+					type: true,
+				},
 			});
 
 			if (!category) {
@@ -304,6 +231,9 @@ export default class TransactionService {
 		if (data.pocketId) {
 			const pocket = await db.query.pocketsTable.findFirst({
 				where: eq(pocketsTable.id, data.pocketId),
+				columns: {
+					userId: true,
+				},
 			});
 
 			if (!pocket) {
@@ -340,7 +270,13 @@ export default class TransactionService {
 	) {
 		const transactions = await db.query.transactionsTable.findMany({
 			where: eq(transactionsTable.transferId, transferId),
-			with: { pocket: true },
+			with: {
+				pocket: {
+					columns: {
+						userId: true,
+					},
+				},
+			},
 		});
 
 		if (transactions.length !== 2 || transactions[0].pocket.userId !== userId) {
@@ -359,59 +295,54 @@ export default class TransactionService {
 		if (!outTx || !inTx) throw new InvariantError('Invalid transfer records');
 
 		if (fromPocketId || toPocketId) {
-			const newFrom = fromPocketId || outTx.pocketId;
-			const newTo = toPocketId || inTx.pocketId;
+			const newFromPocketId = fromPocketId || outTx.pocketId;
+			const newToPocketId = toPocketId || inTx.pocketId;
 
-			if (newFrom === newTo) {
+			if (newFromPocketId === newToPocketId) {
 				throw new InvariantError('Cannot transfer to the same pocket');
 			}
 
 			const pockets = await db.query.pocketsTable.findMany({
 				where: and(
-					inArray(pocketsTable.id, [newFrom, newTo]),
+					inArray(pocketsTable.id, [newFromPocketId, newToPocketId]),
 					eq(pocketsTable.userId, userId),
 				),
+				columns: {
+					id: true,
+				},
 			});
 
 			if (pockets.length !== 2) {
 				throw new InvariantError('Pockets not found or invalid');
 			}
 
-			outTx.pocketId = newFrom;
-			outTx.relatedPocketId = newTo;
+			outTx.pocketId = newFromPocketId;
+			outTx.relatedPocketId = newToPocketId;
 
-			inTx.pocketId = newTo;
-			inTx.relatedPocketId = newFrom;
+			inTx.pocketId = newToPocketId;
+			inTx.relatedPocketId = newFromPocketId;
 		}
 
 		const amountStr = amount ? amount.toString() : undefined;
 		const transactionDate = date ? new Date(date) : undefined;
 
-		await db.transaction(async (tx) => {
-			if (!outTx || !inTx) return;
-
-			await tx
-				.update(transactionsTable)
-				.set({
-					pocketId: outTx.pocketId,
-					relatedPocketId: outTx.relatedPocketId,
-					amount: amountStr ?? outTx.amount,
-					description: description ?? outTx.description,
-					date: transactionDate ?? outTx.date,
-				})
-				.where(eq(transactionsTable.id, outTx.id));
-
-			await tx
-				.update(transactionsTable)
-				.set({
-					pocketId: inTx.pocketId,
-					relatedPocketId: inTx.relatedPocketId,
-					amount: amountStr ?? inTx.amount,
-					description: description ?? inTx.description,
-					date: transactionDate ?? inTx.date,
-				})
-				.where(eq(transactionsTable.id, inTx.id));
-		});
+		await this.repository.updateTransferPair(
+			{
+				id: outTx.id,
+				pocketId: outTx.pocketId,
+				relatedPocketId: outTx.relatedPocketId,
+			},
+			{
+				id: inTx.id,
+				pocketId: inTx.pocketId,
+				relatedPocketId: inTx.relatedPocketId,
+			},
+			{
+				amount: amountStr,
+				description: description ?? undefined,
+				date: transactionDate,
+			},
+		);
 
 		return transferId;
 	}
@@ -420,7 +351,14 @@ export default class TransactionService {
 		const transaction = await db.query.transactionsTable.findFirst({
 			where: eq(transactionsTable.id, transactionId),
 			with: {
-				pocket: true,
+				pocket: {
+					columns: {
+						userId: true,
+					},
+				},
+			},
+			columns: {
+				transferId: true,
 			},
 		});
 

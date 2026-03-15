@@ -41,9 +41,11 @@ export const createOauthCallbackRedirect = (
 };
 
 export const createOauthErrorRedirect = (error: string) => {
-	const loginUrl = new URL(process.env.FRONTEND_URL ?? 'http://localhost:3000');
-	loginUrl.pathname = '/auth/callback';
-	loginUrl.searchParams.append('error', error);
+	const redirectUrl = new URL(
+		process.env.FRONTEND_URL ?? 'http://localhost:3000',
+	);
+	redirectUrl.pathname = '/auth/callback';
+	redirectUrl.searchParams.append('error', error);
 
-	return loginUrl;
+	return redirectUrl;
 };

@@ -1,4 +1,4 @@
-import { ONE_WEEK_IN_MS } from '../constants/time';
+import { ONE_WEEK_IN_MS } from '../../utils/constants/time';
 
 export const isEditableTransaction = (createdAt: string) => {
 	const oneWeekAgo = Date.now() - ONE_WEEK_IN_MS;

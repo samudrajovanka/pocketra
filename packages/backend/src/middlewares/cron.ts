@@ -1,18 +1,9 @@
 import { createMiddleware } from 'hono/factory';
-import ForbiddenError from '../exceptions/ForbiddenError';
+import AuthenticationError from '../exceptions/AuthenticationError';
+import { extractBearerToken } from '../utils/helpers/token';
 
 export const cronSecurity = createMiddleware(async (c, next) => {
-	const authHeader = c.req.header('Authorization');
-
-	if (!authHeader) {
-		throw new ForbiddenError('Missing CRON secret');
-	}
-
-	const [type, secret] = authHeader.split(' ');
-
-	if (type !== 'Bearer' || !secret) {
-		throw new ForbiddenError('Invalid authorization format');
-	}
+	const secret = extractBearerToken(c);
 
 	const expectedSecret = process.env.CRON_SECRET;
 
@@ -21,7 +12,7 @@ export const cronSecurity = createMiddleware(async (c, next) => {
 	}
 
 	if (secret !== expectedSecret) {
-		throw new ForbiddenError('Invalid CRON secret');
+		throw new AuthenticationError('Invalid CRON secret');
 	}
 
 	await next();

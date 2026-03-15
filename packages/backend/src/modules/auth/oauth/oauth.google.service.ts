@@ -14,7 +14,7 @@ export default class OauthGoogleService extends OauthService {
 		this.oauth2Client = new google.auth.OAuth2(
 			process.env.OAUTH_GOOGLE_CLIENT_ID,
 			process.env.OAUTH_GOOGLE_CLIENT_SECRET,
-			this.getRedirectUrl(authProvider.Google as AuthProvider),
+			this.getRedirectUrlCallback(authProvider.Google as AuthProvider),
 		);
 	}
 

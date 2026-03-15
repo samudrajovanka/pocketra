@@ -41,6 +41,7 @@ const EXPENSE_CATEGORIES = [
 	'Donation',
 	'Pet Care',
 	'Childcare',
+	'Sport',
 	'Other',
 ];
 

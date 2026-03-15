@@ -7,9 +7,9 @@ export default abstract class OauthService {
 		oauthState: string,
 		query: Record<string, string>,
 	): Promise<OauthProfile>;
-	protected abstract getProfile(): Promise<OauthProfile>;
+	abstract getProfile(): Promise<OauthProfile>;
 
-	protected getRedirectUrl(type: AuthProvider) {
+	protected getRedirectUrlCallback(type: AuthProvider) {
 		let pathUrl = '';
 
 		if (type === authProvider.Google) {

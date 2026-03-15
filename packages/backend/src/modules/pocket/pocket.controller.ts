@@ -5,8 +5,8 @@ import type { LoggedUser } from '../auth/types';
 import PocketService from './pocket.service';
 import {
 	zGetPocketByIdParamValidator,
+	zPayloadCreatePocketValidator,
 	zPayloadGetPocketsValidator,
-	zPayloadreatePocketValidator,
 	zPayloadUpdatePocketValidator,
 } from './pocket.validator';
 import type {
@@ -20,7 +20,7 @@ const { createHandlers } = createFactory<{ Variables: { user: LoggedUser } }>();
 
 export const createPocket = createHandlers(
 	authMiddleware,
-	zPayloadreatePocketValidator,
+	zPayloadCreatePocketValidator,
 	async (c) => {
 		const user = c.var.user;
 		const payload = c.req.valid('json') as PayloadCreatePocket;

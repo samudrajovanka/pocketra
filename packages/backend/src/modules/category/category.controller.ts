@@ -15,7 +15,7 @@ export const getCategories = createHandlers(authMiddleware, async (c) => {
 		(res, category) => {
 			if (category.type === TRANSACTION_TYPE.income) {
 				res.income.push(category);
-			} else {
+			} else if (category.type === TRANSACTION_TYPE.expense) {
 				res.expense.push(category);
 			}
 

@@ -12,7 +12,7 @@ export const payloadCreatePocketValidator = z.object({
 	initialBalance: z.number().min(0),
 });
 
-export const zPayloadreatePocketValidator = validationMiddleware(
+export const zPayloadCreatePocketValidator = validationMiddleware(
 	'json',
 	payloadCreatePocketValidator,
 );
