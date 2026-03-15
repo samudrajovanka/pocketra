@@ -14,6 +14,8 @@ export type GetTransactionsParams = CursorPaginationParams & {
 	description?: string;
 	minAmount?: number;
 	maxAmount?: number;
+	startDate?: Date;
+	endDate?: Date;
 };
 
 export type CreateTransactionPayload = z.infer<

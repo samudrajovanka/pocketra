@@ -1,3 +1,4 @@
+import { endOfDay, startOfDay } from 'date-fns';
 import { and, desc, eq, gte, ilike, inArray, lte } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { db } from '../../config/db';
@@ -153,6 +154,18 @@ export default class TransactionService {
 		if (params.maxAmount) {
 			conditions.push(
 				lte(transactionsTable.amount, params.maxAmount.toString()),
+			);
+		}
+
+		if (params.startDate) {
+			conditions.push(
+				gte(transactionsTable.date, startOfDay(new Date(params.startDate))),
+			);
+		}
+
+		if (params.endDate) {
+			conditions.push(
+				lte(transactionsTable.date, endOfDay(new Date(params.endDate))),
 			);
 		}
 

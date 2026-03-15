@@ -23,6 +23,8 @@ export const payloadGetTransactionsValidator = z.object({
 	description: z.string().optional(),
 	minAmount: z.coerce.number().optional(),
 	maxAmount: z.coerce.number().optional(),
+	startDate: z.coerce.date().optional(),
+	endDate: z.coerce.date().optional(),
 });
 
 export const zPayloadGetTransactionsValidator = validationMiddleware(

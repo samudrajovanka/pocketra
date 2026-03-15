@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
@@ -13,7 +13,7 @@ import TransactionFilterModal, {
 type TransactionFiltersProps = Pick<TransactionFilterModalProps, 'hideFilter'>;
 
 const TransactionFilters = ({ hideFilter }: TransactionFiltersProps) => {
-	const { filters, setFilters } = useTransactionFiltersStore();
+	const { filters, setFilters, resetFilters } = useTransactionFiltersStore();
 	const [search, setSearch] = useState(filters.description || '');
 	const debouncedSearch = useDebounce(search);
 
@@ -31,16 +31,21 @@ const TransactionFilters = ({ hideFilter }: TransactionFiltersProps) => {
 	}, [debouncedSearch, filters, setFilters]);
 
 	const resetAllFilters = () => {
-		setFilters({});
+		resetFilters();
 		setSearch('');
 	};
 
-	const hasAnyFilter =
-		(!hideFilter?.pocket && filters.pocketId) ||
-		filters.type ||
-		filters.description ||
-		filters.minAmount ||
-		filters.maxAmount;
+	const hasAnyFilter = useMemo(
+		() =>
+			(!hideFilter?.pocket && filters.pocketId) ||
+			filters.type ||
+			filters.description ||
+			filters.minAmount ||
+			filters.maxAmount ||
+			filters.startDate ||
+			filters.endDate,
+		[filters, hideFilter],
+	);
 
 	return (
 		<Card data-card-size="small">

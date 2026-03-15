@@ -1,8 +1,11 @@
-export const REPORT_PERIOD = {
-	today: 'today',
-	month_to_date: 'month_to_date',
-	full_month: 'full_month',
-	last_7_days: 'last_7_days',
-	last_30_days: 'last_30_days',
-	custom: 'custom',
-} as const;
+import type { DateRangePeriod } from '../../../types/time';
+import { DATE_RANGE_PERIOD } from '../../../utils/constants/time';
+
+export const REPORT_PERIOD: Record<DateRangePeriod, DateRangePeriod> = {
+	[DATE_RANGE_PERIOD.today]: DATE_RANGE_PERIOD.today,
+	[DATE_RANGE_PERIOD.month_to_date]: DATE_RANGE_PERIOD.month_to_date,
+	[DATE_RANGE_PERIOD.full_month]: DATE_RANGE_PERIOD.full_month,
+	[DATE_RANGE_PERIOD.last_7_days]: DATE_RANGE_PERIOD.last_7_days,
+	[DATE_RANGE_PERIOD.last_30_days]: DATE_RANGE_PERIOD.last_30_days,
+	[DATE_RANGE_PERIOD.custom]: DATE_RANGE_PERIOD.custom,
+};

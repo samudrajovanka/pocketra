@@ -1,17 +1,30 @@
 import { create } from 'zustand';
 import type { GetTransactionsParams } from '@/endpoints/transaction/types';
+import type { DateRangePeriod } from '@/types/time';
+
+export type DatePreset =
+	| Extract<DateRangePeriod, 'last_7_days' | 'full_month' | 'custom'>
+	| 'all';
+
+export type Filter = GetTransactionsParams & {
+	datePreset: DatePreset;
+};
 
 type TransactionFiltersStore = {
-	filters: GetTransactionsParams;
-	setFilters: (filters: GetTransactionsParams) => void;
+	filters: Filter;
+	setFilters: (filters: Filter) => void;
 
 	resetFilters: () => void;
 };
 
+const defaultFilter: Filter = {
+	datePreset: 'all',
+};
+
 const useTransactionFiltersStore = create<TransactionFiltersStore>((set) => ({
-	filters: {},
+	filters: defaultFilter,
 	setFilters: (filters) => set({ filters }),
-	resetFilters: () => set({ filters: {} }),
+	resetFilters: () => set({ filters: defaultFilter }),
 }));
 
 export default useTransactionFiltersStore;

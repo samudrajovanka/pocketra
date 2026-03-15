@@ -10,7 +10,6 @@
   "dependencies": {
     "@hono/zod-validator": "^0.7.5",
     "date-fns": "^4.1.0",
-    "dayjs": "^1.11.19",
     "drizzle-orm": "^0.44.7",
     "googleapis": "^171.0.0",
     "hono": "^4.10.7",

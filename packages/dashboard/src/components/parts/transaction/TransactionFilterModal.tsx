@@ -1,7 +1,9 @@
 import { Filter } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import {
 	Dialog,
 	DialogContent,
@@ -20,8 +22,15 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import type { GetTransactionsParams } from '@/endpoints/transaction/types';
+import { DATE_RANGE_PERIOD } from '@/lib/constants/time';
+import { TRANSACTION_TYPE } from '@/lib/constants/transactions';
+import { getDateRange } from '@/lib/helpers/time';
 import { useGetPocketOptionsQuery } from '@/query/pocket';
-import useTransactionFiltersStore from '@/store/transactionFiltersStore';
+import useTransactionFiltersStore, {
+	type DatePreset as TransactionDatePreset,
+	type Filter as TransactionFilter,
+} from '@/store/transactionFiltersStore';
+import type { DateRangePeriod } from '@/types/time';
 import type { TransactionType } from '@/types/transaction';
 import QueryHandling from '../query/QueryHandling';
 
@@ -31,13 +40,16 @@ export type TransactionFilterModalProps = {
 	};
 };
 
+const DEFAULT_CUSTOM_DATE_RANGE = getDateRange(DATE_RANGE_PERIOD.last_7_days);
+
 const TransactionFilterModal = ({
 	hideFilter,
 }: TransactionFilterModalProps) => {
 	const { filters, setFilters } = useTransactionFiltersStore();
 	const [open, setOpen] = useState(false);
-	const [localFilters, setLocalFilters] = useState<GetTransactionsParams>({
+	const [localFilters, setLocalFilters] = useState<TransactionFilter>({
 		pocketId: '',
+		datePreset: 'all',
 	});
 	const getPocketOptionsQuery = useGetPocketOptionsQuery();
 
@@ -48,6 +60,9 @@ const TransactionFilterModal = ({
 				type: filters.type ?? ('all' as TransactionType),
 				minAmount: filters.minAmount,
 				maxAmount: filters.maxAmount,
+				datePreset: filters.datePreset,
+				startDate: filters.startDate,
+				endDate: filters.endDate,
 			};
 
 			if (
@@ -76,6 +91,37 @@ const TransactionFilterModal = ({
 		setLocalFilters(newFilters);
 	};
 
+	const handleDatePresetChange = (value: string) => {
+		const preset = value as TransactionDatePreset;
+
+		if (preset === 'all') {
+			setLocalFilters({
+				...localFilters,
+				datePreset: 'all',
+				startDate: undefined,
+				endDate: undefined,
+			});
+
+			return;
+		}
+
+		let customDateRange: Partial<DateRange> | undefined;
+		if (preset === 'custom') customDateRange = DEFAULT_CUSTOM_DATE_RANGE;
+		else if (preset === 'full_month')
+			customDateRange = {
+				from: new Date(),
+			};
+
+		const dateRange = getDateRange(preset as DateRangePeriod, customDateRange);
+
+		setLocalFilters({
+			...localFilters,
+			datePreset: preset,
+			startDate: dateRange.from,
+			endDate: dateRange.to,
+		});
+	};
+
 	const applyFilters = () => {
 		const newFilters = {
 			...filters,
@@ -89,6 +135,10 @@ const TransactionFilterModal = ({
 			delete newFilters.type;
 		if (!localFilters.minAmount) delete newFilters.minAmount;
 		if (!localFilters.maxAmount) delete newFilters.maxAmount;
+		if (!localFilters.datePreset || localFilters.datePreset === 'all') {
+			delete newFilters.startDate;
+			delete newFilters.endDate;
+		}
 
 		setFilters(newFilters);
 		setOpen(false);
@@ -98,15 +148,21 @@ const TransactionFilterModal = ({
 		setLocalFilters({
 			pocketId: 'all',
 			type: 'all' as TransactionType,
+			datePreset: 'all',
+			startDate: undefined,
+			endDate: undefined,
 		});
 	};
 
-	const activeFilterCount = [
-		!hideFilter?.pocket && filters.pocketId,
-		filters.type,
-		filters.minAmount,
-		filters.maxAmount,
-	].filter(Boolean).length;
+	const activeFilterCount = useMemo(() => {
+		return [
+			!hideFilter?.pocket && filters.pocketId,
+			filters.type,
+			filters.minAmount,
+			filters.maxAmount,
+			filters.startDate || filters.endDate,
+		].filter(Boolean).length;
+	}, [filters, hideFilter]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -171,11 +227,57 @@ const TransactionFilterModal = ({
 							</SelectTrigger>
 							<SelectContent>
 								<SelectItem value="all">All Types</SelectItem>
-								<SelectItem value="income">Income</SelectItem>
-								<SelectItem value="expense">Expense</SelectItem>
+								<SelectItem value={TRANSACTION_TYPE.income}>Income</SelectItem>
+								<SelectItem value={TRANSACTION_TYPE.expense}>
+									Expense
+								</SelectItem>
 							</SelectContent>
 						</Select>
 					</Field>
+
+					<Field>
+						<FieldLabel>Date Range</FieldLabel>
+						<Select
+							value={localFilters.datePreset}
+							onValueChange={handleDatePresetChange}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="All Time" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="all">All Time</SelectItem>
+								<SelectItem value={DATE_RANGE_PERIOD.last_7_days}>
+									Last 7 Days
+								</SelectItem>
+								<SelectItem value={DATE_RANGE_PERIOD.full_month}>
+									This Month
+								</SelectItem>
+								<SelectItem value={DATE_RANGE_PERIOD.custom}>
+									Custom Date Range
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</Field>
+
+					{localFilters.datePreset === DATE_RANGE_PERIOD.custom && (
+						<Field>
+							<FieldLabel>Custom Range</FieldLabel>
+							<DateRangePicker
+								value={{
+									from: localFilters.startDate,
+									to: localFilters.endDate,
+								}}
+								onChange={(range) => {
+									setLocalFilters({
+										...localFilters,
+										startDate: range?.from,
+										endDate: range?.to,
+									});
+								}}
+								placeholder="Select date range"
+							/>
+						</Field>
+					)}
 
 					<div className="grid grid-cols-2 gap-4">
 						<Field>
