@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/apiClient';
 import type { CursorPaginationMeta } from '@/types/pagination';
 import type { SuccessResponseData } from '@/types/response';
-import type { Transaction } from '@/types/transaction';
+import type { Transaction, TransferTransaction } from '@/types/transaction';
 import type {
 	CreateTransactionPayload,
 	GetTransactionsParams,
@@ -19,9 +19,9 @@ export const getTransactions = async (params?: GetTransactionsParams) => {
 };
 
 export const getTransactionById = async (id: string) => {
-	return await apiClient.get<SuccessResponseData<Transaction>>(
-		`/transactions/${id}`,
-	);
+	return await apiClient.get<
+		SuccessResponseData<Transaction | TransferTransaction>
+	>(`/transactions/${id}`);
 };
 
 export const createTransaction = async (payload: CreateTransactionPayload) => {

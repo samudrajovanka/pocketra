@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import TextTransaction from '@/components/ui/text-transaction';
 import TransferBadge from '@/components/ui/transfer-badge';
+import { isTransferTransaction } from '@/lib/helpers/transactions';
 import type { Transaction } from '@/types/transaction';
 
 type TransactionItemProps = {
@@ -33,8 +34,10 @@ const TransactionItem = ({
 						{!hidePocketName && (
 							<Badge variant="secondary">{transaction.pocket.name}</Badge>
 						)}
+
 						<Badge variant="outline">{transaction.category.name}</Badge>
-						{transaction.relatedPocket && (
+
+						{isTransferTransaction(transaction) && (
 							<TransferBadge
 								type={transaction.type}
 								relatedPocketName={transaction.relatedPocket.name}

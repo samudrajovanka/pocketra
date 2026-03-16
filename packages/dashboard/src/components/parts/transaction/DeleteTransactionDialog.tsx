@@ -11,20 +11,21 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useDeleteTransactionMutation } from '@/query/transaction';
 
 type DeleteTransactionDialogProps = {
 	transactionId: string;
 	pocketId?: string;
-	children: React.ReactNode;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 };
 
 const DeleteTransactionDialog = ({
+	open,
+	onOpenChange,
 	transactionId,
 	pocketId,
-	children,
 }: DeleteTransactionDialogProps) => {
 	const navigate = useNavigate();
 	const search = useSearch({ strict: false }) as {
@@ -53,8 +54,14 @@ const DeleteTransactionDialog = ({
 	};
 
 	return (
-		<AlertDialog>
-			<AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+		<AlertDialog
+			open={open}
+			onOpenChange={() => {
+				if (!deleteTransactionMutation.isPending) {
+					onOpenChange(false);
+				}
+			}}
+		>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

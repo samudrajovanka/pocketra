@@ -14,14 +14,14 @@ export const createTransactionValidator = z.object({
 });
 
 export const updateTransactionValidator = z.object({
-	categoryId: z.uuidv7('Category is required').optional(),
-	pocketId: z.uuidv7('Pocket is required').optional(),
-	amount: z.number().positive('Amount must be positive').optional(),
+	pocketId: z.uuidv7('Pocket is required'),
+	categoryId: z.uuidv7('Category is required'),
+	amount: z.number().positive('Amount must be positive'),
 	description: z
 		.string()
-		.max(255, 'Description must be at most 255 characters')
-		.optional(),
-	date: z.iso.datetime().optional(),
+		.min(1, 'Description is required')
+		.max(255, 'Description must be at most 255 characters'),
+	date: z.iso.datetime('Date is required'),
 });
 
 export const transferTransactionValidator = z.object({
@@ -33,9 +33,9 @@ export const transferTransactionValidator = z.object({
 });
 
 export const updateTransferTransactionValidator = z.object({
-	fromPocketId: z.string().min(1, 'Source Pocket is required').optional(),
-	toPocketId: z.string().min(1, 'Destination Pocket is required').optional(),
-	amount: z.number().positive('Amount must be positive').optional(),
-	description: z.string().max(255).min(1, 'Description is required').optional(),
-	date: z.iso.datetime('Date is required').optional(),
+	fromPocketId: z.string().min(1, 'Source Pocket is required'),
+	toPocketId: z.string().min(1, 'Destination Pocket is required'),
+	amount: z.number().positive('Amount must be positive'),
+	description: z.string().max(255).min(1, 'Description is required'),
+	date: z.iso.datetime('Date is required'),
 });

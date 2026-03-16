@@ -1,13 +1,23 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowUp, Plus } from 'lucide-react';
+import { useEffect } from 'react';
 import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
 import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import TransactionFilters from '@/components/parts/transaction/TransactionFilters';
 import TransactionList from '@/components/parts/transaction/TransactionList';
 import { Button } from '@/components/ui/button';
 import PageTitle from '@/components/ui/page-title';
+import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 
 const TransactionListPage = () => {
+	const { resetFilters } = useTransactionFiltersStore();
+
+	useEffect(() => {
+		return () => {
+			resetFilters();
+		};
+	}, [resetFilters]);
+
 	return (
 		<div>
 			<DashboardStickyHeader>

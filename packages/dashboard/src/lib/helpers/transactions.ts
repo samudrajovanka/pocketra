@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import type { Transaction } from '@/types/transaction';
+import type { Transaction, TransferTransaction } from '@/types/transaction';
 import { ONE_WEEK_IN_MS } from '../constants/time';
 
 export const isEditableTransaction = (createdAt: string) => {
@@ -24,4 +24,10 @@ export const groupTransactionsByMonth = (transactions: Transaction[]) => {
 	return Object.entries(groupedTransactions).sort(
 		(a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime(),
 	);
+};
+
+export const isTransferTransaction = (
+	transaction: Transaction | TransferTransaction,
+): transaction is TransferTransaction => {
+	return 'transferId' in transaction && transaction.transferId !== null;
 };

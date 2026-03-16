@@ -5,8 +5,7 @@ import {
 	startOfMonth,
 	subDays,
 } from 'date-fns';
-import type { DateRange } from 'react-day-picker';
-import type { DateRangePeriod } from '@/types/time';
+import type { DateRange, DateRangePeriod } from '@/types/time';
 import { DATE_RANGE_PERIOD } from '../constants/time';
 
 const getTodayRange = (now: Date): DateRange => {
@@ -18,14 +17,14 @@ const getTodayRange = (now: Date): DateRange => {
 
 const getLast7DaysRange = (now: Date): DateRange => {
 	const to = endOfDay(now);
-	const from = subDays(to, 6);
+	const from = startOfDay(subDays(to, 6));
 
 	return { from, to };
 };
 
 const getLast30DaysRange = (now: Date): DateRange => {
 	const to = endOfDay(now);
-	const from = subDays(to, 29);
+	const from = startOfDay(subDays(to, 29));
 
 	return { from, to };
 };
@@ -58,26 +57,23 @@ export const getDateRange = (
 		to?: Date;
 	},
 ): DateRange => {
-	const now = new Date();
+	const dateFrom = customDate?.from || new Date();
 
 	switch (period) {
 		case DATE_RANGE_PERIOD.today:
-			return getTodayRange(now);
+			return getTodayRange(dateFrom);
 
 		case DATE_RANGE_PERIOD.last_7_days:
-			return getLast7DaysRange(now);
+			return getLast7DaysRange(dateFrom);
 
 		case DATE_RANGE_PERIOD.last_30_days:
-			return getLast30DaysRange(now);
+			return getLast30DaysRange(dateFrom);
 
 		case DATE_RANGE_PERIOD.month_to_date:
-			return getMonthToDateRange(now);
+			return getMonthToDateRange(dateFrom);
 
 		case DATE_RANGE_PERIOD.full_month:
-			if (!customDate?.from) {
-				throw new Error('Start date is required for full month period');
-			}
-			return getFullMonthRange(customDate.from);
+			return getFullMonthRange(dateFrom);
 
 		case DATE_RANGE_PERIOD.custom:
 			if (!customDate?.from || !customDate?.to) {
@@ -88,6 +84,6 @@ export const getDateRange = (
 			return getCustomRange(customDate.from, customDate.to);
 
 		default:
-			return getMonthToDateRange(now);
+			return getMonthToDateRange(dateFrom);
 	}
 };

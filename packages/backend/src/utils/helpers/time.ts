@@ -35,7 +35,7 @@ const getTodayRangeComparison = (now: Date): DateRangeComparison => {
 
 const getLast7DaysRange = (now: Date): DateRange => {
 	const end = endOfDay(now);
-	const start = subDays(end, 6);
+	const start = startOfDay(subDays(end, 6));
 
 	return { start, end };
 };
@@ -53,7 +53,7 @@ const getLast7DaysRangeComparison = (now: Date): DateRangeComparison => {
 
 const getLast30DaysRange = (now: Date): DateRange => {
 	const end = endOfDay(now);
-	const start = subDays(end, 29);
+	const start = startOfDay(subDays(end, 29));
 
 	return { start, end };
 };

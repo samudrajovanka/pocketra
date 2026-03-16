@@ -1,5 +1,6 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
 import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
@@ -23,15 +24,23 @@ export default function CreateTransactionPage() {
 	const { mutateAsync: transferTransaction, isPending: isTransferring } =
 		useTransferTransactionMutation();
 
+	const generateSuccessNavigate = useCallback(
+		(pocketId: string) => {
+			if (search.from === 'detail_pocket') {
+				return `/pockets/${pocketId}`;
+			}
+
+			return '/transactions';
+		},
+		[search.from],
+	);
+
 	const handleCreateSubmit = async (values: CreateTransactionPayload) => {
 		try {
 			await createTransaction(values);
 			toast.success('Transaction created successfully');
 			navigate({
-				to:
-					search.from === 'detail_pocket'
-						? `/pockets/${values.pocketId}`
-						: '/transactions',
+				to: generateSuccessNavigate(values.pocketId),
 				replace: true,
 			});
 		} catch (error) {
@@ -46,12 +55,9 @@ export default function CreateTransactionPage() {
 	const handleTransferSubmit = async (values: TransferTransactionPayload) => {
 		try {
 			await transferTransaction(values);
-			toast.success('Transfer successful');
+			toast.success('Transfer successfully');
 			navigate({
-				to:
-					search.from === 'detail_pocket'
-						? `/pockets/${values.fromPocketId}`
-						: '/transactions',
+				to: generateSuccessNavigate(values.fromPocketId),
 				replace: true,
 			});
 		} catch (error) {

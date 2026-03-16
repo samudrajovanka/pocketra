@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -22,11 +23,12 @@ const DeletePocketDialog = ({
 	open,
 	onOpenChange,
 }: DeletePocketDialogProps) => {
+	const navigate = useNavigate();
 	const deleteMutation = useDeletePocketMutation();
 
 	const handleDelete = async () => {
 		await deleteMutation.mutateAsync(pocket.id);
-		onOpenChange(false);
+		navigate({ to: '/pockets', replace: true });
 	};
 
 	return (

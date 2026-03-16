@@ -1,21 +1,25 @@
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
-import { AlertCircle } from 'lucide-react';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
 import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
 import QueryHandling from '@/components/parts/query/QueryHandling';
+import CannotEditTransactionAlert from '@/components/parts/transaction/CannotEditTransactionAlert';
 import NotFoundTransaction from '@/components/parts/transaction/NotFoundTransaction';
 import TransactionForm from '@/components/parts/transaction/TransactionForm';
 import TransferPocketForm from '@/components/parts/transaction/TransferPocketForm';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import PageTitle from '@/components/ui/page-title';
 import { Skeleton } from '@/components/ui/skeleton';
 import type {
 	UpdateTransactionPayload,
 	UpdateTransferTransactionPayload,
 } from '@/endpoints/transaction/types';
-import { isEditableTransaction } from '@/lib/helpers/transactions';
+import { TRANSACTION_TYPE } from '@/lib/constants/transactions';
+import {
+	isEditableTransaction,
+	isTransferTransaction,
+} from '@/lib/helpers/transactions';
 import {
 	useGetTransactionByIdQuery,
 	useUpdateTransactionMutation,
@@ -57,11 +61,31 @@ export default function EditTransactionPage() {
 		}
 	};
 
+	const generateSuccessTransferNavigate = useCallback(
+		(fromPocketId: string, toPocketId: string) => {
+			if (search.from !== 'detail_pocket') return '/transactions';
+
+			switch (search.method) {
+				case TRANSACTION_TYPE.transfer_in:
+					return `/pockets/${toPocketId}`;
+				case TRANSACTION_TYPE.transfer_out:
+					return `/pockets/${fromPocketId}`;
+			}
+		},
+		[search.from, search.method],
+	);
+
 	const handleTransferSubmit = async (
 		values: UpdateTransferTransactionPayload,
 	) => {
 		try {
-			const transferId = getTransactionByIdQuery.data?.data.data.transferId;
+			const transaction = getTransactionByIdQuery.data?.data.data;
+
+			if (!transaction || !isTransferTransaction(transaction)) {
+				throw new Error('Transaction is not a transfer');
+			}
+
+			const transferId = transaction.transferId;
 			if (!transferId) throw new Error('Transfer ID not found');
 
 			await updateTransferTransaction({
@@ -69,11 +93,12 @@ export default function EditTransactionPage() {
 				payload: values,
 			});
 			toast.success('Transfer updated successfully');
+
 			navigate({
-				to:
-					search.from === 'detail_pocket'
-						? `/pockets/${values.fromPocketId}`
-						: '/transactions',
+				to: generateSuccessTransferNavigate(
+					values.fromPocketId,
+					values.toPocketId,
+				),
 				replace: true,
 			});
 		} catch (error) {
@@ -103,7 +128,7 @@ export default function EditTransactionPage() {
 				render={({ data }) => {
 					const transaction = data.data;
 					const isEditable = isEditableTransaction(transaction.createdAt);
-					const isTransfer = !!transaction.transferId;
+					const isTransfer = isTransferTransaction(transaction);
 
 					const backTo =
 						search.from === 'detail_pocket'
@@ -118,16 +143,7 @@ export default function EditTransactionPage() {
 
 							<DashboardBody>
 								<div className="space-y-6">
-									{!isEditable && (
-										<Alert variant="destructive">
-											<AlertCircle className="h-4 w-4" />
-											<AlertTitle>Cannot Edit</AlertTitle>
-											<AlertDescription>
-												This transaction is older than 1 week after created and
-												cannot be edited.
-											</AlertDescription>
-										</Alert>
-									)}
+									{!isEditable && <CannotEditTransactionAlert />}
 
 									{isTransfer ? (
 										<TransferPocketForm
@@ -136,10 +152,10 @@ export default function EditTransactionPage() {
 												fromPocketId:
 													transaction.type === 'transfer_out'
 														? transaction.pocketId
-														: (transaction.relatedPocketId ?? undefined),
+														: transaction.relatedPocketId,
 												toPocketId:
 													transaction.type === 'transfer_out'
-														? (transaction.relatedPocketId ?? undefined)
+														? transaction.relatedPocketId
 														: transaction.pocketId,
 												amount: Number(transaction.amount),
 												description: transaction.description || '',

@@ -1,4 +1,5 @@
-import { and, desc, eq, gte, ilike, lte, type SQL } from 'drizzle-orm';
+import { format } from 'date-fns';
+import { and, desc, eq, gte, ilike, lte, type SQL, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { db } from '../../config/db';
 import type { CursorPagination } from '../../utils/helpers/pagination';
@@ -141,11 +142,21 @@ export default class TransactionRepository {
 		}
 
 		if (params.startDate) {
-			conditions.push(gte(transactionsTable.date, params.startDate));
+			conditions.push(
+				gte(
+					sql`DATE(${transactionsTable.date})`,
+					format(params.startDate, 'yyyy-MM-dd'),
+				),
+			);
 		}
 
 		if (params.endDate) {
-			conditions.push(lte(transactionsTable.date, params.endDate));
+			conditions.push(
+				lte(
+					sql`DATE(${transactionsTable.date})`,
+					format(params.endDate, 'yyyy-MM-dd'),
+				),
+			);
 		}
 
 		if (params.pagination.cursor) {

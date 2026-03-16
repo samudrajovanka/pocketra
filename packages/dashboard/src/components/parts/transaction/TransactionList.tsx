@@ -13,9 +13,10 @@ import useTransactionFiltersStore from '@/store/transactionFiltersStore';
 
 type TransactionListProps = {
 	hidePocketName?: boolean;
+	from?: 'detail_pocket';
 };
 
-const TransactionList = ({ hidePocketName }: TransactionListProps) => {
+const TransactionList = ({ hidePocketName, from }: TransactionListProps) => {
 	const { filters } = useTransactionFiltersStore();
 	const transactionsQuery = useGetInfiniteTransactionsQuery({
 		params: filters,
@@ -62,6 +63,9 @@ const TransactionList = ({ hidePocketName }: TransactionListProps) => {
 												<Link
 													key={transaction.id}
 													to="/transactions/$id"
+													search={{
+														from: from || undefined,
+													}}
 													params={{ id: transaction.id }}
 													className="block group/transaction-item"
 												>

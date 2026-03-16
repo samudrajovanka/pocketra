@@ -37,6 +37,7 @@ export default function LoginPage() {
 						Login with your Google account to continue
 					</CardDescription>
 				</CardHeader>
+
 				<CardContent>
 					<Button className="w-full mt-4" onClick={handleGoogleLogin}>
 						<svg

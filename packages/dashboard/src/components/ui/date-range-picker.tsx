@@ -1,68 +1,55 @@
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
 import type { DateRange } from 'react-day-picker';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from '@/components/ui/popover';
+import DatePicker from '@/components/ui/date-picker';
 import { cn } from '@/lib/utils';
 
 type DateRangePickerProps = {
 	value?: DateRange;
 	onChange?: (range: DateRange | undefined) => void;
 	className?: string;
-	placeholder?: string;
 };
 
 const DateRangePicker = ({
 	value,
 	onChange,
 	className,
-	placeholder = 'Pick a date range',
 }: DateRangePickerProps) => {
-	const [open, setOpen] = useState(false);
+	const handleFromChange = (from: Date | undefined) => {
+		onChange?.({
+			from,
+			to: value?.to,
+		});
+	};
 
-	const displayText = () => {
-		if (value?.from) {
-			if (value.to) {
-				return `${format(value.from, 'MMM d, yyyy')} - ${format(value.to, 'MMM d, yyyy')}`;
-			}
-			return format(value.from, 'MMM d, yyyy');
-		}
-		return placeholder;
+	const handleToChange = (to: Date | undefined) => {
+		onChange?.({
+			from: value?.from,
+			to,
+		});
 	};
 
 	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					variant="outline"
-					className={cn(
-						'w-full justify-start text-left font-normal',
-						!value?.from && 'text-muted-foreground',
-						className,
-					)}
-				>
-					<CalendarIcon className="mr-2 size-4" />
-					{displayText()}
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent className="w-auto p-0" align="start">
-				<Calendar
-					mode="range"
-					selected={value}
-					onSelect={onChange}
-					numberOfMonths={2}
-					defaultMonth={value?.from}
+		<div className="@container/date-range-picker">
+			<div
+				className={cn(
+					'grid gap-2 @2xs/date-range-picker:grid-cols-2 @xs/date-range-picker:grid-cols-2',
+					className,
+				)}
+			>
+				<DatePicker
+					value={value?.from}
+					onChange={handleFromChange}
+					placeholder="Start date"
+					disabled={value?.to ? { after: value.to } : undefined}
 				/>
-			</PopoverContent>
-		</Popover>
+				<DatePicker
+					value={value?.to}
+					onChange={handleToChange}
+					placeholder="End date"
+					disabled={value?.from ? { before: value.from } : undefined}
+				/>
+			</div>
+		</div>
 	);
 };
 
-export { DateRangePicker };
-export type { DateRangePickerProps };
+export default DateRangePicker;

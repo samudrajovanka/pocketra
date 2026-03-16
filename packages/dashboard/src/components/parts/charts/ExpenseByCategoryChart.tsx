@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfoTooltip } from '@/components/ui/tooltip';
-import type { ExpenseByCategoryResponse } from '@/endpoints/report/types';
 import { useGetExpenseByCategoryQuery } from '@/query/report';
 import type { ReportPeriod } from '@/types/report';
 
@@ -49,26 +48,19 @@ export function ExpenseByCategoryChart({
 					checkEmpty={({ data }) => !data.data.length}
 					render={({ data }) => {
 						const chartData =
-							data.data.map(
-								(item: ExpenseByCategoryResponse[number], index: number) => ({
-									...item,
-									amount: Number(item.amount),
-									fill: `var(--chart-${(index % 5) + 1})`,
-								}),
-							) || [];
+							data.data.map((item, index) => ({
+								...item,
+								amount: Number(item.amount),
+								fill: `var(--chart-${(index % 5) + 1})`,
+							})) || [];
 
-						const chartConfig = {
-							amount: {
-								label: 'Amount',
-							},
-							...chartData.reduce((acc: ChartConfig, item) => {
-								acc[item.name] = {
-									label: item.name,
-									color: item.fill,
-								};
-								return acc;
-							}, {} as ChartConfig),
-						} satisfies ChartConfig;
+						const chartConfig = chartData.reduce((acc, item) => {
+							acc[item.name] = {
+								label: item.name,
+								color: item.fill,
+							};
+							return acc;
+						}, {} as ChartConfig);
 
 						return (
 							<ChartContainer config={chartConfig} className="mx-auto max-h-40">

@@ -9,10 +9,8 @@ export type Transaction = {
 	categoryId: string;
 	type: TransactionType;
 	amount: string;
-	description: string | null;
+	description: string;
 	date: string;
-	transferId: string | null;
-	relatedPocketId: string | null;
 	createdAt: string;
 	updatedAt: string;
 	pocket: {
@@ -23,8 +21,13 @@ export type Transaction = {
 		id: string;
 		name: string;
 	};
+};
+
+export type TransferTransaction = Transaction & {
+	transferId: string;
+	relatedPocketId: string;
 	relatedPocket: {
 		id: string;
 		name: string;
-	} | null;
+	};
 };

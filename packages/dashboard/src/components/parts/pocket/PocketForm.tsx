@@ -64,9 +64,17 @@ const PocketForm = <T extends 'create' | 'update'>({
 		},
 		validators: {
 			onChange:
-				type === 'create' ? createPocketValidator : updatePocketValidator,
+				type === 'create'
+					? // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(createPocketValidator as any)
+					: // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(updatePocketValidator as any),
 			onSubmit:
-				type === 'create' ? createPocketValidator : updatePocketValidator,
+				type === 'create'
+					? // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(createPocketValidator as any)
+					: // biome-ignore lint/suspicious/noExplicitAny: use any for validator
+						(updatePocketValidator as any),
 		},
 		onSubmit: async ({ value }) => {
 			await onSubmit(

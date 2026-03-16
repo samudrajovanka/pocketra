@@ -59,7 +59,7 @@ const PocketDetailPage = () => {
 
 					<TransactionFilters hideFilter={{ pocket: true }} />
 
-					<TransactionList hidePocketName />
+					<TransactionList hidePocketName from="detail_pocket" />
 				</div>
 			</DashboardBody>
 		</div>

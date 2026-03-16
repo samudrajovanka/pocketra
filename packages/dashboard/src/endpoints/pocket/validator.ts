@@ -12,8 +12,8 @@ export const createPocketValidator = z.object({
 });
 
 export const updatePocketValidator = z.object({
-	name: z.string().min(1, 'Name is required').optional(),
-	icon: z.string().min(1, 'Icon is required').optional(),
-	type: z.enum(Object.values(POCKET_TYPE) as [string, ...string[]]).optional(),
+	name: z.string().min(1, 'Name is required'),
+	icon: z.string().min(1, 'Icon is required'),
+	type: z.enum(Object.values(POCKET_TYPE) as [string, ...string[]]),
 	color: z.string().nullable().optional(),
 });

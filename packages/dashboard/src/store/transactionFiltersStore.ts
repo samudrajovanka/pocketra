@@ -7,13 +7,12 @@ export type DatePreset =
 	| 'all';
 
 export type Filter = GetTransactionsParams & {
-	datePreset: DatePreset;
+	datePreset?: DatePreset;
 };
 
 type TransactionFiltersStore = {
 	filters: Filter;
 	setFilters: (filters: Filter) => void;
-
 	resetFilters: () => void;
 };
 
@@ -23,7 +22,7 @@ const defaultFilter: Filter = {
 
 const useTransactionFiltersStore = create<TransactionFiltersStore>((set) => ({
 	filters: defaultFilter,
-	setFilters: (filters) => set({ filters }),
+	setFilters: (filters) => set((state) => ({ ...state, filters })),
 	resetFilters: () => set({ filters: defaultFilter }),
 }));
 

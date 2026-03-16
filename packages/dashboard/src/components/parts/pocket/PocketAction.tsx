@@ -15,7 +15,7 @@ type PocketActionProps = {
 };
 
 const PocketAction = ({ pocket }: PocketActionProps) => {
-	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [isShowDeleteDialog, setIsShowDeleteDialog] = useState(false);
 	const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
 	return (
@@ -61,8 +61,8 @@ const PocketAction = ({ pocket }: PocketActionProps) => {
 
 			<DeletePocketDialog
 				pocket={pocket}
-				open={showDeleteDialog}
-				onOpenChange={setShowDeleteDialog}
+				open={isShowDeleteDialog}
+				onOpenChange={setIsShowDeleteDialog}
 			/>
 		</>
 	);
