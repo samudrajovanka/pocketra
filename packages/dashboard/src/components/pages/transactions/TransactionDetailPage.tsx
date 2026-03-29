@@ -20,7 +20,6 @@ import {
 	isTransferTransaction,
 } from '@/lib/helpers/transactions';
 import { useGetTransactionByIdQuery } from '@/query/transaction';
-import type { TransactionType } from '@/types/transaction';
 
 export default function TransactionDetailPage() {
 	const { id } = useParams({ from: '/_authed/transactions/$id' });
@@ -67,10 +66,7 @@ export default function TransactionDetailPage() {
 															params={{ id }}
 															search={{
 																from: search.from || undefined,
-																method: transaction.type as Extract<
-																	TransactionType,
-																	'transfer_in' | 'transfer_out'
-																>,
+																method: transaction.type,
 															}}
 														>
 															<Pencil />
