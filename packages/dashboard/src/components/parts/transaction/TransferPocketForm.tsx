@@ -1,10 +1,9 @@
 import { useForm, useStore } from '@tanstack/react-form';
-import { format } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import type z from 'zod';
 import { Button } from '@/components/ui/button';
+import DatePicker from '@/components/ui/date-picker';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -297,14 +296,14 @@ const TransferPocketForm = <T extends 'create' | 'update'>({
 					return (
 						<Field data-invalid={isInvalid} data-required>
 							<FieldLabel>Date</FieldLabel>
-							<Input
-								type="date"
-								value={format(field.state.value, 'yyyy-MM-dd')}
+							<DatePicker
+								value={
+									field.state.value ? new Date(field.state.value) : undefined
+								}
 								disabled={disabled}
-								onChange={(e) => {
-									const val = e.target.value;
-									if (val) {
-										field.handleChange(new Date(val).toISOString());
+								onChange={(date) => {
+									if (date) {
+										field.handleChange(date.toISOString());
 									} else {
 										field.handleChange('');
 									}
