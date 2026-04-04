@@ -36,7 +36,12 @@ export default class PocketBudgetRepository {
 		const result = await db.query.pocketBudgetsTable.findFirst({
 			where: eq(pocketBudgetsTable.pocketId, pocketId),
 			with: {
-				pocket: true,
+				pocket: {
+					columns: {
+						id: true,
+						userId: true,
+					},
+				},
 			},
 		});
 
@@ -95,7 +100,6 @@ export default class PocketBudgetRepository {
 				...data,
 				limitAmount: data.limitAmount?.toString(),
 				alertThreshold: data.alertThreshold?.toString(),
-				periodStartDate: data.periodStartDate?.toISOString(),
 				nextResetDate: data.nextResetDate?.toISOString(),
 			})
 			.where(eq(pocketBudgetsTable.pocketId, pocketId))

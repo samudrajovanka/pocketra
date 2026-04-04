@@ -168,6 +168,7 @@ export default class ReportService {
 		startDate: Date,
 		endDate: Date,
 	) {
+		console.log(startDate, endDate);
 		const result = await db
 			.select({
 				type: transactionsTable.type,

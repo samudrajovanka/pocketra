@@ -95,16 +95,10 @@ export default class PocketBudgetService {
 
 		const updateData = { ...data } as UpdatePocketBudgetWithResetDate;
 
-		if (data.period && data.periodStartDate) {
+		if (data.period) {
 			const nextResetDate = this.calculateNextResetDate(
 				data.period,
-				new Date(data.periodStartDate),
-			);
-			updateData.nextResetDate = nextResetDate;
-		} else if (data.periodStartDate) {
-			const nextResetDate = this.calculateNextResetDate(
-				existingBudget.period as BudgetPeriod,
-				new Date(data.periodStartDate),
+				new Date(existingBudget.periodStartDate),
 			);
 			updateData.nextResetDate = nextResetDate;
 		}

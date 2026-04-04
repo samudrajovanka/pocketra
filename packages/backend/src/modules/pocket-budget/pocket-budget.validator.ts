@@ -23,7 +23,6 @@ export const updatePocketBudgetValidator = z.object({
 		.enum(Object.values(BUDGET_PERIOD) as [string, ...string[]])
 		.optional() as z.ZodOptional<z.ZodType<BudgetPeriod>>,
 	alertThreshold: z.number().min(0.1).max(1.0).optional(),
-	periodStartDate: z.coerce.date().optional(),
 });
 
 export const zUpdatePocketBudgetValidator = validationMiddleware(

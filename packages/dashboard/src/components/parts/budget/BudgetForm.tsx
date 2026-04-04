@@ -32,6 +32,7 @@ import {
 	useUpdatePocketBudgetMutation,
 } from '@/query/budget';
 import type { BudgetPeriod } from '@/types/budget';
+import { format } from 'date-fns';
 
 type BudgetFormType = 'create' | 'update';
 
@@ -104,6 +105,7 @@ export function BudgetForm<T extends BudgetFormType>({
 			const data = values as CreateBudgetPayload;
 			const payload = {
 				...data,
+				periodStartDate: new Date(format(data.periodStartDate, 'yyyy-MM-dd')),
 				alertThreshold: data.alertThreshold / 100,
 			};
 			await createBudgetMutation.mutateAsync({
