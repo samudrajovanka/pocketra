@@ -1,5 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { cache } from 'react';
+import { toast } from 'sonner';
 
 const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
@@ -12,7 +14,11 @@ export const queryClientConfig = {
 		},
 		mutations: {
 			onError: (error: Error) => {
-				console.error(error.message);
+				if (isAxiosError(error)) {
+					toast.error(error.response?.data.message);
+				} else {
+					toast.error(error.message);
+				}
 			},
 		},
 	},

@@ -15,7 +15,7 @@ export const createBudgetValidator = z.object({
 		.min(1, 'Alert threshold must be at least 1%')
 		.max(100, 'Alert threshold cannot exceed 100%')
 		.default(80),
-	startDate: z.date('Please select a valid start date'),
+	periodStartDate: z.date('Please select a valid start date'),
 });
 
 export const updateBudgetValidator = z.object({

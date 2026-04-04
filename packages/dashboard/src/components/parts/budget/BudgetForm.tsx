@@ -67,7 +67,7 @@ export function BudgetForm<T extends BudgetFormType>({
 				limitAmount: 100000,
 				period: BUDGET_PERIOD.monthly,
 				alertThreshold: 80,
-				startDate: new Date(),
+				periodStartDate: new Date(),
 			};
 		}
 
@@ -215,7 +215,7 @@ export function BudgetForm<T extends BudgetFormType>({
 					</form.Field>
 
 					{isCreate && (
-						<form.Field name="startDate">
+						<form.Field name="periodStartDate">
 							{(field) => (
 								<Field data-invalid={isInvalidField(field)}>
 									<FieldLabel htmlFor={field.name}>Start Date</FieldLabel>
