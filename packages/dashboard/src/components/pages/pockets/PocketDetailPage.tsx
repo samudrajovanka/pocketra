@@ -2,6 +2,7 @@ import { useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import DashboardBody from '@/components/layout/dashboardLayout/DashboardBody';
 import DashboardStickyHeader from '@/components/layout/dashboardLayout/DashboardStickyHeader';
+import { BudgetAlert } from '@/components/parts/budget/BudgetAlert';
 import NotFoundPocket from '@/components/parts/pocket/NotFoundPocket';
 import PocketCard from '@/components/parts/pocket/PocketCard';
 import PocketCardLoading from '@/components/parts/pocket/PocketCardLoading';
@@ -41,15 +42,19 @@ const PocketDetailPage = () => {
 						const pocket = data.data;
 
 						return (
-							<PocketCard
-								pocket={pocket}
-								actionComponent={
-									<PocketDetailActions
-										pocket={pocket}
-										className="justify-center @max-lg/pocket:w-full @min-lg/pocket:w-fit"
-									/>
-								}
-							/>
+							<div className="space-y-4">
+								<PocketCard
+									pocket={pocket}
+									actionComponent={
+										<PocketDetailActions
+											pocket={pocket}
+											className="justify-center @max-lg/pocket:w-full @min-lg/pocket:w-fit"
+										/>
+									}
+								/>
+
+								{pocket.hasBudget && <BudgetAlert pocket={pocket} />}
+							</div>
 						);
 					}}
 				/>

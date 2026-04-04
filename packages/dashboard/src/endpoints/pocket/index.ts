@@ -33,14 +33,17 @@ export const getPocketById = async (id: string) => {
 };
 
 export const createPocket = async (payload: CreatePocketPayload) => {
-	return await apiClient.post<SuccessResponseData<Pocket>>('/pockets', payload);
+	return await apiClient.post<SuccessResponseData<{ id: string }>>(
+		'/pockets',
+		payload,
+	);
 };
 
 export const updatePocket = async (
 	id: string,
 	payload: UpdatePocketPayload,
 ) => {
-	return await apiClient.patch<SuccessResponseData<Pocket>>(
+	return await apiClient.patch<SuccessResponseData<{ id: string }>>(
 		`/pockets/${id}`,
 		payload,
 	);

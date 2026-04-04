@@ -10,12 +10,16 @@ const QueryHandling = <T,>({
 		queryResult;
 
 	if (isLoading && isFetching) {
-		return props.renderLoading ? props.renderLoading : <p>Loading...</p>;
+		return props.renderLoading !== undefined ? (
+			props.renderLoading
+		) : (
+			<p>Loading...</p>
+		);
 	}
 
 	if (isError) {
 		if (isAxiosError(error) && error.status === 404) {
-			return props.renderNotFound ? (
+			return props.renderNotFound !== undefined ? (
 				props.renderNotFound
 			) : (
 				<p>Data not found</p>

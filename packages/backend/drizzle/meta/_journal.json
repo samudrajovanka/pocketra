@@ -78,6 +78,13 @@
       "when": 1773195122413,
       "tag": "0010_add-pocket-type-and-color",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1774944235281,
+      "tag": "0011_create-pocket-budgets",
+      "breakpoints": true
     }
   ]
 }

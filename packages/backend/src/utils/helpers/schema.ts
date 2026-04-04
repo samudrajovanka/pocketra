@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { timestamp, uuid } from 'drizzle-orm/pg-core';
+import { decimal, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 export const timestamps = {
 	createdAt: timestamp('created_at', { withTimezone: true })
@@ -15,3 +15,6 @@ export const baseColumns = {
 	id: uuid('id').default(sql`uuid_generate_v7()`).primaryKey(),
 	...timestamps,
 };
+
+export const amountType = (name: string) =>
+	decimal(name, { precision: 19, scale: 4 });

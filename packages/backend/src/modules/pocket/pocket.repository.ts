@@ -1,5 +1,6 @@
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { db } from '../../config/db';
+import { pocketBudgetsTable } from '../pocket-budget/pocket-budget.schema';
 import { transactionsTable } from '../transaction/transaction.schema';
 import { pocketsTable } from './pocket.schema';
 import type { GetPocketsWithBalanceParams, PocketWithBalance } from './types';
@@ -27,13 +28,18 @@ export default class PocketRepository {
 				createdAt: pocketsTable.createdAt,
 				updatedAt: pocketsTable.updatedAt,
 				currentBalance: balanceSql,
+				hasBudget: sql<boolean>`CASE WHEN ${pocketBudgetsTable.id} IS NOT NULL THEN true ELSE false END`,
 			})
 			.from(pocketsTable)
 			.leftJoin(
 				transactionsTable,
 				eq(pocketsTable.id, transactionsTable.pocketId),
 			)
-			.groupBy(pocketsTable.id)
+			.leftJoin(
+				pocketBudgetsTable,
+				eq(pocketsTable.id, pocketBudgetsTable.pocketId),
+			)
+			.groupBy(pocketsTable.id, pocketBudgetsTable.id)
 			.orderBy(
 				params?.sortBy === 'balance'
 					? sql`current_balance DESC`

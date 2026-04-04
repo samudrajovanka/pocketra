@@ -1,8 +1,8 @@
 import { createFactory } from 'hono/factory';
 import { authMiddleware } from '../../middlewares/auth';
+import type { LoggedFactory } from '../../types/hono';
 import { getCursorPaginationFromQuery } from '../../utils/helpers/pagination';
 import { successResponse } from '../../utils/helpers/response';
-import type { LoggedUser } from '../auth/types';
 import TransactionService from './transaction.service';
 import {
 	zPayloadCreateTransactionValidator,
@@ -23,7 +23,7 @@ import type {
 	PayloadUpdateTransferTransaction,
 } from './types';
 
-const { createHandlers } = createFactory<{ Variables: { user: LoggedUser } }>();
+const { createHandlers } = createFactory<LoggedFactory>();
 
 export const createTransaction = createHandlers(
 	authMiddleware,

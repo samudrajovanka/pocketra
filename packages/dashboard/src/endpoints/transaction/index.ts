@@ -25,7 +25,7 @@ export const getTransactionById = async (id: string) => {
 };
 
 export const createTransaction = async (payload: CreateTransactionPayload) => {
-	return await apiClient.post<SuccessResponseData<Transaction>>(
+	return await apiClient.post<SuccessResponseData<{ id: string }>>(
 		'/transactions',
 		payload,
 	);
@@ -35,14 +35,14 @@ export const updateTransaction = async (
 	id: string,
 	payload: UpdateTransactionPayload,
 ) => {
-	return await apiClient.patch<SuccessResponseData<Transaction>>(
+	return await apiClient.patch<SuccessResponseData<{ id: string }>>(
 		`/transactions/${id}`,
 		payload,
 	);
 };
 
 export const deleteTransaction = async (id: string) => {
-	return await apiClient.delete<SuccessResponseData<Transaction>>(
+	return await apiClient.delete<SuccessResponseData<{ id: string }>>(
 		`/transactions/${id}`,
 	);
 };

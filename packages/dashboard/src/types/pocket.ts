@@ -9,6 +9,7 @@ export type Pocket = {
 	type: PocketType;
 	color?: string;
 	currentBalance: string;
+	hasBudget: boolean;
 	createdAt: string;
 	updatedAt: string;
 };

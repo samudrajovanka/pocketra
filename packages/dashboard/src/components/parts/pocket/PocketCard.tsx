@@ -10,6 +10,7 @@ import { POCKET_TYPE_LABELS } from '@/lib/constants/pockets';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/store/settingsStore';
 import type { Pocket } from '@/types/pocket';
+import { BudgetBadge } from '../budget/BudgetBadge';
 
 type PocketCardProps = {
 	pocket: Pocket;
@@ -49,8 +50,12 @@ const PocketCard = ({
 		>
 			{!noIcon && (
 				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="w-full text-4xl flex items-center justify-between gap-2">
-						<span>{pocket.icon}</span>
+					<CardTitle className="w-full text-4xl flex items-center justify-between gap-4">
+						<div className="flex-1 flex gap-2 items-center justify-between">
+							<span>{pocket.icon}</span>
+
+							{pocket.hasBudget && <BudgetBadge pocketId={pocket.id} />}
+						</div>
 
 						{actionComponent && (
 							<div className="@max-lg/pocket:hidden">{actionComponent}</div>
@@ -88,6 +93,7 @@ const PocketCard = ({
 						'typography-small': size === 'small',
 					})}
 				/>
+
 				<p
 					className={cn(
 						'absolute @max-lg/pocket:top-2 @lg/pocket:bottom-2 right-4 typography-xsmall text-muted-foreground text-right',

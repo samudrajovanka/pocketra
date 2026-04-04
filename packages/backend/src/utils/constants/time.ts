@@ -8,3 +8,9 @@ export const DATE_RANGE_PERIOD = {
 	last_30_days: 'last_30_days',
 	custom: 'custom',
 } as const;
+
+export const PERIOD = {
+	daily: 'daily',
+	weekly: 'weekly',
+	monthly: 'monthly',
+} as const;

@@ -1,3 +1,5 @@
+import { PERIOD } from './time';
+
 export const POCKET_TYPE = {
 	cash: 'cash',
 	bank: 'bank',
@@ -58,3 +60,22 @@ export const POCKET_EMOJIS = [
 	'🐶',
 	'🐱',
 ];
+
+export const BUDGET_PERIOD = {
+	daily: PERIOD.daily,
+	weekly: PERIOD.weekly,
+	monthly: PERIOD.monthly,
+};
+
+export const BUDGET_PERIOD_LABELS = {
+	[BUDGET_PERIOD.daily]: 'Daily',
+	[BUDGET_PERIOD.weekly]: 'Weekly',
+	[BUDGET_PERIOD.monthly]: 'Monthly',
+};
+
+export const BUDGET_PERIOD_OPTIONS = Object.values(BUDGET_PERIOD).map(
+	(value) => ({
+		value,
+		label: BUDGET_PERIOD_LABELS[value as keyof typeof BUDGET_PERIOD_LABELS],
+	}),
+);

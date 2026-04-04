@@ -10,8 +10,7 @@ import { categoriesTable } from '../category/category.schema';
 import { pocketsTable } from '../pocket/pocket.schema';
 import TransactionRepository from './transaction.repository';
 import { transactionsTable } from './transaction.schema';
-import { generateTransferId } from './transaction.utils';
-import { isEditableTransaction } from './transactions.utils';
+import { generateTransferId, isEditableTransaction } from './transaction.utils';
 import type {
 	PayloadCreateTransaction,
 	PayloadGetTransactions,

@@ -1,13 +1,6 @@
 import { relations } from 'drizzle-orm';
-import {
-	decimal,
-	pgEnum,
-	pgTable,
-	text,
-	timestamp,
-	uuid,
-} from 'drizzle-orm/pg-core';
-import { baseColumns } from '../../utils/helpers/schema';
+import { pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { amountType, baseColumns } from '../../utils/helpers/schema';
 import { categoriesTable } from '../category/category.schema';
 import { pocketsTable } from '../pocket/pocket.schema';
 import { TRANSACTION_TYPE } from './data';
@@ -26,7 +19,7 @@ export const transactionsTable = pgTable('transactions', {
 		.notNull()
 		.references(() => categoriesTable.id, { onDelete: 'restrict' }),
 	type: transactionTypeEnum('type').notNull(),
-	amount: decimal('amount', { precision: 19, scale: 4 }).notNull(),
+	amount: amountType('amount').notNull(),
 	description: text('description').notNull(),
 	date: timestamp('date', { withTimezone: true }).notNull(),
 	transferId: text('transfer_id'),
