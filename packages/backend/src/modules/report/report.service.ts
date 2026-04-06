@@ -169,7 +169,7 @@ export default class ReportService {
 		endDate: Date,
 	) {
 		console.log(startDate, endDate);
-		const result = await db
+		const query = db
 			.select({
 				type: transactionsTable.type,
 				amount: sql<number>`SUM(amount) as amount`,
@@ -183,6 +183,10 @@ export default class ReportService {
 				),
 			)
 			.groupBy(transactionsTable.type);
+
+		console.log('query', query.toSQL());
+
+		const result = await query;
 
 		const income = result.find((row) => row.type === 'income')?.amount || 0;
 		const expense = result.find((row) => row.type === 'expense')?.amount || 0;
