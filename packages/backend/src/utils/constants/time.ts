@@ -1,5 +1,7 @@
 export const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
+export const APP_TIMEZONE = 'Asia/Jakarta' as const;
+
 export const DATE_RANGE_PERIOD = {
 	today: 'today',
 	month_to_date: 'month_to_date',

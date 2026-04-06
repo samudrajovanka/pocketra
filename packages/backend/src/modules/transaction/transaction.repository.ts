@@ -1,8 +1,10 @@
-import { format } from 'date-fns';
-import { and, desc, eq, gte, ilike, lte, type SQL, sql } from 'drizzle-orm';
+import { TZDate } from '@date-fns/tz';
+import { endOfDay, startOfDay } from 'date-fns';
+import { and, desc, eq, gte, ilike, lte, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { db } from '../../config/db';
 import type { CursorPagination } from '../../utils/helpers/pagination';
+import { APP_TIMEZONE } from '../../utils/constants/time';
 import { categoriesTable } from '../category/category.schema';
 import { pocketsTable } from '../pocket/pocket.schema';
 import { transactionsTable } from './transaction.schema';
@@ -142,21 +144,17 @@ export default class TransactionRepository {
 		}
 
 		if (params.startDate) {
-			conditions.push(
-				gte(
-					sql`DATE(${transactionsTable.date})`,
-					format(params.startDate, 'yyyy-MM-dd'),
-				),
+			const startBoundary = new Date(
+				startOfDay(new TZDate(params.startDate, APP_TIMEZONE)).getTime(),
 			);
+			conditions.push(gte(transactionsTable.date, startBoundary));
 		}
 
 		if (params.endDate) {
-			conditions.push(
-				lte(
-					sql`DATE(${transactionsTable.date})`,
-					format(params.endDate, 'yyyy-MM-dd'),
-				),
+			const endBoundary = new Date(
+				endOfDay(new TZDate(params.endDate, APP_TIMEZONE)).getTime(),
 			);
+			conditions.push(lte(transactionsTable.date, endBoundary));
 		}
 
 		if (params.pagination.cursor) {

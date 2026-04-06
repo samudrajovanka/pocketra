@@ -8,6 +8,7 @@
     "db:seed": "bun run src/seed/main.ts"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
     "@hono/zod-validator": "^0.7.5",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.7",

@@ -168,7 +168,6 @@ export default class ReportService {
 		startDate: Date,
 		endDate: Date,
 	) {
-		console.log(startDate, endDate);
 		const query = db
 			.select({
 				type: transactionsTable.type,
@@ -183,8 +182,6 @@ export default class ReportService {
 				),
 			)
 			.groupBy(transactionsTable.type);
-
-		console.log('query', query.toSQL());
 
 		const result = await query;
 

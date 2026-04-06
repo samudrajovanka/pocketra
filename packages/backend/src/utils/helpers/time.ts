@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import {
 	endOfDay,
 	endOfMonth,
@@ -11,16 +12,20 @@ import type {
 	DateRangeComparison,
 	DateRangePeriod,
 } from '../../types/time';
-import { DATE_RANGE_PERIOD } from '../constants/time';
+import { APP_TIMEZONE, DATE_RANGE_PERIOD } from '../constants/time';
 
-const getTodayRange = (now: Date): DateRange => {
-	const start = startOfDay(now);
-	const end = endOfDay(now);
+/** Convert a TZDate (or any Date) to a plain UTC Date to ensure consistent toISOString() output */
+const toUtc = (d: Date): Date => new Date(d.getTime());
+
+export const getTodayRange = (now: Date): DateRange => {
+	const nowInTz = new TZDate(now, APP_TIMEZONE);
+	const start = toUtc(startOfDay(nowInTz));
+	const end = toUtc(endOfDay(nowInTz));
 
 	return { start, end };
 };
 
-const getTodayRangeComparison = (now: Date): DateRangeComparison => {
+export const getTodayRangeComparison = (now: Date): DateRangeComparison => {
 	const current = getTodayRange(now);
 	const previous = {
 		start: subDays(current.start, 1),
@@ -33,14 +38,17 @@ const getTodayRangeComparison = (now: Date): DateRangeComparison => {
 	};
 };
 
-const getLast7DaysRange = (now: Date): DateRange => {
-	const end = endOfDay(now);
-	const start = startOfDay(subDays(end, 6));
+export const getLast7DaysRange = (now: Date): DateRange => {
+	const nowInTz = new TZDate(now, APP_TIMEZONE);
+	const end = toUtc(endOfDay(nowInTz));
+	const start = toUtc(
+		startOfDay(new TZDate(subDays(nowInTz, 6), APP_TIMEZONE)),
+	);
 
 	return { start, end };
 };
 
-const getLast7DaysRangeComparison = (now: Date): DateRangeComparison => {
+export const getLast7DaysRangeComparison = (now: Date): DateRangeComparison => {
 	const current = getLast7DaysRange(now);
 	const previousEnd = subDays(current.start, 1);
 	const previousStart = subDays(previousEnd, 6);
@@ -51,14 +59,19 @@ const getLast7DaysRangeComparison = (now: Date): DateRangeComparison => {
 	};
 };
 
-const getLast30DaysRange = (now: Date): DateRange => {
-	const end = endOfDay(now);
-	const start = startOfDay(subDays(end, 29));
+export const getLast30DaysRange = (now: Date): DateRange => {
+	const nowInTz = new TZDate(now, APP_TIMEZONE);
+	const end = toUtc(endOfDay(nowInTz));
+	const start = toUtc(
+		startOfDay(new TZDate(subDays(nowInTz, 29), APP_TIMEZONE)),
+	);
 
 	return { start, end };
 };
 
-const getLast30DaysRangeComparison = (now: Date): DateRangeComparison => {
+export const getLast30DaysRangeComparison = (
+	now: Date,
+): DateRangeComparison => {
 	const current = getLast30DaysRange(now);
 	const previousEnd = subDays(current.start, 1);
 	const previousStart = subDays(previousEnd, 29);
@@ -69,14 +82,17 @@ const getLast30DaysRangeComparison = (now: Date): DateRangeComparison => {
 	};
 };
 
-const getMonthToDateRange = (now: Date): DateRange => {
-	const start = startOfMonth(now);
-	const end = endOfDay(now);
+export const getMonthToDateRange = (now: Date): DateRange => {
+	const nowInTz = new TZDate(now, APP_TIMEZONE);
+	const start = toUtc(startOfMonth(nowInTz));
+	const end = toUtc(endOfDay(nowInTz));
 
 	return { start, end };
 };
 
-const getMonthToDateRangeComparison = (now: Date): DateRangeComparison => {
+export const getMonthToDateRangeComparison = (
+	now: Date,
+): DateRangeComparison => {
 	const current = getMonthToDateRange(now);
 	const previousStart = subMonths(current.start, 1);
 	const previousEnd = subMonths(current.end, 1);
@@ -87,14 +103,17 @@ const getMonthToDateRangeComparison = (now: Date): DateRangeComparison => {
 	};
 };
 
-const getFullMonthRange = (startDate: Date): DateRange => {
-	const start = startOfMonth(startDate);
-	const end = endOfMonth(start);
+export const getFullMonthRange = (startDate: Date): DateRange => {
+	const startInTz = new TZDate(startDate, APP_TIMEZONE);
+	const start = toUtc(startOfMonth(startInTz));
+	const end = toUtc(endOfMonth(startOfMonth(startInTz)));
 
 	return { start, end };
 };
 
-const getFullMonthRangeComparison = (startDate: Date): DateRangeComparison => {
+export const getFullMonthRangeComparison = (
+	startDate: Date,
+): DateRangeComparison => {
 	const current = getFullMonthRange(startDate);
 	const previousStart = subMonths(current.start, 1);
 	const previousEnd = endOfMonth(previousStart);
@@ -105,14 +124,16 @@ const getFullMonthRangeComparison = (startDate: Date): DateRangeComparison => {
 	};
 };
 
-const getCustomRange = (startDate: Date, endDate: Date): DateRange => {
-	const start = startOfDay(startDate);
-	const end = endOfDay(endDate);
+export const getCustomRange = (startDate: Date, endDate: Date): DateRange => {
+	const startInTz = new TZDate(startDate, APP_TIMEZONE);
+	const endInTz = new TZDate(endDate, APP_TIMEZONE);
+	const start = toUtc(startOfDay(startInTz));
+	const end = toUtc(endOfDay(endInTz));
 
 	return { start, end };
 };
 
-const getCustomRangeComparison = (
+export const getCustomRangeComparison = (
 	startDate: Date,
 	endDate: Date,
 ): DateRangeComparison => {
@@ -131,9 +152,8 @@ export const getDateRangeComparison = (
 	period: DateRangePeriod,
 	customStart?: Date,
 	customEnd?: Date,
+	now: Date = new Date(),
 ): DateRangeComparison => {
-	const now = new Date();
-
 	switch (period) {
 		case DATE_RANGE_PERIOD.today:
 			return getTodayRangeComparison(now);
