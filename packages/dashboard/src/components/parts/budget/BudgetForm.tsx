@@ -9,7 +9,12 @@ import {
 	DialogTitle,
 } from '@/components/ui/dialog';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { InputGroup, InputGroupNumberInput } from '@/components/ui/input-group';
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupNumberInput,
+	InputGroupText,
+} from '@/components/ui/input-group';
 import {
 	Select,
 	SelectContent,
@@ -144,93 +149,103 @@ export function BudgetForm<T extends BudgetFormType>({
 					className="space-y-4"
 				>
 					<form.Field name="limitAmount">
-						{(field) => (
-							<Field data-invalid={isInvalidField(field)}>
-								<FieldLabel htmlFor={field.name}>Budget Limit</FieldLabel>
-								<InputGroup>
-									<InputGroupNumberInput
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onChange={(value) => field.handleChange(value)}
-										placeholder="Enter budget limit"
-									/>
-								</InputGroup>
-								{field.state.meta.errors.length > 0 && (
-									<FieldError>{field.state.meta.errors[0]}</FieldError>
-								)}
-							</Field>
-						)}
+						{(field) => {
+							const isInvalid = isInvalidField(field);
+							return (
+								<Field data-invalid={isInvalid} data-required>
+									<FieldLabel>Limit Amount</FieldLabel>
+									<InputGroup>
+										<InputGroupNumberInput
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={(val) => field.handleChange(val)}
+											placeholder="0"
+										/>
+
+										<InputGroupAddon>
+											<InputGroupText>IDR</InputGroupText>
+										</InputGroupAddon>
+									</InputGroup>
+									{isInvalid && <FieldError errors={field.state.meta.errors} />}
+								</Field>
+							);
+						}}
 					</form.Field>
 
 					<form.Field name="period">
-						{(field) => (
-							<Field data-invalid={isInvalidField(field)}>
-								<FieldLabel htmlFor={field.name}>Budget Period</FieldLabel>
-								<Select
-									value={field.state.value}
-									onValueChange={(value) =>
-										field.handleChange(value as BudgetPeriod)
-									}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder="Select period" />
-									</SelectTrigger>
-									<SelectContent>
-										{BUDGET_PERIOD_OPTIONS.map((option) => (
-											<SelectItem key={option.value} value={option.value}>
-												{option.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								{field.state.meta.errors.length > 0 && (
-									<FieldError>{field.state.meta.errors[0]}</FieldError>
-								)}
-							</Field>
-						)}
+						{(field) => {
+							const isInvalid = isInvalidField(field);
+							return (
+								<Field data-invalid={isInvalid}>
+									<FieldLabel>Budget Period</FieldLabel>
+									<Select
+										value={field.state.value}
+										onValueChange={(value) =>
+											field.handleChange(value as BudgetPeriod)
+										}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Select period" />
+										</SelectTrigger>
+										<SelectContent>
+											{BUDGET_PERIOD_OPTIONS.map((option) => (
+												<SelectItem key={option.value} value={option.value}>
+													{option.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									{isInvalid && <FieldError errors={field.state.meta.errors} />}
+								</Field>
+							);
+						}}
 					</form.Field>
 
 					<form.Field name="alertThreshold">
-						{(field) => (
-							<Field data-invalid={isInvalidField(field)}>
-								<FieldLabel htmlFor={field.name}>
-									Alert Threshold ({field.state.value}%)
-								</FieldLabel>
-								<InputGroup>
-									<InputGroupNumberInput
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onChange={(value) => field.handleChange(value)}
-										min={1}
-										max={100}
-										step={1}
-										placeholder="80"
-									/>
-								</InputGroup>
-								{field.state.meta.errors.length > 0 && (
-									<FieldError>{field.state.meta.errors[0]}</FieldError>
-								)}
-							</Field>
-						)}
+						{(field) => {
+							const isInvalid = isInvalidField(field);
+							return (
+								<Field data-invalid={isInvalid}>
+									<FieldLabel>Alert Threshold</FieldLabel>
+									<InputGroup>
+										<InputGroupNumberInput
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onChange={(value) => field.handleChange(value)}
+											min={1}
+											max={100}
+											step={1}
+											placeholder="80"
+										/>
+									</InputGroup>
+									{isInvalid && <FieldError errors={field.state.meta.errors} />}
+								</Field>
+							);
+						}}
 					</form.Field>
 
 					{isCreate && (
 						<form.Field name="periodStartDate">
-							{(field) => (
-								<Field data-invalid={isInvalidField(field)}>
-									<FieldLabel htmlFor={field.name}>Start Date</FieldLabel>
-									<DatePicker
-										value={field.state.value}
-										onChange={(date) => field.handleChange(date || new Date())}
-										placeholder="Select start date"
-									/>
-									{field.state.meta.errors.length > 0 && (
-										<FieldError>{field.state.meta.errors[0]}</FieldError>
-									)}
-								</Field>
-							)}
+							{(field) => {
+								const isInvalid = isInvalidField(field);
+								return (
+									<Field data-invalid={isInvalid}>
+										<FieldLabel>Start Date</FieldLabel>
+										<DatePicker
+											value={field.state.value}
+											onChange={(date) =>
+												field.handleChange(date || new Date())
+											}
+											placeholder="Select start date"
+										/>
+										{isInvalid && (
+											<FieldError errors={field.state.meta.errors} />
+										)}
+									</Field>
+								);
+							}}
 						</form.Field>
 					)}
 
