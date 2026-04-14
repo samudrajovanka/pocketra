@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { date, decimal, pgEnum, pgTable, uuid } from 'drizzle-orm/pg-core';
+import { decimal, pgEnum, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { amountType, baseColumns } from '../../utils/helpers/schema';
 import { pocketsTable } from '../pocket/pocket.schema';
 import { BUDGET_PERIOD } from './data';
@@ -20,8 +20,10 @@ export const pocketBudgetsTable = pgTable('pocket_budgets', {
 	alertThreshold: decimal('alert_threshold', { precision: 3, scale: 2 })
 		.default('0.8')
 		.notNull(),
-	periodStartDate: date('period_start_date').notNull(),
-	nextResetDate: date('next_reset_date').notNull(),
+	periodStartDate: timestamp('period_start_date', {
+		withTimezone: true,
+	}).notNull(),
+	nextResetDate: timestamp('next_reset_date', { withTimezone: true }).notNull(),
 });
 
 export const pocketBudgetsRelations = relations(

@@ -1,5 +1,8 @@
 export const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000;
 
+export const DATE_NOW_ZERO = new Date();
+DATE_NOW_ZERO.setHours(0, 0, 0, 0);
+
 export const DATE_RANGE_PERIOD = {
 	today: 'today',
 	month_to_date: 'month_to_date',

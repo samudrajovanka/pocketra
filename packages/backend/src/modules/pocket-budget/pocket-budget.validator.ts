@@ -9,7 +9,7 @@ export const createPocketBudgetValidator = z.object({
 		Object.values(BUDGET_PERIOD) as [string, ...string[]],
 	) as z.ZodType<BudgetPeriod>,
 	alertThreshold: z.number().min(0.1).max(1.0).default(0.8),
-	periodStartDate: z.coerce.date(),
+	periodStartDate: z.iso.datetime(),
 });
 
 export const zCreatePocketBudgetValidator = validationMiddleware(
@@ -31,7 +31,7 @@ export const zUpdatePocketBudgetValidator = validationMiddleware(
 );
 
 export const pocketBudgetParamValidator = z.object({
-	pocketId: z.string().uuid(),
+	pocketId: z.uuidv7(),
 });
 
 export const zGetPocketBudgetParamValidator = validationMiddleware(

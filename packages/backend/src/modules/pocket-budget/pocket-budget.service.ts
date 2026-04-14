@@ -1,6 +1,8 @@
+import { TZDate } from '@date-fns/tz';
 import { addDays, addMonths, addWeeks } from 'date-fns';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';
+import { APP_TIMEZONE } from '../../utils/constants/time';
 import { BUDGET_PERIOD } from './data';
 import PocketBudgetRepository from './pocket-budget.repository';
 import type {
@@ -35,7 +37,11 @@ export default class PocketBudgetService {
 
 		const budgetData = {
 			...data,
-			nextResetDate: nextResetDate,
+			periodStartDate: new TZDate(
+				data.periodStartDate,
+				APP_TIMEZONE,
+			).toISOString(),
+			nextResetDate: nextResetDate.toISOString(),
 		};
 
 		return await this.repository.createBudget(pocketId, budgetData);
@@ -45,6 +51,7 @@ export default class PocketBudgetService {
 		pocketId: string,
 		userId: string,
 	): Promise<PocketBudgetWithProgress> {
+		console.log('new Date', new Date());
 		const budget = await this.repository.findBudgetByPocketId(pocketId, userId);
 
 		if (!budget) {
@@ -54,7 +61,7 @@ export default class PocketBudgetService {
 		const periodStart = new Date(budget.periodStartDate);
 		const nextReset = new Date(budget.nextResetDate);
 
-		const currentSpent = await this.repository.calculateCurrentSpent(
+		const currentSpent = await this.repository.calculateCurrentNet(
 			pocketId,
 			periodStart,
 			nextReset,
@@ -98,7 +105,7 @@ export default class PocketBudgetService {
 		if (data.period) {
 			const nextResetDate = this.calculateNextResetDate(
 				data.period,
-				new Date(existingBudget.periodStartDate),
+				existingBudget.periodStartDate,
 			);
 			updateData.nextResetDate = nextResetDate;
 		}
@@ -127,7 +134,10 @@ export default class PocketBudgetService {
 		return resetResults.length;
 	}
 
-	private calculateNextResetDate(period: BudgetPeriod, startDate: Date): Date {
+	private calculateNextResetDate(
+		period: BudgetPeriod,
+		startDate: string | Date,
+	): Date {
 		switch (period) {
 			case BUDGET_PERIOD.daily:
 				return addDays(startDate, 1);

@@ -26,6 +26,7 @@ import {
 	createTransactionValidator,
 	updateTransactionValidator,
 } from '@/endpoints/transaction/validator';
+import { DATE_NOW_ZERO } from '@/lib/constants/time';
 import { isInvalidField } from '@/lib/utils';
 import { useGetCategoriesQuery } from '@/query/category';
 import { useGetPocketOptionsQuery } from '@/query/pocket';
@@ -72,7 +73,7 @@ const TransactionForm = <T extends 'create' | 'update'>({
 					categoryId: '',
 					pocketId: '',
 					description: '',
-					date: new Date().toISOString(),
+					date: DATE_NOW_ZERO.toISOString(),
 				},
 		validators: {
 			onChange:

@@ -26,6 +26,7 @@ import {
 	transferTransactionValidator,
 	updateTransferTransactionValidator,
 } from '@/endpoints/transaction/validator';
+import { DATE_NOW_ZERO } from '@/lib/constants/time';
 import { isInvalidField } from '@/lib/utils';
 import { useGetPocketOptionsQuery } from '@/query/pocket';
 import QueryHandling from '../query/QueryHandling';
@@ -65,14 +66,14 @@ const TransferPocketForm = <T extends 'create' | 'update'>({
 					toPocketId: initialValues.toPocketId || '',
 					amount: initialValues.amount || 0,
 					description: initialValues.description || '',
-					date: initialValues.date || new Date().toISOString(),
+					date: initialValues.date || DATE_NOW_ZERO.toISOString(),
 				}
 			: {
 					fromPocketId: '',
 					toPocketId: '',
 					amount: 0,
 					description: 'Transfer pocket',
-					date: new Date().toISOString(),
+					date: DATE_NOW_ZERO.toISOString(),
 				},
 		validators: {
 			onChange:

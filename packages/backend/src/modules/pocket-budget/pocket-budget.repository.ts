@@ -1,6 +1,5 @@
-import { and, eq, gte, inArray, lt, lte, sql, sum } from 'drizzle-orm';
+import { and, between, eq, lte, sql } from 'drizzle-orm';
 import { db } from '../../config/db';
-import { TRANSACTION_TYPE } from '../transaction/data';
 import { transactionsTable } from '../transaction/transaction.schema';
 import { BUDGET_PERIOD } from './data';
 import { pocketBudgetsTable } from './pocket-budget.schema';
@@ -52,23 +51,27 @@ export default class PocketBudgetRepository {
 		return result;
 	}
 
-	async calculateCurrentSpent(
+	async calculateCurrentNet(
 		pocketId: string,
 		periodStartDate: Date,
 		nextResetDate: Date,
 	) {
 		const result = await db
-			.select({ spent: sum(transactionsTable.amount) })
+			.select({
+				spent: sql<number>`COALESCE(
+				SUM(
+					CASE
+						WHEN ${transactionsTable.type} IN ('income', 'transfer_in') THEN -${transactionsTable.amount}
+						ELSE ${transactionsTable.amount}
+					END
+				), 0
+			)`,
+			})
 			.from(transactionsTable)
 			.where(
 				and(
 					eq(transactionsTable.pocketId, pocketId),
-					inArray(transactionsTable.type, [
-						TRANSACTION_TYPE.expense,
-						TRANSACTION_TYPE.transfer_out,
-					]),
-					gte(transactionsTable.date, periodStartDate),
-					lt(transactionsTable.date, nextResetDate),
+					between(transactionsTable.date, periodStartDate, nextResetDate),
 				),
 			);
 
@@ -83,8 +86,8 @@ export default class PocketBudgetRepository {
 				limitAmount: data.limitAmount.toString(),
 				period: data.period,
 				alertThreshold: data.alertThreshold.toString(),
-				periodStartDate: data.periodStartDate.toISOString(),
-				nextResetDate: data.nextResetDate.toISOString(),
+				periodStartDate: new Date(data.periodStartDate),
+				nextResetDate: new Date(data.nextResetDate),
 			})
 			.returning({
 				id: pocketBudgetsTable.id,
@@ -100,7 +103,7 @@ export default class PocketBudgetRepository {
 				...data,
 				limitAmount: data.limitAmount?.toString(),
 				alertThreshold: data.alertThreshold?.toString(),
-				nextResetDate: data.nextResetDate?.toISOString(),
+				nextResetDate: data.nextResetDate,
 			})
 			.where(eq(pocketBudgetsTable.pocketId, pocketId))
 			.returning();
@@ -118,9 +121,8 @@ export default class PocketBudgetRepository {
 	}
 
 	async findBudgetsToReset(currentDate: Date) {
-		const dateStr = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
 		return await db.query.pocketBudgetsTable.findMany({
-			where: lte(pocketBudgetsTable.nextResetDate, dateStr),
+			where: lte(pocketBudgetsTable.nextResetDate, currentDate),
 			with: {
 				pocket: {
 					columns: {
@@ -137,14 +139,11 @@ export default class PocketBudgetRepository {
 		newPeriodStart: Date,
 		newNextReset: Date,
 	) {
-		const periodStartStr = newPeriodStart.toISOString();
-		const nextResetStr = newNextReset.toISOString();
-
 		const [budget] = await db
 			.update(pocketBudgetsTable)
 			.set({
-				periodStartDate: periodStartStr,
-				nextResetDate: nextResetStr,
+				periodStartDate: newPeriodStart,
+				nextResetDate: newNextReset,
 			})
 			.where(eq(pocketBudgetsTable.id, budgetId))
 			.returning();
@@ -153,8 +152,6 @@ export default class PocketBudgetRepository {
 	}
 
 	async bulkResetBudgetPeriods(currentDate: Date) {
-		const dateStr = currentDate.toISOString();
-
 		const result = await db.execute(sql`
 			UPDATE pocket_budgets pb
 			SET 
@@ -166,7 +163,7 @@ export default class PocketBudgetRepository {
 					ELSE next_reset_date
 				END,
 				updated_at = NOW()
-			WHERE next_reset_date <= ${dateStr}::date
+			WHERE next_reset_date <= ${currentDate}
 			RETURNING id
 		`);
 

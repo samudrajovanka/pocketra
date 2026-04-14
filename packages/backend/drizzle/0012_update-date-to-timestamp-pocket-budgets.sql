@@ -1,0 +1,2 @@
+ALTER TABLE "pocket_budgets" ALTER COLUMN "period_start_date" SET DATA TYPE timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "pocket_budgets" ALTER COLUMN "next_reset_date" SET DATA TYPE timestamp with time zone;

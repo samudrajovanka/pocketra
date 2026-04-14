@@ -1,4 +1,5 @@
 import { useForm } from '@tanstack/react-form';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import DatePicker from '@/components/ui/date-picker';
 import {
@@ -31,13 +32,13 @@ import {
 	updateBudgetValidator,
 } from '@/endpoints/budget/validator';
 import { BUDGET_PERIOD, BUDGET_PERIOD_OPTIONS } from '@/lib/constants/pockets';
+import { DATE_NOW_ZERO } from '@/lib/constants/time';
 import { isInvalidField } from '@/lib/utils';
 import {
 	useCreatePocketBudgetMutation,
 	useUpdatePocketBudgetMutation,
 } from '@/query/budget';
 import type { BudgetPeriod } from '@/types/budget';
-import { format } from 'date-fns';
 
 type BudgetFormType = 'create' | 'update';
 
@@ -73,7 +74,7 @@ export function BudgetForm<T extends BudgetFormType>({
 				limitAmount: 100000,
 				period: BUDGET_PERIOD.monthly,
 				alertThreshold: 80,
-				periodStartDate: new Date(),
+				periodStartDate: DATE_NOW_ZERO.toISOString(),
 			};
 		}
 
@@ -236,7 +237,9 @@ export function BudgetForm<T extends BudgetFormType>({
 										<DatePicker
 											value={field.state.value}
 											onChange={(date) =>
-												field.handleChange(date || new Date())
+												field.handleChange(
+													date?.toISOString() || new Date().toISOString(),
+												)
 											}
 											placeholder="Select start date"
 										/>

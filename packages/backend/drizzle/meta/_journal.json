@@ -85,6 +85,13 @@
       "when": 1774944235281,
       "tag": "0011_create-pocket-budgets",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1776044870437,
+      "tag": "0012_update-date-to-timestamp-pocket-budgets",
+      "breakpoints": true
     }
   ]
 }
