@@ -14,7 +14,7 @@ export type CreatePocketBudgetPayload = z.infer<
 >;
 
 export type CreatePocketBudgetWithResetDate = CreatePocketBudgetPayload & {
-	nextResetDate: string;
+	nextResetDate: Date;
 };
 
 export type UpdatePocketBudgetPayload = z.infer<

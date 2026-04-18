@@ -1,5 +1,5 @@
 import { TZDate } from '@date-fns/tz';
-import { addDays, addMonths, addWeeks } from 'date-fns';
+import { addDays, addMonths, addWeeks, startOfDay } from 'date-fns';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';
 import { APP_TIMEZONE } from '../../utils/constants/time';
@@ -37,11 +37,10 @@ export default class PocketBudgetService {
 
 		const budgetData = {
 			...data,
-			periodStartDate: new TZDate(
-				data.periodStartDate,
-				APP_TIMEZONE,
+			periodStartDate: startOfDay(
+				new TZDate(data.periodStartDate, APP_TIMEZONE),
 			).toISOString(),
-			nextResetDate: nextResetDate.toISOString(),
+			nextResetDate: startOfDay(new TZDate(nextResetDate, APP_TIMEZONE)),
 		};
 
 		return await this.repository.createBudget(pocketId, budgetData);
@@ -107,7 +106,9 @@ export default class PocketBudgetService {
 				data.period,
 				existingBudget.periodStartDate,
 			);
-			updateData.nextResetDate = nextResetDate;
+			updateData.nextResetDate = startOfDay(
+				new TZDate(nextResetDate, APP_TIMEZONE),
+			);
 		}
 
 		return await this.repository.updateBudget(pocketId, updateData);

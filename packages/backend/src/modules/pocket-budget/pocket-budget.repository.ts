@@ -87,7 +87,7 @@ export default class PocketBudgetRepository {
 				period: data.period,
 				alertThreshold: data.alertThreshold.toString(),
 				periodStartDate: new Date(data.periodStartDate),
-				nextResetDate: new Date(data.nextResetDate),
+				nextResetDate: data.nextResetDate,
 			})
 			.returning({
 				id: pocketBudgetsTable.id,
@@ -163,7 +163,7 @@ export default class PocketBudgetRepository {
 					ELSE next_reset_date
 				END,
 				updated_at = NOW()
-			WHERE next_reset_date <= ${currentDate}
+			WHERE next_reset_date <= ${currentDate.toISOString()}
 			RETURNING id
 		`);
 
@@ -182,7 +182,6 @@ export default class PocketBudgetRepository {
 			},
 		});
 
-		// Filter for user's pockets only
 		return result.filter((budget) => budget.pocket.userId === userId);
 	}
 }

@@ -1,7 +1,10 @@
+import { TZDate } from '@date-fns/tz';
+import { startOfDay } from 'date-fns';
 import { and, eq, inArray } from 'drizzle-orm';
 import { db } from '../../config/db';
 import InvariantError from '../../exceptions/InvariantError';
 import NotFoundError from '../../exceptions/NotFoundError';
+import { APP_TIMEZONE } from '../../utils/constants/time';
 import {
 	type CursorPagination,
 	generateCursorPaginationMetaResponse,
@@ -67,7 +70,7 @@ export default class TransactionService {
 
 		const transferId = generateTransferId(date);
 		const amountStr = amount.toString();
-		const transactionDate = new Date(date);
+		const transactionDate = startOfDay(new TZDate(date, APP_TIMEZONE));
 
 		await db.insert(transactionsTable).values([
 			{
@@ -126,7 +129,7 @@ export default class TransactionService {
 				type: data.type,
 				amount: data.amount.toString(),
 				description: data.description,
-				date: new Date(data.date),
+				date: startOfDay(new TZDate(data.date, APP_TIMEZONE)),
 			})
 			.returning({
 				id: transactionsTable.id,

@@ -144,16 +144,14 @@ export default class TransactionRepository {
 		}
 
 		if (params.startDate) {
-			const startBoundary = new Date(
-				startOfDay(new TZDate(params.startDate, APP_TIMEZONE)).getTime(),
+			const startBoundary = startOfDay(
+				new TZDate(params.startDate, APP_TIMEZONE),
 			);
 			conditions.push(gte(transactionsTable.date, startBoundary));
 		}
 
 		if (params.endDate) {
-			const endBoundary = new Date(
-				endOfDay(new TZDate(params.endDate, APP_TIMEZONE)).getTime(),
-			);
+			const endBoundary = endOfDay(new TZDate(params.endDate, APP_TIMEZONE));
 			conditions.push(lte(transactionsTable.date, endBoundary));
 		}
 
